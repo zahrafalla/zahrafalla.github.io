@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paper Constellation</title>
+<style>
+  :root{
+    --space:#04060d; --panel:rgba(12,16,30,.78); --line:rgba(255,255,255,.09);
+    --ink:#e9edf5; --muted:#8e9ab0; --gold:#ffd27a; --accent:#2fd2be;
+  }
+  *{box-sizing:border-box} html,body{margin:0; height:100%;}
+  body{background:var(--space); color:var(--ink); overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased;}
+  #stage{position:fixed; inset:0; top:var(--navh,49px);}
+  #sky{display:block; width:100%; height:100%; cursor:grab; touch-action:none;}
+  #sky.grabbing{cursor:grabbing;} #sky.pointing{cursor:pointer;}
+
+  .glass{background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); box-shadow:0 10px 40px rgba(0,0,0,.45);}
+
+  /* left control panel */
+  #controls{position:absolute; left:16px; top:16px; width:300px; max-height:calc(100% - 32px);
+    overflow:auto; padding:16px; scrollbar-width:thin;}
+  #controls h1{font-size:18px; margin:0; letter-spacing:-.01em;}
+  #controls .sub{font-size:12.5px; color:var(--muted); margin:4px 0 12px; line-height:1.45;}
+  .sec{margin-top:14px;}
+  .sec h3{font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0 0 8px; font-weight:800;}
+  .chips{display:flex; flex-wrap:wrap; gap:6px;}
+  .chip{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); background:transparent;
+    color:var(--ink); padding:5px 10px; border-radius:999px; font-size:12px; font-weight:650; cursor:pointer; transition:.15s;}
+  .chip .dot{width:8px; height:8px; border-radius:50%; background:var(--c);}
+  .chip:hover{border-color:rgba(255,255,255,.25);}
+  .chip[aria-pressed="true"]{background:var(--c); color:#061016; border-color:transparent;}
+  .chip[aria-pressed="true"] .dot{background:#061016;}
+  .toggles{display:grid; grid-template-columns:1fr 1fr; gap:6px;}
+  .tg{display:flex; align-items:center; gap:8px; font-size:12.5px; color:#cdd5e3; cursor:pointer;
+    padding:6px 8px; border-radius:9px; border:1px solid var(--line); user-select:none;}
+  .tg input{accent-color:var(--accent);}
+  .range{display:flex; align-items:center; gap:10px; font-size:12px; color:var(--muted);}
+  .range input{flex:1; accent-color:var(--accent);}
+  .range b{color:var(--ink); min-width:34px; text-align:right; font-variant-numeric:tabular-nums;}
+  #search{width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--line);
+    background:rgba(255,255,255,.04); color:var(--ink); font-size:13px;}
+  #search:focus{outline:none; border-color:var(--accent);}
+
+  /* ideas list */
+  .idea{display:flex; gap:10px; align-items:center; padding:8px 8px; border-radius:10px; cursor:pointer; transition:.12s;}
+  .idea:hover{background:rgba(255,210,122,.08);}
+  .idea .st{color:var(--gold); font-size:15px; text-shadow:0 0 10px rgba(255,210,122,.7); flex:none;}
+  .idea .nm{flex:1; font-size:13px; font-weight:650; line-height:1.25;}
+  .idea .nm small{display:block; color:var(--muted); font-weight:500; font-size:11.5px;}
+  .idea .bar{width:46px; height:5px; border-radius:9px; background:rgba(255,255,255,.08); overflow:hidden; flex:none;}
+  .idea .bar i{display:block; height:100%; background:linear-gradient(90deg,#ffb35c,#ffe7a8);}
+
+  /* detail panel */
+  #detail{position:absolute; right:16px; top:16px; width:350px; max-height:calc(100% - 32px); overflow:auto;
+    padding:18px; transform:translateX(calc(100% + 30px)); transition:transform .35s cubic-bezier(.2,.8,.2,1); scrollbar-width:thin;}
+  #detail.open{transform:none;}
+  #detail .close{position:absolute; right:12px; top:12px; width:28px; height:28px; border-radius:8px; border:none;
+    background:rgba(255,255,255,.07); color:var(--ink); cursor:pointer; font-size:15px;}
+  #detail .close:hover{background:rgba(255,255,255,.15);}
+  .kind{font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; font-weight:800; color:var(--muted);}
+  .dt{font-size:17px; font-weight:750; margin:6px 30px 6px 0; line-height:1.3;}
+  .meta{font-size:12.5px; color:var(--muted);}
+  .badge{display:inline-block; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:800; letter-spacing:.04em;}
+  .ideatext{margin:12px 0; padding:12px 14px; border-radius:12px; font-size:13.5px; line-height:1.5;
+    background:linear-gradient(135deg, rgba(255,200,110,.12), rgba(255,140,90,.06)); border:1px solid rgba(255,210,122,.25);}
+  .dh{font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:800; margin:16px 0 8px;}
+  .dna-row{display:grid; grid-template-columns:118px 1fr 22px; gap:8px; align-items:center; font-size:12px; padding:3px 0;}
+  .dna-row .t{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#d6dceb;}
+  .dna-row .tr{height:6px; border-radius:9px; background:rgba(255,255,255,.06); overflow:hidden;}
+  .dna-row .tr i{display:block; height:100%; border-radius:9px;}
+  .dna-row .n{color:var(--muted); text-align:right; font-variant-numeric:tabular-nums;}
+  .link{padding:9px 10px; border-radius:10px; cursor:pointer; border:1px solid transparent; transition:.12s; margin-bottom:4px;}
+  .link:hover{background:rgba(255,255,255,.05); border-color:var(--line);}
+  .link .lt{font-size:13px; font-weight:650; display:flex; justify-content:space-between; gap:8px;}
+  .link .lt span{color:var(--accent); font-variant-numeric:tabular-nums; font-size:12px; flex:none;}
+  .words{display:flex; flex-wrap:wrap; gap:4px; margin-top:5px;}
+  .w{font-size:11px; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,.07); color:#cfd7e6;}
+  .tchip{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px;
+    color:var(--c); background:color-mix(in srgb, var(--c) 16%, transparent); margin:0 4px 4px 0;}
+
+  /* legend + zoom + hint */
+  #legend{position:absolute; left:332px; bottom:16px; padding:10px 14px; font-size:11.5px; color:#c9d1df;
+    display:flex; gap:14px; flex-wrap:wrap; align-items:center; max-width:calc(100% - 520px);}
+  #legend span{display:inline-flex; align-items:center; gap:6px; white-space:nowrap;}
+  #legend i{width:9px; height:9px; border-radius:50%; display:inline-block;}
+  #zoom{position:absolute; right:16px; bottom:16px; display:flex; flex-direction:column; gap:2px; padding:4px;}
+  #zoom button{width:36px; height:36px; border:none; border-radius:10px; background:transparent; color:var(--ink);
+    font-size:18px; font-weight:700; cursor:pointer;}
+  #zoom button:hover{background:rgba(255,255,255,.1);}
+  #hint{position:absolute; left:50%; top:16px; transform:translateX(-50%); padding:7px 14px; font-size:12px; color:#b8c2d3;
+    white-space:nowrap; pointer-events:none; transition:opacity .6s;}
+  #tip{position:absolute; pointer-events:none; padding:6px 10px; font-size:12px; font-weight:650; border-radius:9px;
+    background:rgba(8,11,22,.94); border:1px solid rgba(255,255,255,.14); color:#fff; opacity:0; transition:opacity .1s;
+    max-width:280px; white-space:normal;}
+  #tip.show{opacity:1;}
+  #notice{position:absolute; left:50%; bottom:70px; transform:translateX(-50%); padding:9px 14px; font-size:12.5px;
+    color:#ffe2a8; max-width:520px; text-align:center; display:none;}
+  #empty{position:absolute; inset:0; display:none; align-items:center; justify-content:center; text-align:center; padding:20px;}
+  #empty a{color:var(--accent);}
+  #menuBtn{display:none; position:absolute; left:16px; top:16px; padding:9px 13px; font-size:13px; font-weight:700;
+    color:var(--ink); cursor:pointer; border-radius:12px;}
+
+  #zoom{transition:right .35s cubic-bezier(.2,.8,.2,1);}
+  body.detail-open #legend{opacity:0; pointer-events:none;}
+  body.detail-open #zoom{right:382px;}
+  #legend{transition:opacity .25s;}
+  #controls{transition:opacity .3s, transform .3s;}
+  @media (max-width:1180px) and (min-width:821px){
+    body.detail-open #controls{opacity:0; pointer-events:none; transform:translateX(-24px);}
+  }
+  @media (max-width:820px){
+    body.detail-open #zoom{right:16px;}
+    #legend{display:none;}
+    #hint{display:none;}
+    #menuBtn{display:block;}
+    #controls{top:62px; width:calc(100% - 32px); max-height:60%; display:none;}
+    #controls.open{display:block;}
+    #detail{left:12px; right:12px; top:auto; bottom:12px; width:auto; max-height:58%; transform:translateY(calc(100% + 30px));}
+    #detail.open{transform:none;}
+    #zoom{bottom:auto; top:16px;}
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="sky" aria-label="3D constellation of papers"></canvas>
+
+  <button id="menuBtn" class="glass">☰ Controls & ideas</button>
+
+  <aside id="controls" class="glass">
+    <h1>✦ Constellation</h1>
+    <p class="sub">Every <b>planet</b> is a paper. Lines join papers that share words — brighter means more in common.
+      Golden <b>stars</b> are ideas for your thesis that several papers already support.</p>
+
+    <input id="search" list="titles" placeholder="Find a paper…" autocomplete="off">
+    <datalist id="titles"></datalist>
+
+    <div class="sec"><h3>Focus on themes</h3><div class="chips" id="themeChips"></div></div>
+
+    <div class="sec"><h3>Show</h3>
+      <div class="toggles">
+        <label class="tg"><input type="checkbox" id="tLinks" checked> Word links</label>
+        <label class="tg"><input type="checkbox" id="tStars" checked> Idea stars</label>
+        <label class="tg"><input type="checkbox" id="tLabels" checked> Labels</label>
+        <label class="tg"><input type="checkbox" id="tSpin" checked> Auto‑rotate</label>
+      </div>
+    </div>
+
+    <div class="sec"><h3>Link strength</h3>
+      <div class="range"><span>loose</span><input type="range" id="strength" min="0" max="60" value="12"><span>tight</span><b id="strengthVal">12%</b></div>
+    </div>
+
+    <div class="sec"><h3>✦ Ideas with the strongest support</h3><div id="ideas"></div></div>
+  </aside>
+
+  <aside id="detail" class="glass" aria-live="polite">
+    <button class="close" id="closeDetail" aria-label="Close">✕</button>
+    <div id="detailBody"></div>
+  </aside>
+
+  <div id="legend" class="glass"></div>
+  <div id="zoom" class="glass">
+    <button data-z="in" title="Fly in">+</button>
+    <button data-z="out" title="Fly out">−</button>
+    <button data-z="reset" title="Reset view">⟲</button>
+  </div>
+  <div id="hint" class="glass">drag to orbit · scroll to fly in · click a planet or a star</div>
+  <div id="notice" class="glass"></div>
+  <div id="tip"></div>
+  <div id="empty"><div><h2>No papers yet</h2><p>Analyse papers on the <a href="add-paper.html">Analyze a paper</a> page, then update <code>papers.js</code>.</p></div></div>
+</div>
+
+<script src="nav.js"></script>
+<script src="lexicon.js"></script>
+<script src="papers.js"></script>
+<script src="constellation.js"></script>
+</body>
+</html>

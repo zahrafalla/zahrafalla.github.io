@@ -23,7 +23,12 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/cv/";
           },
-        },{
+        },{id: "projects-my-phd",
+          title: 'My PhD',
+          description: "An interactive literature map for my PhD on collaborative embodied learning of mathematics in virtual reality.",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/1_phd/";
+            },},{
         id: 'social-email',
         title: 'email',
         section: 'Socials',

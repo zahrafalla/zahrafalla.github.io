@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paper Library</title>
+<style>
+  :root{
+    --bg:#f5f7f9; --panel:#ffffff; --ink:#15181d; --muted:#5c6673; --line:#e5e9ef;
+    --accent:#0e9f8e; --accent-ink:#0b7d70; --radius:16px;
+    --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.06);
+    --c-collaborative:#0e9f8e; --c-embodied:#e8743b; --c-learning:#3e6fd6; --c-mathematics:#8a5cf0; --c-vr:#d64d8a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#121519; --panel:#1a1e25; --ink:#e8ebef; --muted:#9aa4b2; --line:#2a303a; --accent:#2fd2be; --accent-ink:#2fd2be;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.35); }
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink);
+    line-height:1.5; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1120px; margin:0 auto; padding:26px 16px 72px;}
+  .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink); font-weight:800;}
+  h1{font-size:clamp(22px,3.4vw,32px); margin:.2em 0 .1em; letter-spacing:-.02em;}
+  .sub{color:var(--muted); font-size:15px; max-width:64ch; margin:0;}
+  .samplebar{margin-top:12px; font-size:13px; color:var(--accent-ink); background:color-mix(in srgb,var(--accent) 10%,transparent);
+    border:1px solid color-mix(in srgb,var(--accent) 30%,transparent); padding:8px 12px; border-radius:10px; display:inline-block;}
+
+  .toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:20px 0 6px; background:var(--panel);
+    border:1px solid var(--line); border-radius:14px; padding:12px; box-shadow:var(--shadow);}
+  .search{flex:1 1 220px; padding:10px 13px; border:1px solid var(--line); border-radius:10px; background:var(--bg); color:var(--ink); font-size:14px;}
+  .search:focus{outline:2px solid color-mix(in srgb,var(--accent) 45%,transparent); border-color:var(--accent);}
+  .chips{display:flex; flex-wrap:wrap; gap:6px;}
+  .chip{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); background:transparent; color:var(--ink);
+    padding:6px 11px; border-radius:999px; font-size:12.5px; font-weight:650; cursor:pointer;}
+  .chip i{width:9px; height:9px; border-radius:50%; background:var(--c);}
+  .chip[aria-pressed="true"]{background:var(--c); color:#fff; border-color:transparent;}
+  .chip[aria-pressed="true"] i{background:rgba(255,255,255,.9);}
+  select{padding:9px 10px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--ink); font-size:13px;}
+  .count{color:var(--muted); font-size:13px; margin:10px 2px 0;}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-top:12px;}
+  a.card{display:flex; flex-direction:column; text-decoration:none; color:var(--ink); background:var(--panel); border:1px solid var(--line);
+    border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); transition:transform .18s, box-shadow .18s, border-color .18s;}
+  a.card:hover{transform:translateY(-3px); box-shadow:0 14px 34px rgba(16,24,40,.14); border-color:color-mix(in srgb,var(--accent) 45%,var(--line));}
+  a.card:focus-visible{outline:3px solid var(--accent); outline-offset:2px;}
+  .art{position:relative; height:150px; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(120% 120% at 50% 45%, #141d3a 0%, #0a1024 55%, #05070f 100%);}
+  .art svg{width:138px; height:138px; transition:transform .5s cubic-bezier(.2,.8,.2,1);}
+  a.card:hover .art svg{transform:scale(1.08) rotate(8deg);}
+  .badge{position:absolute; top:10px; right:10px; font-size:10.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+    padding:3px 8px; border-radius:999px; background:rgba(47,210,190,.18); color:#5fe6d4; border:1px solid rgba(47,210,190,.35);}
+  .badge.basic{background:rgba(255,255,255,.08); color:#aab4c5; border-color:rgba(255,255,255,.15);}
+  .yr{position:absolute; top:10px; left:12px; font-size:12px; font-weight:700; color:#c9d1df;}
+  .body{padding:14px 16px 16px; display:flex; flex-direction:column; gap:8px; flex:1;}
+  .title{font-weight:700; font-size:15px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+  .dots{display:flex; gap:5px; align-items:center;}
+  .dots i{width:10px; height:10px; border-radius:50%;}
+  .dots span{color:var(--muted); font-size:12px; margin-left:4px;}
+  .cw{display:flex; flex-wrap:wrap; gap:4px; margin-top:auto;}
+  .cw span{font-size:11.5px; padding:2px 8px; border-radius:999px; background:color-mix(in srgb,var(--ink) 7%,transparent); color:var(--muted);}
+  .open{font-size:12.5px; font-weight:700; color:var(--accent-ink);}
+  .empty{text-align:center; color:var(--muted); padding:60px 0;}
+  .empty a{color:var(--accent-ink);}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<div class="wrap">
+  <div class="eyebrow">Library</div>
+  <h1>Every paper in the review</h1>
+  <p class="sub">Click any paper to open its full analysis: summary, theme DNA, the 🧬 DNA lens, idea sparks, evidence sentences and its connections to other papers.</p>
+  <div id="sample" hidden><span class="samplebar">👋 Showing sample papers — replace <code>papers.js</code> with your own.</span></div>
+
+  <div class="toolbar">
+    <input class="search" id="q" type="search" placeholder="Search titles, authors or concepts…">
+    <div class="chips" id="chips"></div>
+    <select id="sort" aria-label="Sort papers">
+      <option value="new">Newest first</option>
+      <option value="old">Oldest first</option>
+      <option value="az">Title A–Z</option>
+      <option value="themes">Most themes</option>
+      <option value="connected">Most connected</option>
+    </select>
+  </div>
+  <div class="count" id="count"></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script src="lexicon.js"></script>
+<script src="papers.js"></script>
+<script src="analysis-view.js"></script>
+<script>
+(function(){
+  "use strict";
+  const LEX = window.LEX, ALL = (Array.isArray(window.PAPERS) ? window.PAPERS : []).map((p,i)=>({p,i}));
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const state = { q:"", filter:new Set(), sort:"new" };
+  if(window.PAPERS_IS_SAMPLE) $("#sample").hidden = false;
+
+  /* how many other papers share at least one concept with each paper */
+  ALL.forEach(a => { const ks = Object.keys(a.p.dna||{});
+    a.conn = ALL.filter(b => b!==a && ks.some(k => b.p.dna && b.p.dna[k])).length;
+    a.themes = LEX.THEMES.filter(t => a.p.keywords && a.p.keywords[t.key]);
+    a.top = Object.entries(a.p.dna||{}).sort((x,y)=>y[1]-x[1]).slice(0,4).map(([k])=>LEX.label(k));
+    a.search = (a.p.title+" "+(a.p.authors||"")+" "+Object.keys(a.p.dna||{}).map(LEX.label).join(" ")).toLowerCase(); });
+
+  $("#chips").innerHTML = LEX.THEMES.map(t=>`<button class="chip" data-k="${t.key}" aria-pressed="false" style="--c:${t.color}"><i></i>${esc(t.short)}</button>`).join("");
+  $("#chips").querySelectorAll(".chip").forEach(b => b.onclick = () => {
+    const k=b.dataset.k; state.filter.has(k)?state.filter.delete(k):state.filter.add(k); b.setAttribute("aria-pressed", state.filter.has(k)); render(); });
+  $("#q").oninput = e => { state.q = e.target.value.trim().toLowerCase(); render(); };
+  $("#sort").onchange = e => { state.sort = e.target.value; render(); };
+
+  const sorters = {
+    new: (a,b)=>(+b.p.year||0)-(+a.p.year||0), old: (a,b)=>(+a.p.year||9999)-(+b.p.year||9999),
+    az: (a,b)=>a.p.title.localeCompare(b.p.title), themes: (a,b)=>b.themes.length-a.themes.length, connected: (a,b)=>b.conn-a.conn };
+
+  function render(){
+    if(!ALL.length){ $("#grid").innerHTML = `<div class="empty">No papers yet. Analyse your first one on <a href="add-paper.html">Analyze a paper</a>.</div>`; $("#count").textContent=""; return; }
+    const list = ALL.filter(a => (!state.q || a.search.includes(state.q)) && [...state.filter].every(k => a.p.keywords && a.p.keywords[k]))
+      .sort(sorters[state.sort]);
+    $("#count").textContent = list.length===ALL.length ? `${ALL.length} papers` : `Showing ${list.length} of ${ALL.length} papers`;
+    $("#grid").innerHTML = list.length ? list.map(a => `
+      <a class="card" href="paper.html?id=${a.i}" aria-label="Open analysis of ${esc(a.p.title)}">
+        <div class="art">${AnalysisView.miniBurst(a.p.dna||{})}
+          ${a.p.year?`<span class="yr">${esc(a.p.year)}</span>`:""}
+          <span class="badge${a.p.analysis?"":" basic"}">${a.p.analysis?"Full analysis":"Basic"}</span></div>
+        <div class="body">
+          <div class="title">${esc(a.p.title)}</div>
+          <div class="dots">${LEX.THEMES.map(t=>`<i title="${esc(t.label)}" style="background:${a.themes.includes(t)?t.color:"color-mix(in srgb,var(--ink) 10%,transparent)"}"></i>`).join("")}
+            <span>${a.themes.length}/5 themes · ${a.conn} links</span></div>
+          <div class="cw">${a.top.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
+          <div class="open">Open analysis →</div>
+        </div></a>`).join("")
+      : `<div class="empty">No papers match. Try clearing the search or theme filters.</div>`;
+  }
+  render();
+})();
+</script>
+</body>
+</html>
