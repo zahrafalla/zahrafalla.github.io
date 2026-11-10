@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analyze a paper — Thesis Literature Map</title>
+<style>
+  :root{
+    --bg:#f5f7f9; --panel:#ffffff; --ink:#15181d; --muted:#5c6673;
+    --line:#e5e9ef; --accent:#0e9f8e; --accent-ink:#0b7d70;
+    --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.06);
+    --radius:14px;
+    --c-collaborative:#0e9f8e; --c-embodied:#e8743b; --c-learning:#3e6fd6;
+    --c-mathematics:#8a5cf0;   --c-vr:#d64d8a; --c-method:#7a8699;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#121519; --panel:#1a1e25; --ink:#e8ebef; --muted:#9aa4b2;
+      --line:#2a303a; --accent:#2fd2be; --accent-ink:#2fd2be;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.35);}
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.55; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1000px; margin:0 auto; padding:26px 16px 72px;}
+  a.back{color:var(--accent-ink); text-decoration:none; font-weight:600; font-size:14px;}
+  a.back:hover{text-decoration:underline;}
+  h1{font-size:clamp(21px,3vw,28px); margin:.3em 0 .1em; letter-spacing:-.02em;}
+  .sub{color:var(--muted); font-size:14.5px; max-width:70ch;}
+
+  /* how-to steps */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:18px 0 4px;}
+  .step{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px; box-shadow:var(--shadow);}
+  .step .n{display:inline-flex; width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff;
+    font-size:12px; font-weight:800; align-items:center; justify-content:center; margin-right:7px;}
+  .step b{font-size:13.5px;} .step p{margin:6px 0 0; font-size:12.5px; color:var(--muted);}
+  @media(max-width:640px){ .steps{grid-template-columns:1fr;} }
+
+  .note{background:color-mix(in srgb,var(--accent) 10%, transparent);
+    border:1px solid color-mix(in srgb,var(--accent) 30%, transparent);
+    color:var(--accent-ink); padding:10px 14px; border-radius:10px; font-size:13px; margin:16px 0;}
+
+  .drop{margin:16px 0; border:2px dashed color-mix(in srgb,var(--accent) 45%, var(--line));
+    border-radius:var(--radius); background:var(--panel); padding:34px 20px; text-align:center;
+    cursor:pointer; transition:.15s; box-shadow:var(--shadow);}
+  .drop.hover{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 7%, var(--panel));}
+  .drop .ic{font-size:32px;} .drop .t{font-weight:700; margin-top:6px; font-size:16px;}
+  .drop .s{color:var(--muted); font-size:13px; margin-top:4px;}
+  input[type=file]{display:none;}
+
+  .status{font-size:13.5px; margin:10px 2px; min-height:20px;}
+  .status.work{color:var(--accent-ink);} .status.err{color:#d2443f;}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px; box-shadow:var(--shadow); margin-top:16px;}
+  .card h2{font-size:12px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted);
+    font-weight:800; margin:0 0 12px;}
+  .analysis[hidden]{display:none;}
+
+  /* paper header */
+  .phead{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end; justify-content:space-between;}
+  .ptitle{font-size:19px; font-weight:750; letter-spacing:-.01em; border:1px solid transparent;
+    background:transparent; color:var(--ink); width:100%; max-width:640px; padding:4px 6px; border-radius:8px; font-family:inherit;}
+  .ptitle:hover{border-color:var(--line);} .ptitle:focus{outline:none; border-color:var(--accent); background:var(--bg);}
+  .pstats{display:flex; gap:18px; color:var(--muted); font-size:13px; margin-top:6px; flex-wrap:wrap;}
+  .pstats b{color:var(--ink); font-size:15px;}
+  .yin{width:72px; border:1px solid var(--line); background:var(--bg); color:var(--ink);
+    border-radius:8px; padding:6px 8px; font-size:13px; font-family:inherit;}
+
+  .para{font-size:14px; color:var(--ink);} .para.q{color:var(--muted); font-style:italic;}
+  .keyline{padding:8px 0 8px 14px; border-left:3px solid var(--accent); margin:9px 0; font-size:14px;}
+
+  /* theme bars + barcode */
+  .tbar{display:grid; grid-template-columns:118px 1fr 54px; align-items:center; gap:10px; padding:6px 0;}
+  .tname{font-weight:650; font-size:13.5px; display:flex; gap:7px; align-items:center;}
+  .tname .dot{width:10px;height:10px;border-radius:50%;background:var(--dot);flex:none;}
+  .track{height:14px; background:color-mix(in srgb,var(--ink) 7%, transparent); border-radius:999px; overflow:hidden;}
+  .fill{height:100%; border-radius:999px; background:var(--dot);}
+  .tcount{text-align:right; font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums;}
+  .barcode{display:flex; gap:1px; height:26px; margin-top:4px; border-radius:6px; overflow:hidden;
+    background:color-mix(in srgb,var(--ink) 5%, transparent);}
+  .barcode i{flex:1;}
+  .barlane{display:grid; grid-template-columns:118px 1fr; gap:10px; align-items:center; margin:5px 0;}
+  .barlane .tname{font-size:12px;}
+  .barcap{font-size:11.5px; color:var(--muted); margin:2px 0 0 128px;}
+
+  /* chips */
+  .chips{display:flex; flex-wrap:wrap; gap:7px;}
+  .chip{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:650;
+    padding:4px 10px; border-radius:999px; color:var(--dot);
+    background:color-mix(in srgb,var(--dot) 15%, transparent);}
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--dot);}
+  .chip .n{opacity:.7; font-weight:700;}
+  .fam{margin:12px 0 4px; font-size:12px; font-weight:800; letter-spacing:.04em; color:var(--muted); text-transform:uppercase;}
+
+  /* concept cloud */
+  .cloud{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:baseline;}
+  .cloud .w{font-weight:650; color:var(--ink); line-height:1.1;}
+  .cloud .w span{color:var(--muted); font-size:11px; font-weight:600;}
+
+  /* sparks */
+  .spark{display:flex; gap:11px; padding:10px 0; border-top:1px solid var(--line);}
+  .spark:first-child{border-top:none;}
+  .spark .bulb{font-size:18px; flex:none;}
+  .spark .st{font-weight:700; font-size:13.5px;} .spark .sp{font-size:13px; color:var(--muted); margin-top:1px;}
+
+  /* evidence */
+  details.ev{border:1px solid var(--line); border-radius:10px; padding:4px 12px; margin:8px 0; background:var(--bg);}
+  details.ev summary{cursor:pointer; font-weight:650; font-size:13.5px; padding:8px 0; display:flex; gap:8px; align-items:center;}
+  details.ev summary .dot{width:9px;height:9px;border-radius:50%;background:var(--dot);}
+  details.ev p{font-size:13px; color:var(--ink); margin:6px 0 12px; padding-left:17px; border-left:2px solid color-mix(in srgb,var(--dot) 50%,transparent);}
+  mark{background:color-mix(in srgb,var(--accent) 30%, transparent); color:inherit; padding:0 2px; border-radius:3px;}
+
+  /* actions */
+  .actionrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:4px;}
+  .tgl{border:1px solid var(--line); background:transparent; padding:6px 11px; border-radius:999px;
+    cursor:pointer; font-size:12.5px; font-weight:650; color:var(--muted); display:inline-flex; gap:6px; align-items:center;}
+  .tgl .dot{width:9px;height:9px;border-radius:50%;background:var(--dot);}
+  .tgl[data-on="true"]{background:var(--dot); color:#fff; border-color:transparent;}
+  .tgl[data-on="true"] .dot{background:rgba(255,255,255,.9);}
+  .quotes{display:flex; gap:8px; align-items:flex-start; flex-wrap:wrap; font-size:13px; margin-top:14px; cursor:pointer;}
+  .quotes input{accent-color:var(--accent); margin-top:3px;}
+  .quotes span{color:var(--muted); font-size:12px; flex-basis:100%; padding-left:22px; margin-top:-4px;}
+
+  .btn{border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer;
+    padding:9px 15px; border-radius:10px; font-size:13.5px; font-weight:650; box-shadow:var(--shadow);}
+  .btn:hover{border-color:color-mix(in srgb,var(--ink) 25%, transparent);}
+  .btn.primary{background:var(--accent); color:#fff; border-color:transparent;}
+  .btn.ghost{background:transparent; box-shadow:none;}
+  .btn:disabled{opacity:.5; cursor:not-allowed;}
+
+  /* collection */
+  .coltools{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:6px 0 4px;}
+  .colitem{display:flex; gap:10px; align-items:center; padding:9px 0; border-top:1px solid var(--line); font-size:13.5px;}
+  .colitem:first-child{border-top:none;}
+  .colitem .ct{flex:1; font-weight:600;}
+  .colitem .ck{display:flex; gap:5px;}
+  .mini-dot{width:9px;height:9px;border-radius:50%;}
+  .del{border:none; background:transparent; color:#c23b3b; cursor:pointer; font-size:15px;}
+  .emptyc{color:var(--muted); font-size:13.5px; padding:14px 0;}
+  .colstatus{color:var(--muted); font-size:12.5px; margin-left:auto;}
+  code{background:color-mix(in srgb,var(--ink) 8%, transparent); padding:1px 6px; border-radius:5px; font-size:12.5px;}
+
+  /* ---- DNA lens radial burst ---- */
+  .lensviz{position:relative; margin:2px 0 14px; border-radius:14px; overflow:hidden;
+    background:radial-gradient(130% 130% at 50% 46%, #141d3a 0%, #0a1024 55%, #05070f 100%);
+    border:1px solid #121a33; padding:8px;}
+  .lensviz svg{display:block; width:100%; max-width:560px; height:auto; margin:0 auto;}
+  .lensviz .ray{animation:raydraw .75s cubic-bezier(.2,.7,.2,1) forwards; transition:stroke-width .15s, opacity .15s;}
+  .lensviz .tip{opacity:0; animation:tipin .45s ease forwards;}
+  @keyframes raydraw{to{stroke-dashoffset:0;}}
+  @keyframes tipin{to{opacity:1;}}
+  .lensviz .rayg{cursor:default;}
+  .lensviz .rayg:hover .ray{stroke-width:3.6px; opacity:1;}
+  .lensviz.dimmed .rayg:not(.on) .ray,.lensviz.dimmed .rayg:not(.on) .tip{opacity:.1;}
+  .lensviz .center{filter:drop-shadow(0 0 7px rgba(255,255,255,.85));}
+  .lenstip{position:absolute; pointer-events:none; left:0; top:0; background:rgba(8,12,24,.94); color:#fff;
+    border:1px solid rgba(255,255,255,.16); border-radius:8px; padding:5px 9px; font-size:12px; font-weight:650;
+    opacity:0; transition:opacity .1s; white-space:nowrap; z-index:5;}
+  .lenstip.show{opacity:1;}
+  .lenslegend{font-size:12px; color:var(--muted); text-align:center; margin:-2px 0 12px;}
+  .famblock{margin-top:4px; border-radius:8px; transition:background .12s;}
+  .famblock:hover{background:color-mix(in srgb,var(--ink) 4%, transparent);}
+  .lensviz svg{cursor:grab; touch-action:none; user-select:none;}
+  .lensviz.grabbing svg{cursor:grabbing;}
+  .rlabel{font-size:var(--fs,12px); font-weight:650; opacity:0; pointer-events:none; transition:opacity .2s;
+    paint-order:stroke; stroke:#070a17; stroke-width:calc(var(--fs,12px) * .32); stroke-linejoin:round;
+    font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;}
+  .rlabel.top{opacity:.85;}
+  .lensviz.zoomed .rlabel{opacity:.95;}
+  .lensviz.dimmed .rayg:not(.on) .rlabel{opacity:0;}
+  .lensviz .rayg:hover .rlabel{opacity:1;}
+  .zoombar{position:absolute; right:12px; top:12px; display:flex; gap:4px; align-items:center;
+    background:rgba(8,12,24,.72); border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:4px; backdrop-filter:blur(6px);}
+  .zoombar button{width:30px; height:30px; border:none; border-radius:7px; background:transparent; color:#e8ecf5;
+    font-size:17px; font-weight:700; cursor:pointer; line-height:1;}
+  .zoombar button:hover{background:rgba(255,255,255,.12);}
+  .zlevel{color:#9aa6bb; font-size:11.5px; font-weight:700; min-width:42px; text-align:center; font-variant-numeric:tabular-nums;}
+  .zhint{position:absolute; left:14px; bottom:10px; color:rgba(220,228,240,.45); font-size:11px; pointer-events:none;}
+  @media (prefers-reduced-motion: reduce){ .lensviz .ray,.lensviz .tip{animation:none; stroke-dashoffset:0; opacity:1;} }
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<div class="wrap">
+  <a class="back" href="index.html">← Back to the map</a>
+  <h1>Analyze a paper 🧬</h1>
+  <p class="sub">Drop a PDF and read it closely in seconds. Everything runs <b>inside your browser</b> —
+    the file is never uploaded. You get a summary, the sentences that mention each of your five themes,
+    a <b>DNA lens</b> of related concepts, idea sparks, and the paper's key phrases.</p>
+
+  <div class="steps">
+    <div class="step"><b><span class="n">1</span>Drop a PDF</b><p>Drag a paper onto the box below (or click to choose).</p></div>
+    <div class="step"><b><span class="n">2</span>Read the analysis</b><p>It appears instantly underneath — summary, themes, DNA lens, sparks.</p></div>
+    <div class="step"><b><span class="n">3</span>Add it to your map</b><p>Happy with it? Click <i>Add to my collection</i>, then download <code>papers.js</code>.</p></div>
+  </div>
+
+  <div class="note">💡 Tip: run this on your live GitHub&nbsp;Pages link (or the local‑server command in the README).
+    Simply double‑clicking the file can make some browsers block PDF reading for security.</div>
+
+  <div class="drop" id="drop">
+    <div class="ic">📄⬇️</div>
+    <div class="t">Drop a PDF here</div>
+    <div class="s">…or click to choose. One paper at a time gives the richest read.</div>
+  </div>
+  <input type="file" id="file" accept="application/pdf,.pdf" multiple>
+  <div class="status" id="status"></div>
+
+  <!-- ===================== ANALYSIS ===================== -->
+  <div class="analysis" id="analysis" hidden>
+
+    <div class="card">
+      <div class="phead">
+        <div style="flex:1; min-width:260px;">
+          <input class="ptitle" id="aTitle" placeholder="Paper title">
+          <div class="pstats" id="aStats"></div>
+        </div>
+        <label style="font-size:12px;color:var(--muted)">Year
+          <input class="yin" id="aYear" placeholder="—"></label>
+      </div>
+    </div>
+
+    <div id="aView"></div>
+
+    <div class="card">
+      <h2>Add to your map</h2>
+      <p class="sub" style="margin:-4px 0 10px">Check the themes (edit if the auto‑reading got one wrong), then add this paper.
+        Its full analysis is saved too, so visitors can open it from the <b>Library</b>.</p>
+      <div class="actionrow" id="aToggles"></div>
+      <label class="quotes"><input type="checkbox" id="aQuotes" checked>
+        Show the abstract and quoted sentences on the public site
+        <span>(untick to publish only the numbers, concepts and charts)</span></label>
+      <div class="actionrow" style="margin-top:14px">
+        <button class="btn primary" id="aAdd">➕ Add to my collection</button>
+        <span class="colstatus" id="aAddMsg"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== COLLECTION ===================== -->
+  <div class="card">
+    <h2>My collection <span id="colCount" style="color:var(--muted)"></span></h2>
+    <div class="coltools">
+      <button class="btn" id="loadCur">Load current papers.js</button>
+      <button class="btn primary" id="download" disabled>⬇ Download papers.js</button>
+      <button class="btn ghost" id="copy" disabled>Copy</button>
+      <button class="btn ghost" id="clear" disabled>Clear all</button>
+      <span class="colstatus" id="colStatus"></span>
+    </div>
+    <div id="colList"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="lexicon.js"></script>
+<script src="analysis-view.js"></script>
+<script src="papers.js"></script>
+<script>
+(function(){
+  "use strict";
+  const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  if(window.pdfjsLib){ pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER; }
+
+  /* ---------- shared vocabulary (edit it in lexicon.js) ---------- */
+  const { THEMES, THRESHOLD, LENS, LENS_COLOR, FAM_HUE, SPARKS } = window.LEX;
+  const lbl = window.LEX.label;
+
+  /* ---------- stopwords ---------- */
+  const STOP = new Set(("a an and are as at be by for from has have had he her his in is it its of on that the to was were will with this these those which who whom whose what when where why how not no nor can could should would may might must shall into than then there their them they we you your our us but or if so such only own same too very more most other some any each few all both out up down over under again further once here only also well even still just about above below between through during before after our we i me my mine ours yours his hers theirs been being do does did doing done use used using using based within without across among per via etc using show shown shows found using thus hence however therefore moreover whereas e.g i.e et al figure table section results method methods study studies paper research results result data participants participant one two three using one two first second new high low using approach approaches using order using given using using large small using several using using many using using using different using using using using").split(/\s+/));
+
+  /* ---------- helpers ---------- */
+  const $ = s=>document.querySelector(s);
+  const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const count = (hay,n)=>{ let i=0,c=0; while((i=hay.indexOf(n,i))!==-1){c++;i+=n.length;} return c; };
+  const setStatus=(t,cls="")=>{ const el=$("#status"); el.textContent=t; el.className="status "+cls; };
+
+  /* "Introduction Mathematics is…" → "Mathematics is…"  (but keep "Results suggest that…") */
+  const HEADING_RE = /^(?:\d+(?:\.\d+)*\.?\s+)?(?:abstract|introduction|background|related work|literature review|theoretical framework|methods?|methodology|participants|procedure|results|findings|discussion|conclusions?|limitations|future work|keywords)\s*[:.\-—]?\s+(.*)$/i;
+  const stripHeading = s => { const m = s.match(HEADING_RE); return m && /^[A-Z0-9“"(]/.test(m[1]) ? m[1] : s; };
+  function splitSentences(text){
+    return text.replace(/\s+/g," ")
+      .split(/(?<=[.!?])\s+(?=[A-Z0-9"“(])/)
+      .map(s=>stripHeading(s.trim()))                 // drop section headings glued to a sentence
+      .filter(s=> s.length>=25 && s.length<=400 && /[a-zA-Z]/.test(s));
+  }
+  function guessYear(text){
+    const m=text.match(/\b(19[89]\d|20[0-4]\d)\b/g); if(!m) return "";
+    const f={}; m.forEach(y=>f[y]=(f[y]||0)+1);
+    return Object.keys(f).sort((a,b)=>f[b]-f[a])[0]||"";
+  }
+
+  /* ---------- the analysis ---------- */
+  function analyze(rawText, meta){
+    const text = rawText.replace(/­/g,"").replace(/-\s+/g,""); // de-hyphenate line breaks
+    const low = " " + text.toLowerCase() + " ";
+    const words = text.split(/[^A-Za-z-]+/).filter(Boolean);
+    const sentences = splitSentences(text);
+
+    /* tokens for concept frequency */
+    const tokens = words.map(w=>w.toLowerCase().replace(/^-+|-+$/g,""))
+      .filter(w=> w.length>=4 && !STOP.has(w) && !/^\d+$/.test(w) && /[a-z]/.test(w));
+    const uni={}; tokens.forEach(t=> uni[t]=(uni[t]||0)+1);
+    const bi={};
+    for(let i=0;i<tokens.length-1;i++){ const b=tokens[i]+" "+tokens[i+1]; bi[b]=(bi[b]||0)+1; }
+
+    const topBi = Object.entries(bi).filter(([,n])=>n>=3).sort((a,b)=>b[1]-a[1]).slice(0,14);
+    const biWords = new Set(); topBi.forEach(([b])=> b.split(" ").forEach(w=>biWords.add(w)));
+    const topUni = Object.entries(uni).filter(([w,n])=> n>=4 && !biWords.has(w)).sort((a,b)=>b[1]-a[1]).slice(0,16);
+    const concepts = [...topBi, ...topUni].sort((a,b)=>b[1]-a[1]).slice(0,22);
+
+    /* themes: counts + evidence sentences + barcode */
+    const themes = THEMES.map(th=>{
+      let c=0; th.terms.forEach(t=> c+=count(low,t));
+      const ev = sentences.map(s=>{
+        const sl=" "+s.toLowerCase()+" "; let d=0, hit=null;
+        th.terms.forEach(t=>{ const k=count(sl,t); if(k){ d+=k; if(!hit) hit=t; } });
+        return {s, d, hit};
+      }).filter(x=>x.d>0).sort((a,b)=> b.d-a.d || a.s.length-b.s.length).slice(0,2);
+      // barcode bins
+      const BINS=70, bins=new Array(BINS).fill(0), L=low.length;
+      th.terms.forEach(t=>{ let i=0; while((i=low.indexOf(t,i))!==-1){ bins[Math.min(BINS-1,Math.floor(i/L*BINS))]++; i+=t.length; } });
+      return { ...th, count:c, present:c>=THRESHOLD, evidence:ev, bins };
+    });
+    const maxTheme = Math.max(1, ...themes.map(t=>t.count));
+
+    /* DNA lens */
+    const lens={};
+    Object.entries(LENS).forEach(([fam,terms])=>{
+      const found = terms.map(t=>({t, n:count(low,t)})).filter(x=>x.n>0)
+        .sort((a,b)=>b.n-a.n).slice(0,12);
+      if(found.length) lens[fam]=found;
+    });
+
+    /* sparks */
+    const sparks = SPARKS.map(sp=>({ ...sp, n:count(low,sp.t) })).filter(x=>x.n>0);
+
+    /* extractive summary */
+    const freq={}; Object.entries(uni).forEach(([w,n])=>freq[w]=n);
+    const scored = sentences.map((s,idx)=>{
+      const ws=s.toLowerCase().split(/[^a-z]+/).filter(w=>w.length>=4 && !STOP.has(w));
+      let sc=ws.reduce((a,w)=>a+(freq[w]||0),0)/Math.sqrt(ws.length||1);
+      const sl=" "+s.toLowerCase()+" ";
+      THEMES.forEach(th=> th.terms.forEach(t=>{ if(sl.indexOf(t)!==-1) sc*=1.08; }));
+      if(idx<6) sc*=1.12;
+      return {s, sc, idx};
+    }).filter(x=> x.s.length<300);
+    const summary = scored.slice().sort((a,b)=>b.sc-a.sc).slice(0,5)
+      .sort((a,b)=>a.idx-b.idx).map(x=>x.s);
+
+    /* abstract */
+    let abstract="";
+    const am = low.indexOf(" abstract");
+    if(am!==-1){
+      let chunk = text.slice(am, am+1400);
+      let stop = chunk.search(/\b(introduction|keywords|key words|index terms|ccs concepts|acm reference format)\b/i);
+      const num = chunk.search(/\s1\.?\s+[A-Z][a-z]/);          // a numbered first section, e.g. "1 Introduction"
+      if(num>120 && (stop<0 || num<stop)) stop = num;
+      if(stop>120) chunk = chunk.slice(0, stop);
+      chunk = chunk.replace(/^\s*abstract[\s:.\-—]*/i,"").trim();
+      if(chunk.length>180 && chunk.length<1400) abstract=chunk;
+    }
+
+    return {
+      title: meta.title, year: meta.year||guessYear(text), pages: meta.pages,
+      wordCount: words.length, sentenceCount: sentences.length,
+      themes, maxTheme, concepts, lens, sparks, summary, abstract,
+      keywords: THEMES.reduce((o,t,i)=>{ o[t.key]=themes[i].present; return o; },{})
+    };
+  }
+
+  /* ---------- render (cards are drawn by analysis-view.js) ---------- */
+  let current=null;
+  function renderAnalysis(a){
+    current=a;
+    $("#analysis").hidden=false;
+    $("#aTitle").value=a.title||"";
+    $("#aYear").value=a.year||"";
+    $("#aStats").innerHTML =
+      `<span><b>${a.pages}</b> pages</span><span><b>${a.wordCount.toLocaleString()}</b> words</span>`+
+      `<span><b>${a.themes.filter(t=>t.present).length}</b>/5 themes present</span>`;
+
+    AnalysisView.render($("#aView"), AnalysisView.fromLive(a));
+
+    $("#aToggles").innerHTML = THEMES.map(th=>`
+      <button class="tgl" data-k="${th.key}" data-on="${a.keywords[th.key]}" style="--dot:${th.color}">
+        <span class="dot"></span>${esc(th.label)}</button>`).join("");
+    $("#aToggles").querySelectorAll(".tgl").forEach(b=> b.onclick=()=>{
+      const on=b.dataset.on!=="true"; b.dataset.on=on; current.keywords[b.dataset.k]=on;
+    });
+    $("#aAddMsg").textContent="";
+    $("#aTitle").oninput=()=>{ current.title=$("#aTitle").value; };
+    $("#aYear").oninput =()=>{ current.year =$("#aYear").value; };
+
+    $("#analysis").scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  /* ---------- read a PDF ---------- */
+  async function readPdf(buf, fallbackName){
+    const pdf = await pdfjsLib.getDocument({data:buf}).promise;
+    let text="";
+    for(let p=1;p<=pdf.numPages;p++){
+      setStatus(`Reading page ${p} of ${pdf.numPages}…`, "work");
+      const page=await pdf.getPage(p);
+      const c=await page.getTextContent();
+      text += " " + c.items.map(i=>i.str).join(" ");
+    }
+    let title = (fallbackName||"").replace(/\.pdf$/i,"").replace(/[_]+/g," ").trim();
+    try{ const m=await pdf.getMetadata(); const t=m&&m.info&&m.info.Title;
+      if(t && t.trim().length>5 && !/^(microsoft word|untitled|slide)/i.test(t.trim())) title=t.trim(); }catch(e){}
+    return { text, meta:{ title, year:"", pages:pdf.numPages } };
+  }
+
+  async function handleFile(file){
+    if(!(file.type==="application/pdf" || /\.pdf$/i.test(file.name))){ setStatus("Please choose a PDF file.","err"); return; }
+    if(!window.pdfjsLib){ setStatus("PDF reader failed to load. Check your internet connection and reload.","err"); return; }
+    setStatus("Opening "+file.name+"…","work");
+    try{
+      const buf = await file.arrayBuffer();
+      const { text, meta } = await readPdf(buf, file.name);
+      if(text.replace(/\s/g,"").length < 120){
+        setStatus("This PDF has almost no selectable text — it is probably a scanned image. Try a text-based PDF.","err");
+        return;
+      }
+      renderAnalysis(analyze(text, meta));
+      setStatus("Done ✓  Scroll down for the analysis.", "");
+    }catch(err){
+      console.error(err);
+      setStatus("Couldn't read this PDF here. Try again, or open the site on your GitHub Pages link. ("+(err&&err.message||err)+")","err");
+    }
+  }
+
+  /* dev/test helper (harmless, unused by the UI) */
+  window.__analyzeText = (text, title)=>{ renderAnalysis(analyze(text,{title:title||"Test paper",year:"",pages:1})); };
+  window.__loadUrl = async (url)=>{ const b=await fetch(url).then(r=>r.arrayBuffer()); const {text,meta}=await readPdf(b,url); renderAnalysis(analyze(text,meta)); };
+
+  /* ---------- collection (localStorage) ---------- */
+  const KEY="thesisPapers";
+  let papers=load();
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY))||[]; }catch(e){ return []; } }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(papers)); }catch(e){} }
+
+  function renderCollection(){
+    const has=papers.length>0;
+    $("#download").disabled=!has; $("#copy").disabled=!has; $("#clear").disabled=!has;
+    $("#colCount").textContent = has? `· ${papers.length} paper${papers.length>1?'s':''}` : "";
+    if(!has){ $("#colList").innerHTML=`<div class="emptyc">Nothing saved yet. Analyse a paper above and click “Add to my collection”, or load your current papers.js.</div>`; return; }
+    $("#colList").innerHTML = papers.map((p,i)=>{
+      const dots=THEMES.filter(t=>p.keywords&&p.keywords[t.key]).map(t=>`<span class="mini-dot" style="background:${t.color}" title="${esc(t.label)}"></span>`).join("");
+      return `<div class="colitem"><div class="ct">${esc(p.title||"Untitled")}</div>
+        <div class="ck">${dots||'<span class="sub" style="font-size:12px">no themes</span>'}</div>
+        <span class="sub" style="font-size:12px;width:46px;text-align:right">${esc(p.year||"")}</span>
+        <button class="del" data-i="${i}" title="remove">✕</button></div>`;
+    }).join("");
+    $("#colList").querySelectorAll(".del").forEach(b=> b.onclick=()=>{ papers.splice(+b.dataset.i,1); save(); renderCollection(); });
+  }
+
+  function buildFile(){
+    const body = papers.map(p=>{
+      const kw=THEMES.map(t=>`${t.key}:${!!(p.keywords&&p.keywords[t.key])}`).join(", ");
+      const yr = p.year? (isNaN(+p.year)? JSON.stringify(p.year) : +p.year) : '""';
+      const dna = p.dna && Object.keys(p.dna).length ? `,\n    dna: ${JSON.stringify(p.dna)}` : "";
+      const an  = p.analysis ? `,\n    analysis: ${JSON.stringify(p.analysis)}` : "";
+      return `  { title: ${JSON.stringify(p.title||"")}, authors: ${JSON.stringify(p.authors||"")}, year: ${yr},\n    keywords: { ${kw} }${dna}${an} },`;
+    }).join("\n\n");
+    return `/* papers.js — generated by add-paper.html on ${new Date().toISOString().slice(0,10)} */\n`+
+      `window.PAPERS = [\n${body}\n];\n\nwindow.PAPERS_IS_SAMPLE = false;\n`;
+  }
+
+  /* ---------- events ---------- */
+  const drop=$("#drop"), file=$("#file");
+  drop.onclick=()=>file.click();
+  file.onchange=e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); file.value=""; };
+  ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("hover");}));
+  ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("hover");}));
+  drop.addEventListener("drop",e=>{ const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) handleFile(f); });
+
+  $("#aAdd").onclick=()=>{
+    if(!current) return;
+    papers.push({ title:current.title||"Untitled", authors:"", year:current.year||"",
+      keywords: THEMES.reduce((o,t)=>{ o[t.key]=!!current.keywords[t.key]; return o; },{}),
+      dna: window.LEX.dnaOf(current.lens),
+      analysis: AnalysisView.compact(current, $("#aQuotes").checked) });
+    save(); renderCollection();
+    $("#aAddMsg").textContent = "Added ✓  ("+papers.length+" in collection) — remember to Download papers.js.";
+  };
+  $("#download").onclick=()=>{
+    const blob=new Blob([buildFile()],{type:"text/javascript"});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="papers.js";
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+    $("#colStatus").textContent="Downloaded papers.js — now commit it to GitHub.";
+  };
+  $("#copy").onclick=async()=>{ try{ await navigator.clipboard.writeText(buildFile()); $("#colStatus").textContent="Copied."; }catch(e){ $("#colStatus").textContent="Copy failed — use Download."; } };
+  $("#clear").onclick=()=>{ if(confirm("Remove all papers from this tool? Your committed papers.js is not affected.")){ papers=[]; save(); renderCollection(); } };
+  $("#loadCur").onclick=()=>{
+    if(!Array.isArray(window.PAPERS)||!window.PAPERS.length){ $("#colStatus").textContent="No papers.js found next to this file."; return; }
+    if(papers.length && !confirm("Replace the current collection with the papers from papers.js?")) return;
+    papers = window.PAPERS.map(p=>({ title:p.title||"", authors:p.authors||"", year:p.year||"",
+      keywords: THEMES.reduce((o,t)=>{ o[t.key]=!!(p.keywords&&p.keywords[t.key]); return o; },{}),
+      dna: p.dna||{}, analysis: p.analysis||null }));
+    save(); renderCollection(); $("#colStatus").textContent=`Loaded ${papers.length} paper(s) from papers.js.`;
+  };
+
+  renderCollection();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thesis Literature Map</title>
+<style>
+  :root{
+    --bg:#f5f7f9; --panel:#ffffff; --ink:#15181d; --muted:#5c6673;
+    --line:#e5e9ef; --accent:#0e9f8e; --accent-ink:#0b7d70;
+    --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.06);
+    --radius:14px;
+    --c-collaborative:#0e9f8e; --c-embodied:#e8743b; --c-learning:#3e6fd6;
+    --c-mathematics:#8a5cf0;   --c-vr:#d64d8a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#121519; --panel:#1a1e25; --ink:#e8ebef; --muted:#9aa4b2;
+      --line:#2a303a; --accent:#2fd2be; --accent-ink:#2fd2be;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:28px 16px 64px;}
+
+  header.hero{margin-bottom:18px;}
+  .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--accent-ink); font-weight:700;}
+  h1{font-size:clamp(22px,3.4vw,32px); margin:.25em 0 .1em; letter-spacing:-.02em;}
+  .sub{color:var(--muted); font-size:15px; max-width:62ch;}
+
+  .samplebar{margin-top:14px; display:flex; gap:10px; align-items:center;
+    background:color-mix(in srgb, var(--accent) 12%, transparent);
+    border:1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    color:var(--accent-ink); padding:9px 13px; border-radius:10px; font-size:13.5px;}
+  .samplebar b{font-weight:700}
+
+  /* stat cards */
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:12px; margin:20px 0 22px;}
+  .stat{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px; box-shadow:var(--shadow);}
+  .stat .big{font-size:26px; font-weight:750; letter-spacing:-.02em; line-height:1.1;}
+  .stat .lbl{font-size:12.5px; color:var(--muted); margin-top:4px;}
+
+  /* filter */
+  .filter{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px; box-shadow:var(--shadow); margin-bottom:16px;}
+  .filter .ftitle{font-size:12.5px; color:var(--muted); margin-bottom:9px;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; align-items:center;}
+  .chip{display:inline-flex; align-items:center; gap:7px; cursor:pointer;
+    border:1px solid var(--line); background:transparent; color:var(--ink);
+    padding:6px 12px; border-radius:999px; font-size:13.5px; font-weight:600;
+    transition:.12s; user-select:none;}
+  .chip:hover{border-color:color-mix(in srgb, var(--ink) 30%, transparent);}
+  .chip .dot{width:10px; height:10px; border-radius:50%; background:var(--dot);}
+  .chip[aria-pressed="true"]{background:var(--dot); color:#fff; border-color:transparent;}
+  .chip[aria-pressed="true"] .dot{background:rgba(255,255,255,.9);}
+  .clear{margin-left:auto; background:transparent; border:none; color:var(--muted);
+    font-size:13px; cursor:pointer; text-decoration:underline; padding:6px;}
+  .clear[hidden]{display:none;}
+
+  /* tabs */
+  nav.tabs{display:flex; gap:4px; background:var(--panel); border:1px solid var(--line);
+    border-radius:999px; padding:5px; box-shadow:var(--shadow); margin-bottom:8px; overflow:auto;}
+  .tab{flex:1 0 auto; border:none; background:transparent; color:var(--muted); cursor:pointer;
+    padding:9px 14px; border-radius:999px; font-size:14px; font-weight:650; white-space:nowrap; transition:.12s;}
+  .tab:hover{color:var(--ink);}
+  .tab[aria-selected="true"]{background:var(--accent); color:#fff;}
+  .viewdesc{color:var(--muted); font-size:13.5px; margin:12px 2px 14px;}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px; box-shadow:var(--shadow);}
+  .view[hidden]{display:none;}
+
+  /* coverage bars */
+  .cov-row{display:grid; grid-template-columns:140px 1fr 86px; align-items:center;
+    gap:12px; padding:9px 0;}
+  .cov-row + .cov-row{border-top:1px solid var(--line);}
+  .cov-name{font-weight:650; font-size:14px; display:flex; align-items:center; gap:8px;}
+  .cov-name .dot{width:11px;height:11px;border-radius:50%;background:var(--dot);flex:none;}
+  .track{height:16px; background:color-mix(in srgb, var(--ink) 7%, transparent);
+    border-radius:999px; overflow:hidden;}
+  .bar{height:100%; border-radius:999px; background:var(--dot); transition:width .5s ease;}
+  .cov-val{text-align:right; font-variant-numeric:tabular-nums; font-size:14px;}
+  .cov-val b{font-size:16px;} .cov-val span{color:var(--muted); font-size:12.5px;}
+
+  /* heatmap */
+  .heat-scroll{overflow:auto;}
+  .heat{display:grid; gap:4px; min-width:520px;
+    grid-template-columns:118px repeat(5,1fr);}
+  .hcell{border-radius:8px; padding:10px 6px; text-align:center; min-height:52px;
+    display:flex; flex-direction:column; justify-content:center;}
+  .hhead{font-size:12px; font-weight:700; color:var(--muted); background:transparent;}
+  .hrow-lbl{font-size:12.5px; font-weight:700; text-align:left; display:flex;
+    align-items:center; gap:7px; padding-left:2px; color:var(--ink);}
+  .hrow-lbl .dot{width:9px;height:9px;border-radius:50%;background:var(--dot);flex:none;}
+  .hval{font-weight:750; font-size:15px; font-variant-numeric:tabular-nums;}
+  .hsub{font-size:10.5px; opacity:.78; margin-top:1px;}
+  .legend-scale{display:flex; align-items:center; gap:8px; margin-top:14px;
+    font-size:12px; color:var(--muted);}
+  .scalebar{height:10px; width:160px; border-radius:6px;
+    background:linear-gradient(90deg, var(--heat0), var(--heat1));}
+
+  /* combinations */
+  .mini{display:grid; grid-template-columns:72px 1fr 70px; gap:10px; align-items:center;
+    padding:7px 0; font-size:13.5px;}
+  .mini + .mini{border-top:1px solid var(--line);}
+  .mini .mlbl{color:var(--muted);}
+  .combo-row{display:grid; grid-template-columns:1fr 150px 70px; gap:12px; align-items:center;
+    padding:10px 0;}
+  .combo-row + .combo-row{border-top:1px solid var(--line);}
+  .combo-chips{display:flex; flex-wrap:wrap; gap:6px;}
+  .ck{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:650;
+    padding:3px 9px; border-radius:999px; color:var(--dot);
+    background:color-mix(in srgb, var(--dot) 15%, transparent);}
+  .ck .dot{width:8px;height:8px;border-radius:50%;background:var(--dot);}
+  .combo-val{text-align:right; font-variant-numeric:tabular-nums;}
+  .combo-val b{font-size:15px;} .combo-val span{color:var(--muted); font-size:12px;}
+  .h3{font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted);
+    font-weight:700; margin:4px 0 10px;}
+  .divider{height:1px; background:var(--line); margin:22px 0;}
+
+  /* papers */
+  .search{width:100%; padding:11px 14px; border:1px solid var(--line); border-radius:10px;
+    background:var(--bg); color:var(--ink); font-size:14px; margin-bottom:14px;}
+  .search:focus{outline:2px solid color-mix(in srgb,var(--accent) 50%, transparent); border-color:var(--accent);}
+  .paper{padding:12px 0; border-top:1px solid var(--line);}
+  .paper:first-child{border-top:none;}
+  .paper .pt{font-weight:650; font-size:14.5px; color:var(--ink); text-decoration:none; display:inline-flex; gap:8px; align-items:baseline; flex-wrap:wrap;}
+  .paper .pt:hover{color:var(--accent-ink);}
+  .paper .pt .go{font-size:12px; font-weight:700; color:var(--accent-ink); opacity:0; transition:opacity .15s;}
+  .paper:hover .pt .go, .paper .pt:focus .go{opacity:1;}
+  .paper .pm{color:var(--muted); font-size:12.5px; margin-top:1px;}
+  .paper .pk{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;}
+
+  .empty{color:var(--muted); text-align:center; padding:40px 0; font-size:14px;}
+  footer{margin-top:26px; color:var(--muted); font-size:13px; text-align:center;}
+  footer a{color:var(--accent-ink); font-weight:600; text-decoration:none;}
+  footer a:hover{text-decoration:underline;}
+  .count-pill{display:inline-block; background:color-mix(in srgb,var(--ink) 8%, transparent);
+    border-radius:999px; padding:2px 10px; font-size:12.5px; color:var(--muted); font-weight:600;}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">PhD · Literature Map</div>
+    <h1>Collaborative Embodied Learning of Mathematics in Virtual Reality</h1>
+    <p class="sub">Multiple ways of seeing the knowledge I have read — how the five themes of my
+      thesis appear, on their own and in every combination, across the papers in my review.</p>
+    <div class="samplebar" id="sampleBar" hidden>
+      <span>👋</span><span><b>Sample data.</b> Replace <code>papers.js</code> with your own papers
+      (open <b>Analyze&nbsp;a&nbsp;paper</b> below) to see your real map.</span>
+    </div>
+  </header>
+
+  <section class="stats" id="stats"></section>
+
+  <section class="filter">
+    <div class="ftitle">Focus on papers that include <b>all</b> of the themes you pick
+      (click to filter — every view updates):</div>
+    <div class="chips" id="filterChips"></div>
+    <div class="chips" style="margin-top:10px;">
+      <span class="count-pill" id="shownPill"></span>
+      <button class="clear" id="clearBtn" hidden>Clear filter</button>
+    </div>
+  </section>
+
+  <nav class="tabs" id="tabs" role="tablist">
+    <button class="tab" role="tab" data-view="coverage"   aria-selected="true">Coverage</button>
+    <button class="tab" role="tab" data-view="heatmap"    aria-selected="false">Connections</button>
+    <button class="tab" role="tab" data-view="combos"     aria-selected="false">Combinations</button>
+    <button class="tab" role="tab" data-view="papers"     aria-selected="false">Papers</button>
+  </nav>
+
+  <!-- COVERAGE -->
+  <section class="view" id="view-coverage">
+    <p class="viewdesc">What share of the papers touches each theme on its own.</p>
+    <div class="card" id="coverage"></div>
+  </section>
+
+  <!-- HEATMAP -->
+  <section class="view" id="view-heatmap" hidden>
+    <p class="viewdesc">How often two themes appear <b>together</b> in the same paper. Darker = more
+      papers share that pair. The diagonal is each theme on its own.</p>
+    <div class="card">
+      <div class="heat-scroll"><div class="heat" id="heat"></div></div>
+      <div class="legend-scale">
+        <span>fewer papers</span>
+        <span class="scalebar" style="--heat0:var(--heatA); --heat1:var(--heatB);"></span>
+        <span>more papers</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMBINATIONS -->
+  <section class="view" id="view-combos" hidden>
+    <p class="viewdesc">Which groups of themes cluster together — the heart of the thesis is where
+      several meet at once.</p>
+    <div class="card">
+      <div class="h3">How many themes per paper</div>
+      <div id="sizes"></div>
+      <div class="divider"></div>
+      <div class="h3">Theme combinations, most common first</div>
+      <div id="combos"></div>
+    </div>
+  </section>
+
+  <!-- PAPERS -->
+  <section class="view" id="view-papers" hidden>
+    <p class="viewdesc">Every paper in the current view, searchable by title. Click a paper to open its full analysis
+      — or browse them all in the <a href="library.html" style="color:var(--accent-ink);font-weight:600">Library</a>.</p>
+    <div class="card">
+      <input class="search" id="search" type="search" placeholder="Search titles…">
+      <div id="papers"></div>
+    </div>
+  </section>
+
+  <footer>
+    <span id="legendline"></span><br><br>
+    <a href="constellation.html">✦ Explore the 3D constellation</a> &nbsp;·&nbsp;
+    <a href="add-paper.html">🧬 Analyze&nbsp;a&nbsp;paper</a> &nbsp;·&nbsp; built as a static site · hosted free on GitHub&nbsp;Pages
+  </footer>
+</div>
+
+<script src="papers.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  /* ---- config: the five themes, in display order ---- */
+  const KEYWORDS = [
+    { key:"collaborative", label:"Collaborative", short:"Collab.",   color:"var(--c-collaborative)" },
+    { key:"embodied",      label:"Embodied",      short:"Embodied",  color:"var(--c-embodied)" },
+    { key:"learning",      label:"Learning",      short:"Learning",  color:"var(--c-learning)" },
+    { key:"mathematics",   label:"Mathematics",   short:"Math",      color:"var(--c-mathematics)" },
+    { key:"vr",            label:"Virtual Reality",short:"VR",       color:"var(--c-vr)" },
+  ];
+
+  const ALL = Array.isArray(window.PAPERS) ? window.PAPERS.slice() : [];
+  const state = { filter:new Set(), view:"coverage", query:"" };
+
+  /* ---------- helpers ---------- */
+  const $ = (s,el=document)=>el.querySelector(s);
+  const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const pct = (n,d)=> d ? Math.round(n/d*100) : 0;
+  const kwOf = p => KEYWORDS.filter(k => p.keywords && p.keywords[k.key]).map(k=>k.key);
+
+  function filtered(){
+    if(state.filter.size===0) return ALL;
+    return ALL.filter(p => [...state.filter].every(k => p.keywords && p.keywords[k]));
+  }
+
+  /* dark-mode aware heat colours */
+  const dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const HEAT_A = dark ? [28,36,44]  : [237,246,245];   // low
+  const HEAT_B = dark ? [47,210,190]: [12,120,109];    // high
+  function heatColor(t){
+    t = Math.max(0, Math.min(1, t));
+    const r=Math.round(HEAT_A[0]+(HEAT_B[0]-HEAT_A[0])*t);
+    const g=Math.round(HEAT_A[1]+(HEAT_B[1]-HEAT_A[1])*t);
+    const b=Math.round(HEAT_A[2]+(HEAT_B[2]-HEAT_A[2])*t);
+    return [r,g,b];
+  }
+  const textOn = ([r,g,b]) => (0.299*r+0.587*g+0.114*b) > 140 ? "#15181d" : "#ffffff";
+  document.documentElement.style.setProperty('--heatA', `rgb(${HEAT_A.join(',')})`);
+  document.documentElement.style.setProperty('--heatB', `rgb(${HEAT_B.join(',')})`);
+
+  /* ---------- build static chrome ---------- */
+  function buildChips(){
+    const box = $("#filterChips"); box.innerHTML="";
+    KEYWORDS.forEach(k=>{
+      const b=document.createElement("button");
+      b.className="chip"; b.style.setProperty("--dot",k.color);
+      b.setAttribute("aria-pressed", state.filter.has(k.key));
+      b.innerHTML=`<span class="dot"></span>${esc(k.label)}`;
+      b.onclick=()=>{ state.filter.has(k.key)?state.filter.delete(k.key):state.filter.add(k.key); render(); };
+      box.appendChild(b);
+    });
+    $("#legendline").innerHTML = "Themes: " + KEYWORDS.map(k =>
+      `<span style="color:${k.color};font-weight:700">●</span>&nbsp;${esc(k.label)}`).join(" &nbsp; ");
+  }
+
+  /* ---------- views ---------- */
+  function renderStats(ps){
+    const total=ps.length;
+    // coverage per keyword
+    const cov = KEYWORDS.map(k=>({k, n:ps.filter(p=>p.keywords&&p.keywords[k.key]).length}));
+    const top = cov.slice().sort((a,b)=>b.n-a.n)[0];
+    const allFive = ps.filter(p=>KEYWORDS.every(k=>p.keywords&&p.keywords[k.key])).length;
+    const avg = total ? (ps.reduce((s,p)=>s+kwOf(p).length,0)/total) : 0;
+
+    const cards=[
+      { big: total, lbl:"papers in view" },
+      { big: top&&total? `${pct(top.n,total)}%`:"—", lbl: top? `cover ${top.k.label.toLowerCase()} (most common)`:"" },
+      { big: total? `${pct(allFive,total)}%`:"—", lbl:"combine all five themes" },
+      { big: avg? avg.toFixed(1):"—", lbl:"themes per paper, on average" },
+    ];
+    $("#stats").innerHTML = cards.map(c=>
+      `<div class="stat"><div class="big">${c.big}</div><div class="lbl">${esc(c.lbl)}</div></div>`).join("");
+  }
+
+  function renderCoverage(ps){
+    const total=ps.length;
+    const rows = KEYWORDS.map(k=>{
+      const n=ps.filter(p=>p.keywords&&p.keywords[k.key]).length, p=pct(n,total);
+      return `<div class="cov-row" style="--dot:${k.color}">
+        <div class="cov-name"><span class="dot"></span>${esc(k.label)}</div>
+        <div class="track"><div class="bar" style="width:${p}%"></div></div>
+        <div class="cov-val"><b>${p}%</b> <span>(${n})</span></div>
+      </div>`;
+    }).join("");
+    $("#coverage").innerHTML = total ? rows : `<div class="empty">No papers match this filter.</div>`;
+  }
+
+  function renderHeat(ps){
+    const total=ps.length;
+    const idx = KEYWORDS;
+    // matrix of counts (both present); diagonal = single coverage
+    const M = idx.map(ri => idx.map(ci =>
+      ps.filter(p=>p.keywords&&p.keywords[ri.key]&&p.keywords[ci.key]).length));
+    let max=0; M.forEach(r=>r.forEach(v=>{ if(v>max) max=v; }));
+    const cells=[];
+    cells.push(`<div class="hcell hhead"></div>`);
+    idx.forEach(c=> cells.push(`<div class="hcell hhead">${esc(c.short)}</div>`));
+    idx.forEach((r,i)=>{
+      cells.push(`<div class="hcell hrow-lbl" style="--dot:${r.color}"><span class="dot"></span>${esc(r.short)}</div>`);
+      idx.forEach((c,j)=>{
+        const v=M[i][j], t= max? v/max : 0, rgb=heatColor(t);
+        cells.push(`<div class="hcell" title="${esc(r.label)} + ${esc(c.label)}: ${v} paper(s)"
+          style="background:rgb(${rgb.join(',')});color:${textOn(rgb)}">
+          <div class="hval">${pct(v,total)}%</div><div class="hsub">${v}</div></div>`);
+      });
+    });
+    $("#heat").innerHTML = total ? cells.join("") : `<div class="empty" style="grid-column:1/-1">No papers match this filter.</div>`;
+  }
+
+  function renderCombos(ps){
+    const total=ps.length;
+    // size distribution 1..5 (papers touching exactly n themes)
+    const sizes=[0,0,0,0,0,0];
+    ps.forEach(p=> sizes[kwOf(p).length]++);
+    const maxSize = Math.max(1, ...sizes.slice(1));
+    const sizeRows = [1,2,3,4,5].map(n=>{
+      const cnt=sizes[n], w = Math.round(cnt/maxSize*100);
+      return `<div class="mini">
+        <div class="mlbl">${n} theme${n>1?'s':''}</div>
+        <div class="track"><div class="bar" style="width:${w}%;background:var(--accent)"></div></div>
+        <div class="cov-val"><b>${pct(cnt,total)}%</b> <span>(${cnt})</span></div>
+      </div>`;
+    }).join("");
+    $("#sizes").innerHTML = total ? sizeRows : `<div class="empty">No papers match this filter.</div>`;
+
+    // specific combinations
+    const map=new Map();
+    ps.forEach(p=>{
+      const keys=kwOf(p); if(keys.length===0) return;
+      const id=keys.join("+");
+      map.set(id,(map.get(id)||0)+1);
+    });
+    const arr=[...map.entries()].map(([id,n])=>({keys:id.split("+"),n}))
+      .sort((a,b)=> b.n-a.n || a.keys.length-b.keys.length);
+    const maxN = arr.length? arr[0].n : 1;
+    const comboRows = arr.map(c=>{
+      const chips=c.keys.map(k=>{
+        const kw=KEYWORDS.find(x=>x.key===k);
+        return `<span class="ck" style="--dot:${kw.color}"><span class="dot"></span>${esc(kw.short)}</span>`;
+      }).join("");
+      const w=Math.round(c.n/maxN*100);
+      return `<div class="combo-row">
+        <div class="combo-chips">${chips}</div>
+        <div class="track"><div class="bar" style="width:${w}%;background:var(--accent)"></div></div>
+        <div class="combo-val"><b>${pct(c.n,total)}%</b> <span>(${c.n})</span></div>
+      </div>`;
+    }).join("");
+    $("#combos").innerHTML = total ? comboRows : "";
+  }
+
+  function renderPapers(ps){
+    const q=state.query.trim().toLowerCase();
+    const list = ps.filter(p=> !q || (p.title||"").toLowerCase().includes(q))
+      .slice().sort((a,b)=> (b.year||0)-(a.year||0));
+    if(!list.length){ $("#papers").innerHTML=`<div class="empty">No papers match.</div>`; return; }
+    $("#papers").innerHTML = list.map(p=>{
+      const chips = KEYWORDS.filter(k=>p.keywords&&p.keywords[k.key]).map(k=>
+        `<span class="ck" style="--dot:${k.color}"><span class="dot"></span>${esc(k.short)}</span>`).join("");
+      const meta=[p.authors, p.year].filter(Boolean).join(" · ");
+      return `<div class="paper">
+        <a class="pt" href="paper.html?id=${ALL.indexOf(p)}">${esc(p.title||"Untitled")} <span class="go">Open analysis →</span></a>
+        ${meta?`<div class="pm">${esc(meta)}</div>`:""}
+        <div class="pk">${chips||'<span class="pm">no themes tagged</span>'}</div>
+      </div>`;
+    }).join("");
+  }
+
+  /* ---------- master render ---------- */
+  function render(){
+    const ps=filtered();
+    // chips pressed state
+    [...document.querySelectorAll("#filterChips .chip")].forEach((b,i)=>
+      b.setAttribute("aria-pressed", state.filter.has(KEYWORDS[i].key)));
+    $("#shownPill").textContent = state.filter.size
+      ? `Showing ${ps.length} of ${ALL.length} papers`
+      : `All ${ALL.length} papers`;
+    $("#clearBtn").hidden = state.filter.size===0;
+
+    renderStats(ps);
+    renderCoverage(ps);
+    renderHeat(ps);
+    renderCombos(ps);
+    renderPapers(ps);
+
+    // tabs
+    document.querySelectorAll(".tab").forEach(t=>{
+      const on = t.dataset.view===state.view;
+      t.setAttribute("aria-selected", on);
+      $("#view-"+t.dataset.view).hidden = !on;
+    });
+  }
+
+  /* ---------- events ---------- */
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.onclick=()=>{ state.view=t.dataset.view; render(); };
+  });
+  $("#clearBtn").onclick=()=>{ state.filter.clear(); render(); };
+  $("#search").oninput=e=>{ state.query=e.target.value; renderPapers(filtered()); };
+
+  if(window.PAPERS_IS_SAMPLE){ $("#sampleBar").hidden=false; }
+
+  buildChips();
+  render();
+})();
+</script>
+</body>
+</html>
