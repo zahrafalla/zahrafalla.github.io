@@ -2,96 +2,161 @@
   type: map
   contents:
     - name: Full Name
-      value: Albert Einstein
-    - name: Date of Birth
-      value: 14th March 1879
+      value: Zahra Fallah
+    - name: Location
+      value: Tehran, Iran
+    - name: Email
+      value: <a href="mailto:zfallah10874@gmail.com">zfallah10874@gmail.com</a>
+    - name: LinkedIn
+      value: <a href="https://www.linkedin.com/in/zahra-fallah95" target="_blank">linkedin.com/in/zahra-fallah95</a>
     - name: Languages
-      value: English, German
+      value: English (TOEFL iBT 93), Persian (Native)
+
+- title: Research Profile
+  type: list
+  contents:
+    - Cognitive Science MSc researcher working on VR-based behavioral experiments, embodied interaction, and perceptual decision-making. Experienced in Unity-based experimental design, computational behavioral analysis, eye-tracking, and immersive HCI research. Interested in collaborative learning, multimodal interaction, and cognitive technologies.
+
+- title: Research Interests
+  type: list
+  contents:
+    - Human-Computer Interaction
+    - Virtual Reality
+    - Perceptual Decision-Making
+    - Embodied Cognition
+    - Educational Technology
+    - Computational Cognitive Modeling
 
 - title: Education
   type: time_table
   contents:
-    - title: PhD
-      institution: University of Zurich, Zurich, Switzerland
-      year: 1905
+    - title: MSc in Cognitive Science
+      institution: University of Tehran
+      year: 2022 – 2025
       description:
-        - Description 1.
-        - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
-    - title: Federal teaching diploma
-      institution: Eidgenössische Technische Hochschule, Zurich, Switzerland
-      year: 1900
+        - "Thesis: Effects of Altered Sensorimotor Feedback on Perceptual Decision-Making, Confidence, Cognitive Load, Agency, and Embodiment in Virtual Reality."
+        - "GPA: 4.0/4.0"
+    - title: BSc in Mechanical Engineering
+      institution: University of Tehran
+      year: 2014 – 2019
       description:
-        - Description 1.
-        - Description 2.
+        - "Senior Project: Design and Analysis of Optimal Motor Strategies Using EMG Signal Processing to Counteract Muscular Fatigue in Archery."
+        - "GPA: 3.36/4.0"
 
-- title: Experience
+- title: Research Experience
   type: time_table
   contents:
-    - title: Professor of Theoretical Physics
-      institution: Institute for Advanced Study, Princeton University
-      year: 1933 - 1955
+    - title: "MSc Thesis Research: Perceptual Decision-Making in Virtual Reality"
+      institution: University of Tehran
+      year: 2023 – 2025
       description:
-        - Description 1.
-        - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
-    - title: Visiting Professor
-      institution: California Institute of Technology, Pasadena, California, US
-      year: 1933
+        - Designed Unity-based VR experiments investigating visuomotor feedback, embodiment, confidence, and perceptual decision-making.
+        - Implemented hand gesture interaction and iterative sensory feedback paradigms to study adaptive behavior and cognitive workload.
+        - Applied Drift Diffusion Modeling and behavioral analysis in Python.
+    - title: Cognitive Pathology VR Project
+      year: 2024
       description:
-        - Description 1.
-        - Description 2.
-
-    - title: Director
-      institution: Kaiser Wilhelm Institute for Physics, Berlin, Germany.
-      year: 1917-1933
-
-    - title: Professor of Theoretical Physics
-      institution: Karl-Ferdinand University, Prague, Czechoslovakia
-      year: 1911 - 1917
+        - Developed VR navigation tasks embedding addiction-related cues to study cognitive and physiological responses.
+        - Measured spatial memory, path integration, and HRV-based cognitive load.
+    - title: Agency and Automation Interaction Project
+      year: 2023
       description:
+        - Designed continuous HCI tasks to study perceived agency under different automation levels.
+        - Collected eye-tracking and pupillometry data to examine attention and adaptive behavior.
+        - Analyzed behavioral and physiological data with MATLAB.
 
-    - title: Associate Professor of Theoretical Physics
-      institution: University of Zurich, Zurich, Switzerland
-      year: 1909 - 1911
-
-- title: Open Source Projects
+- title: Publications & Presentations
   type: time_table
   contents:
-    - title: <a href="https://github.com/alshedivat/al-folio">al-folio</a>
-      year: 2015-now
-      description: A beautiful, simple, clean, and responsive Jekyll theme for academics.
+    - title: Effects of Altered Visuomotor Feedback on Perceptual Decision-Making, Confidence, and Embodiment in VR
+      year: 2025
+      maindescription: <em>Manuscript in preparation</em>
+      description:
+        - Finalizing results for submission to top-tier HCI venues. Features a novel integration of Drift Diffusion Modeling (DDM) to quantify the cognitive costs of asynchronous visuomotor feedback.
+    - title: "Embodied Decision-Making in VR: A Computational and Metacognitive Analysis"
+      year: 2025
+      maindescription: <em>Poster — 2nd Place Award</em>, Basic and Clinical Neuroscience Congress (BCN 2025)
+      description:
+        - Presented empirical findings on the "performance–metacognition paradox" in immersive interaction.
 
-- title: Honors and Awards
+- title: Academic Experience
   type: time_table
   contents:
-    - year: 1921
-      items:
-        - Nobel Prize in Physics
-        - Matteucci Medal
-    - year: 2029
-      items:
-        - Max Planck Medal
+    - title: Project Mentor, Psychology of Learning
+      institution: University of Tehran
+      year: Present
+      description:
+        - Mentoring student projects in experimental psychology and applied learning.
+        - Providing guidance on behavioral data analysis and experimental design.
+    - title: Project Mentor, IT in Psychology
+      institution: University of Science and Culture
+      year: Present
+      description:
+        - Assisting students with game-based and AI-driven experimental projects.
+        - Supporting study design, implementation, and analysis.
+    - title: Teaching Assistant, Computational Neuroscience
+      institution: Neuromatch Academy
+      year: 2025
+      description:
+        - Assisted in international computational neuroscience and modeling instruction using Python.
 
-- title: Academic Interests
-  type: nested_list
+- title: Professional & Applied Experience
+  type: time_table
   contents:
-    - title: Topic 1.
-      items:
-        - Description 1.
-        - Description 2.
-    - title: Topic 2.
-      items:
-        - Description 1.
-        - Description 2.
+    - title: LLM Agents Hackathon
+      institution: Sharif University of Technology
+      year: 2025
+      description:
+        - Developed an LLM-based educational assistant to investigate adaptive reasoning and personalized learning.
+        - Designed interdisciplinary algorithmic challenges for educational contexts.
+    - title: Founder, Iran Minecraft Academy
+      institution: Tehran, Iran
+      year: 2023 – Present
+      description:
+        - Designed game-based learning environments for programming and computational thinking.
+    - title: Co-founder, Crange-Ghaf Game Studio
+      institution: Yazd, Iran
+      year: 2019 – Present
+      description:
+        - Created interactive board and PC games to study adaptive decision-making and collaboration.
+    - title: Cognitive Specialist, Cultural Documentation Project
+      institution: Khuzestan, Iran
+      year: Apr 2023
+      description:
+        - Conducted naturalistic behavioral observations in children, contributing to a collaborative publication.
+    - title: UX Research Intern, Web Rokh
+      institution: Tehran, Iran
+      year: Summer 2021
+      description:
+        - Evaluated user behavior and decision-making on e-commerce platforms using cognitive principles.
 
-- title: Other Interests
-  type: list
+- title: Technical Skills
+  type: map
   contents:
-    - <u>Hobbies:</u> Hobby 1, Hobby 2, etc.
+    - name: Programming
+      value: R, Python (NumPy, Pandas), MATLAB, C#
+    - name: Methods
+      value: VR experiments, game-based experiments, serious games, cognitive modeling, DDM, Bayesian inference, behavioral analysis, UX research
+    - name: Bio-Signal Processing
+      value: EMG (motor control analysis), eye-tracking &amp; pupillometry, HRV
+    - name: VR &amp; Research Software
+      value: Unity, Psychtoolbox, Tobii Pro Lab, EEGLAB, Git
+
+- title: Honors & Awards
+  type: time_table
+  contents:
+    - year: 2025
+      items:
+        - 2nd Place Poster Award, Basic and Clinical Neuroscience Congress (BCN 2025)
+    - year: 2024
+      items:
+        - 2nd in cumulative GPA, MSc Cognitive Science, University of Tehran
+    - year: 2022
+      items:
+        - 2nd among 1,000+ in the Iranian National MSc Entrance Exam (Cognitive Science)
+    - year: 2014
+      items:
+        - 756th among 2,000,000 in the Iranian National BSc Entrance Exam (Math/Physics)
+    - year: 2012
+      items:
+        - 3rd Place, 14th Khwarazmi International Award in Nanotechnology, and National Patent Inventory for a nanotech project on oil–seawater separation
