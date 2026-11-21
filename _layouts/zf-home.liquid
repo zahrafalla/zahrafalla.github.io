@@ -24,7 +24,7 @@ layout: zf
       </h2>
       <div class="zf-intro-foot">
         <span class="zf-meta">{{ page.hero.affiliation }} · {{ page.hero.location }}</span>
-        <a class="zf-red" href="{{ '/phd/' | relative_url }}">My PhD map →</a>
+        <a class="zf-red" href="{{ '/phd/' | relative_url }}">Paper library →</a>
         <a class="zf-red" href="{{ '/cv/' | relative_url }}">CV</a>
       </div>
     </div>
@@ -40,9 +40,9 @@ layout: zf
               <img src="{{ c.image | prepend: '/assets/img/' | relative_url }}" alt="{{ c.alt }}" loading="lazy">
             {% elsif c.art == 'swatch' %}
               <div class="zf-swatch" aria-hidden="true">
-                <i></i><i class="dot" style="--c: var(--c-collaborative)"></i><i></i><i class="fill" style="--c: var(--c-embodied)"></i>
-                <i class="dot" style="--c: var(--c-learning)"></i><i></i><i class="fill" style="--c: var(--c-mathematics)"></i><i></i> <i></i
-                ><i class="dot" style="--c: var(--c-vr)"></i><i></i><i class="dot" style="--c: var(--red)"></i>
+                <i></i><i class="dot" style="--c: var(--m-theory)"></i><i></i><i class="fill" style="--c: var(--m-experiment)"></i>
+                <i class="dot" style="--c: var(--m-important)"></i><i></i><i class="fill" style="--c: var(--m-idea)"></i><i></i> <i></i
+                ><i class="dot" style="--c: var(--m-theory)"></i><i></i><i class="dot" style="--c: var(--red)"></i>
               </div>
             {% else %}
               <div class="zf-hatch" style="height: 100%" aria-hidden="true"></div>
@@ -165,38 +165,32 @@ layout: zf
 <section class="zf-row" id="phd" aria-labelledby="phd-h">
   <div class="zf-row zf-shead">
     <p class="zf-label b"><span class="n">04</span> My PhD</p>
-    <h2 class="zf-h zf-big b" id="phd-h">A universe of papers</h2>
+    <h2 class="zf-h zf-big b" id="phd-h">Papers through my eyes</h2>
   </div>
   <div class="w-main zf-stack">
     <div class="zf-phd-text b">
       <p class="zf-meta" style="text-transform: uppercase">Collaborative · Embodied · Learning · Mathematics · VR</p>
       <h3 class="zf-big">Collaborative, embodied <span class="zf-under">mathematics</span> in virtual reality</h3>
       <p>
-        I built a Literature Universe to map the research behind my PhD. Every paper becomes a planet, shared ideas link papers into constellations,
-        and concepts that several papers support light up as possible research directions.
+        This is how I read for my PhD. Every paper becomes a bar as long as its pages, and the circles on it mark its theories, its experiments, what
+        matters for my work, and the ideas it gives me for my thesis.
       </p>
-      <a class="zf-red" href="{{ '/phd/' | relative_url }}">Enter the Literature Universe →</a>
+      <a class="zf-red" href="{{ '/phd/' | relative_url }}">Open the library →</a>
     </div>
     <div class="zf-phd-sky b" aria-hidden="true">
       <canvas data-sky></canvas>
       <div class="zf-legend">
-        <span><i style="--c: var(--c-collaborative)"></i>Collaborative</span>
-        <span><i style="--c: var(--c-embodied)"></i>Embodied</span>
-        <span><i style="--c: var(--c-learning)"></i>Learning</span>
-        <span><i style="--c: var(--c-mathematics)"></i>Mathematics</span>
-        <span><i style="--c: var(--c-vr)"></i>VR</span>
+        <span><i style="--c: var(--m-theory)"></i>Theory</span>
+        <span><i style="--c: var(--m-experiment)"></i>Experiment</span>
+        <span><i style="--c: var(--m-important)"></i>Important for my work</span>
+        <span><i style="--c: var(--m-idea)"></i>Idea for my thesis</span>
       </div>
     </div>
   </div>
-  <nav class="w-side zf-links b" aria-label="PhD sections">
-    <a href="{{ '/phd/' | relative_url }}"><b>Overview</b><small>How the five themes combine across papers</small><span class="arr">→</span></a>
-    <a href="{{ '/phd/constellation.html' | relative_url }}"
-      ><b>Constellation</b><small>A 3D universe of papers and ideas</small><span class="arr">→</span></a
-    >
-    <a href="{{ '/phd/library.html' | relative_url }}"><b>Library</b><small>Every paper with its full analysis</small><span class="arr">→</span></a>
-    <a href="{{ '/phd/add-paper.html' | relative_url }}"
-      ><b>Analyze a paper</b><small>Read a PDF right in the browser</small><span class="arr">→</span></a
-    >
+  <nav class="w-side zf-links b" aria-label="PhD project sections">
+    <a href="{{ '/phd/' | relative_url }}"><b>Library</b><small>The papers I've read, each as a page bar</small><span class="arr">→</span></a>
+    <a href="{{ '/phd/collage/' | relative_url }}"><b>Paper collage</b><small>Coming soon</small><span class="arr">→</span></a>
+    <a href="{{ '/phd/overview/' | relative_url }}"><b>Overview</b><small>Coming soon</small><span class="arr">→</span></a>
   </nav>
 </section>
 

@@ -11,8 +11,8 @@
      M   ≤  960px  14 columns   inner lines 2 → 14
      S   ≤  640px   8 columns   inner lines 1 → 9  (edge to edge)
 
-   The PhD Literature Universe (/phd/) reads the same tokens (--bg, --panel,
-   --ink, --line, --accent, --radius, --shadow…) so it inherits the look.
+   The PhD project "Papers through my eyes" (/phd/) uses the --m-* colours
+   for the four kinds of marks on a paper's page bar.
    ============================================================================= */
 
 /* ---------- tokens ---------- */
@@ -49,6 +49,12 @@
   --c-mathematics: #8a5cf0;
   --c-vr: #d64d8a;
   --c-method: #7a8699;
+
+  /* the four kinds of marks on a paper's page bar */
+  --m-theory: #3e6fd6;
+  --m-experiment: #e8743b;
+  --m-important: #12a090;
+  --m-idea: #9b5cf0;
 
   /* board geometry (zf.js replaces --cell with a whole-pixel value) */
   --cols: 26;
@@ -382,13 +388,6 @@ a.zf-red:hover {
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-thickness: 1.5px;
-}
-.zf-navstrip a.is-phd::after {
-  content: "✦";
-  color: var(--red);
-  margin-left: 4px;
-  font-size: 10px;
-  vertical-align: 2px;
 }
 .zf-util {
   grid-column: 19 / 26;
@@ -1687,39 +1686,564 @@ a.zf-red:hover {
     grid-column: 1 / -1;
   }
 }
-/* the app's own pages keep their layout; they sit in one big box */
-.zf-board > main > .phd-app {
+/* placeholder for sections still being built */
+.zf-soon {
+  height: calc(6 * var(--cell) + 1px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.zf-soon span {
   background: var(--paper);
   border: 1px solid var(--ink);
-  margin: 0 -1px -1px 0;
+  padding: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+/* ---------- Library: the four kinds of marks ---------- */
+[hidden] {
+  display: none !important;
+}
+.t-theory {
+  --c: var(--m-theory);
+}
+.t-experiment {
+  --c: var(--m-experiment);
+}
+.t-important {
+  --c: var(--m-important);
+}
+.t-idea {
+  --c: var(--m-idea);
+}
+.zf-rows2 {
+  row-gap: calc(2 * var(--cell));
+}
+
+/* paper cards */
+.pcard {
+  cursor: pointer;
+}
+.pcard h3 {
+  font-size: 20px;
+}
+.pmini {
   position: relative;
-  z-index: 1;
-  min-width: 0;
+  height: 14px;
+  max-width: 100%;
+  margin: 12px 0 4px;
+  border: 1px solid currentColor;
+  background-image: linear-gradient(to right, currentColor 1px, transparent 1px);
+  background-size: calc(100% / var(--pages)) 100%;
 }
-.zf-phd .phd-app .wrap {
-  max-width: none;
-  padding-left: 20px;
-  padding-right: 20px;
+.pmini i,
+.pcounts i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--c);
+  border: 1px solid currentColor;
 }
-@media (max-width: 640px) {
-  .zf-phd .phd-app .wrap {
-    padding-left: 12px;
-    padding-right: 12px;
+.pmini i {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--x) * 1%);
+  transform: translate(-50%, -50%);
+}
+.pcounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.pcounts span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* paper view: head */
+.pb-head {
+  row-gap: 0;
+}
+.pb-back {
+  grid-column: 2 / 6;
+  grid-row: 1;
+  text-decoration: none;
+}
+.pb-back:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+.pb-title {
+  grid-column: 6 / 26;
+  grid-row: 1;
+  font-size: clamp(28px, 3.4vw, 50px);
+  padding: 10px 16px 14px;
+}
+.pb-meta {
+  grid-column: 6 / 20;
+  grid-row: 2;
+  padding: 14px 16px 16px;
+}
+.pb-meta .zf-meta + .zf-meta {
+  margin-top: 2px;
+}
+.pb-meta a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pb-meta a:hover {
+  color: var(--red);
+}
+.pb-sum {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.55;
+  max-width: 70ch;
+}
+.pb-toggle {
+  grid-column: 20 / 26;
+  grid-row: 2;
+  align-self: start;
+  display: flex;
+  height: calc(var(--cell) + 1px);
+}
+.pb-toggle button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-right: 1px solid var(--ink);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+.pb-toggle button:last-child {
+  border-right: 0;
+}
+.pb-toggle button:hover {
+  color: var(--red);
+}
+.pb-toggle button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.pb-ico {
+  border: 1.5px solid currentColor;
+}
+.pb-ico--h {
+  width: 20px;
+  height: 8px;
+}
+.pb-ico--v {
+  width: 8px;
+  height: 20px;
+}
+@media (max-width: 1240px) {
+  .pb-title {
+    grid-column: 6 / 20;
+  }
+  .pb-meta {
+    grid-column: 6 / 15;
+  }
+  .pb-toggle {
+    grid-column: 15 / 20;
   }
 }
-/* the app hard-codes pills and rounded panels; square them to match the board */
-.zf-phd .phd-app *,
-.zf-phd .phd-app *::before,
-.zf-phd .phd-app *::after {
-  border-radius: 0 !important;
+@media (max-width: 960px) {
+  .pb-back {
+    grid-column: 2 / 6;
+  }
+  .pb-toggle {
+    grid-column: 8 / 14;
+    grid-row: 1;
+  }
+  .pb-title {
+    grid-column: 2 / 14;
+    grid-row: 2;
+  }
+  .pb-meta {
+    grid-column: 2 / 14;
+    grid-row: 3;
+  }
 }
-/* immersive page (3D constellation): no page scroll, no footer */
-body.zf-immersive {
+@media (max-width: 640px) {
+  .pb-back {
+    grid-column: 1 / 4;
+  }
+  .pb-toggle {
+    grid-column: 4 / -1;
+  }
+  .pb-title,
+  .pb-meta {
+    grid-column: 1 / -1;
+  }
+}
+
+/* legend: which kinds of marks are shown */
+.pb-legend {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+}
+.pb-legend button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  height: calc(var(--cell) - 1px); /* + the box border = exactly one cell */
+  padding: 0 16px;
+  border: 0;
+  border-right: 1px solid var(--ink);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  text-transform: uppercase;
+}
+.pb-legend button i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--c);
+  border: 1px solid var(--ink);
+}
+.pb-legend button b {
+  font-weight: 600;
+}
+.pb-legend button:hover {
+  background: var(--paper-2);
+}
+.pb-legend button[aria-pressed="false"] {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.pb-legend button[aria-pressed="false"] i {
+  opacity: 0.2;
+}
+@media (max-width: 960px) {
+  /* two buttons per row: two rows of exactly one cell each */
+  .pb-legend button {
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: 0 10px;
+    font-size: 11px;
+    line-height: 1.2;
+    text-align: left;
+    white-space: normal;
+  }
+  .pb-legend button i {
+    flex: none;
+  }
+  .pb-legend button:nth-child(-n + 2) {
+    height: var(--cell);
+    border-bottom: 1px solid var(--ink);
+  }
+  .pb-legend button:nth-child(2n) {
+    border-right: 0;
+  }
+}
+
+/* ---------- the page bar ---------- */
+.pb-box {
+  padding: 0;
   overflow: hidden;
 }
-body.zf-immersive .zf-board > main > .phd-app {
-  border: 0;
-  background: transparent;
+.pb {
+  --mk: 18px; /* mark size */
+  position: relative;
+  display: grid;
+}
+.pb--h {
+  grid-template-areas: "note" "track";
+  grid-template-rows: calc(6 * var(--cell)) calc(3 * var(--cell));
+  padding: 0 var(--cell);
+}
+.pb--v {
+  grid-template-areas: "track note";
+  grid-template-columns: calc(4 * var(--cell)) minmax(0, 1fr);
+  padding: var(--cell) var(--cell) var(--cell) 0;
+}
+.pb-notearea {
+  grid-area: note;
+  position: relative;
+  min-width: 0;
+}
+.pb-track {
+  grid-area: track;
+  position: relative;
+  outline-offset: 4px;
+  touch-action: pan-y;
+}
+.pb--v .pb-track {
+  height: calc(var(--pages) * var(--cell));
+  touch-action: auto;
+}
+
+/* the bar: one segment per page */
+.pb-bar {
+  position: absolute;
+  background-color: var(--paper);
+  border: 1px solid var(--ink);
+  view-transition-name: pbar;
+}
+.pb--h .pb-bar {
+  left: 0;
+  right: 0;
+  top: calc(var(--cell) - 9px);
+  height: 18px;
+  background-image: linear-gradient(to right, var(--ink) 1px, transparent 1px);
+  background-size: calc(100% / var(--pages)) 100%;
+}
+.pb--v .pb-bar {
+  top: 0;
+  bottom: 0;
+  left: calc(2 * var(--cell) - 9px);
+  width: 18px;
+  background-image: linear-gradient(to bottom, var(--ink) 1px, transparent 1px);
+  background-size: 100% calc(100% / var(--pages));
+}
+/* how far along the paper the active mark is */
+.pb-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-image: repeating-linear-gradient(-45deg, var(--ink) 0 1px, transparent 1px 5px);
+  transition:
+    width 0.25s ease,
+    height 0.25s ease;
+}
+.pb--h .pb-fill {
+  height: 100%;
+  width: var(--p, 0%);
+}
+.pb--v .pb-fill {
+  width: 100%;
+  height: var(--p, 0%);
+}
+
+/* page numbers */
+.pb-tick {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+}
+.pb--h .pb-tick {
+  left: calc(var(--x) * 1%);
+  top: calc(2 * var(--cell) + 14px);
+  transform: translateX(-50%);
+}
+.pb--v .pb-tick {
+  top: calc(var(--x) * 1%);
+  right: calc(2 * var(--cell) + 18px);
+  transform: translateY(-50%);
+}
+.pb-tick small {
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+/* the marks */
+.pb-mark {
+  position: absolute;
+  width: var(--mk);
+  height: var(--mk);
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  background: var(--c);
+  cursor: pointer;
+  z-index: 2;
+  transition:
+    width 0.15s,
+    height 0.15s,
+    box-shadow 0.15s;
+}
+.pb--h .pb-mark {
+  left: calc(var(--x) * 1%);
+  top: var(--cell);
+  transform: translate(-50%, calc(-50% + var(--off) * 24px));
+}
+.pb--v .pb-mark {
+  top: calc(var(--x) * 1%);
+  left: calc(2 * var(--cell));
+  transform: translate(calc(-50% + var(--off) * 24px), -50%);
+}
+.pb-mark:hover {
+  box-shadow:
+    0 0 0 3px var(--paper),
+    0 0 0 4px var(--ink);
+}
+.pb-mark.is-active {
+  width: 24px;
+  height: 24px;
+  z-index: 3;
+  box-shadow:
+    0 0 0 3px var(--paper),
+    0 0 0 5px var(--ink);
+}
+.pb-mark.is-off {
+  display: none;
+}
+
+/* the pointer's position along the bar */
+.pb-cursor {
+  position: absolute;
+  background: var(--red);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 1;
+}
+.pb--h .pb-cursor {
+  top: 0;
+  width: 1px;
+  height: calc(2 * var(--cell));
+  left: var(--cx, 0);
+}
+.pb--v .pb-cursor {
+  left: calc(1.5 * var(--cell));
+  height: 1px;
+  width: calc(2.5 * var(--cell));
+  top: var(--cy, 0);
+}
+.pb.is-hover .pb-cursor {
+  opacity: 1;
+}
+
+/* the note above (or beside) the bar */
+.pb-note {
+  position: absolute;
+  z-index: 2;
+  width: min(400px, 100%);
+  max-height: calc(100% - 24px);
+  overflow: auto;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  padding: 12px 14px 14px;
+  transition:
+    left 0.22s ease,
+    top 0.22s ease;
+}
+.pb--h .pb-note {
+  bottom: 24px;
+  left: var(--nx, 0);
+}
+.pb--v .pb-note {
+  left: 0;
+  top: var(--ny, 0);
+  width: min(460px, 100%);
+  max-height: none;
+}
+.pb-stem {
+  position: absolute;
+  background: var(--ink);
+  pointer-events: none;
+  transition:
+    left 0.22s ease,
+    top 0.22s ease;
+}
+.pb--h .pb-stem {
+  width: 1px;
+  left: var(--sx, 0);
+  bottom: calc(-1 * (var(--cell) - 12px));
+  height: calc(24px + var(--cell) - 12px);
+}
+.pb--v .pb-stem {
+  height: 1px;
+  top: var(--sy, 0);
+  left: calc(-2 * var(--cell) + 12px);
+  width: calc(2 * var(--cell) - 12px);
+}
+.pb-note.is-empty + .pb-stem {
+  display: none;
+}
+.pb-note-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  text-transform: uppercase;
+}
+.pb-note-top i {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--c);
+  border: 1px solid var(--ink);
+}
+.pb-note-top .pg {
+  margin-left: auto;
+  font-weight: 600;
+}
+.pb-note h3 {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.15;
+  text-transform: uppercase;
+  margin: 8px 0 6px;
+}
+.pb-note p {
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+.pb-note q {
+  display: block;
+  margin-top: 10px;
+  padding-left: 10px;
+  border-left: 3px solid var(--c);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.pb-note.is-empty {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+@media (max-width: 640px) {
+  .pb--h {
+    grid-template-rows: calc(8 * var(--cell)) calc(3 * var(--cell));
+    padding: 0 calc(var(--cell) / 2);
+  }
+  .pb--v {
+    grid-template-columns: calc(3 * var(--cell)) minmax(0, 1fr);
+    padding-right: 10px;
+  }
+  .pb--v .pb-bar {
+    left: calc(1.5 * var(--cell) - 9px);
+  }
+  .pb--v .pb-mark {
+    left: calc(1.5 * var(--cell));
+  }
+  .pb--v .pb-tick {
+    right: calc(1.5 * var(--cell) + 18px);
+  }
+  .pb--v .pb-cursor {
+    left: var(--cell);
+    width: calc(2 * var(--cell));
+  }
+  .pb--v .pb-stem {
+    left: calc(-1.5 * var(--cell) + 12px);
+    width: calc(1.5 * var(--cell) - 12px);
+  }
+}
+::view-transition-group(pbar) {
+  animation-duration: 0.45s;
 }
 
 /* ---------- reduced motion ---------- */

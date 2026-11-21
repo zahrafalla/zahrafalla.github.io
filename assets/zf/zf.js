@@ -78,7 +78,7 @@
 
   /* boxes snap to whole cells: height = n·cell + 1 (the extra pixel is the
      closing border, cancelled by the box's -1px bottom margin) */
-  var SNAP = ".zf-board > main .b, .zf-board > main .snap, .zf-board > main > .phd-app, .zf-foot .b";
+  var SNAP = ".zf-board > main .b, .zf-board > main .snap, .zf-foot .b";
   var snapping = false;
   function snapAll() {
     if (!board) return;
@@ -116,15 +116,29 @@
   window.addEventListener("resize", relayout);
   window.addEventListener("load", relayout);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
-  if ("ResizeObserver" in window) {
-    var ro = new ResizeObserver(function () {
-      if (!snapping) queueSnap();
-    });
-    // also catches PhD app pages, which render their content after load
+  var ro =
+    "ResizeObserver" in window
+      ? new ResizeObserver(function () {
+          if (!snapping) queueSnap();
+        })
+      : null;
+  var watched = typeof WeakSet === "function" ? new WeakSet() : null;
+  function watch() {
+    if (!ro) return;
     $$(SNAP).forEach(function (el) {
+      if (watched && watched.has(el)) return;
+      if (watched) watched.add(el);
       ro.observe(el);
     });
   }
+  watch();
+  /* pages that draw boxes after load (the PhD library) call zf.refresh() */
+  window.zf = {
+    refresh: function () {
+      watch();
+      queueSnap();
+    },
+  };
   $$("img").forEach(function (img) {
     if (!img.complete) img.addEventListener("load", queueSnap);
   });
@@ -177,7 +191,7 @@
   /* ---------- PhD "sky": papers on grid points, linked by shared ideas ---------- */
   $$("canvas[data-sky]").forEach(function (cv) {
     var ctx = cv.getContext("2d");
-    var themes = ["--c-collaborative", "--c-embodied", "--c-learning", "--c-mathematics", "--c-vr"];
+    var themes = ["--m-theory", "--m-experiment", "--m-important", "--m-idea"];
     var seed = 7;
     function rnd() {
       seed = (seed * 16807) % 2147483647;

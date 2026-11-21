@@ -1,37 +1,30 @@
-{%- comment -%} Sub-navigation shared by every page of the PhD Literature Universe. {%- endcomment -%}
+{%- comment -%} Sub-navigation shared by the pages of the "Papers through my eyes" project. {%- endcomment -%}
 <div class="zf-row zf-phdbar">
   <a class="zf-phdbar-title b" href="{{ '/phd/' | relative_url }}">
-    <small>My PhD ✦</small>
-    <b>Literature Universe</b>
+    <small>My PhD · Project</small>
+    <b>Papers through my eyes</b>
   </a>
-  <nav class="zf-phdtabs b" aria-label="PhD sections">
+  <nav class="zf-phdtabs b" aria-label="Project sections">
     <a
       href="{{ '/phd/' | relative_url }}"
-      {% if page.phd_tab == 'overview' %}
-        class="is-active" aria-current="page"
-      {% endif %}
-      ><i class="ti ti-layout-dashboard"></i>Overview</a
-    >
-    <a
-      href="{{ '/phd/library.html' | relative_url }}"
       {% if page.phd_tab == 'library' %}
         class="is-active" aria-current="page"
       {% endif %}
-      ><i class="ti ti-books"></i>Library</a
+      >Library</a
     >
     <a
-      href="{{ '/phd/constellation.html' | relative_url }}"
-      {% if page.phd_tab == 'constellation' %}
+      href="{{ '/phd/collage/' | relative_url }}"
+      {% if page.phd_tab == 'collage' %}
         class="is-active" aria-current="page"
       {% endif %}
-      ><i class="ti ti-sparkles"></i>Constellation</a
+      >Paper collage</a
     >
     <a
-      href="{{ '/phd/add-paper.html' | relative_url }}"
-      {% if page.phd_tab == 'analyze' %}
+      href="{{ '/phd/overview/' | relative_url }}"
+      {% if page.phd_tab == 'overview' %}
         class="is-active" aria-current="page"
       {% endif %}
-      ><i class="ti ti-dna-2"></i>Analyze a paper</a
+      >Overview</a
     >
   </nav>
 </div>

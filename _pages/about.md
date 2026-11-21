@@ -21,8 +21,8 @@ cards:
     url: /#about
     image: prof_pic.jpg
     alt: Portrait of Zahra Fallah
-  - title: A universe of PhD papers
-    text: Every paper is a planet, shared ideas form constellations.
+  - title: Papers through my eyes
+    text: Every paper I read becomes a bar of pages, marked with theories, experiments and ideas.
     url: /phd/
     art: swatch
     more: Explore

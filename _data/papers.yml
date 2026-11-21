@@ -1,0 +1,183 @@
+# -----------------------------------------------------------------------------
+# Papers I've read — each one becomes a page bar in the Library (/phd/).
+#
+# id       short unique slug, used in the link: /phd/#<id>
+# pages    number of pages; the bar is this long
+# marks    one entry per circle on the bar
+#   page   printed page number (1 = first page of the paper)
+#   type   theory | experiment | important | idea
+#            theory      a theory, model or concept the paper puts forward
+#            experiment  a study, its method or its results
+#            important   something that matters for my PhD
+#            idea        an idea for my thesis inspired by this page
+#   title  a short heading
+#   text   what it says, or my note
+#   quote  (optional) a short verbatim quote from that page
+#
+# Add a new paper by copying a whole block (starting with "- id:").
+# -----------------------------------------------------------------------------
+
+- id: kirsh-2013
+  title: Embodied Cognition and the Magical Future of Interaction Design
+  authors: David Kirsh
+  year: 2013
+  venue: ACM Transactions on Computer-Human Interaction 20(1), Article 3
+  doi: 10.1145/2442106.2442109
+  pages: 30
+  read: 2026-11
+  summary: >-
+    Kirsh argues that embodied cognition gives interaction designers new principles. Tools are absorbed into the body schema and
+    reshape perception; we think with our bodies; doing teaches more than watching; and we can literally think with things. A study
+    with expert dancers shows that "marking" (practising a simplified version of a movement) can beat full-out practice.
+  marks:
+    # ---- theories -----------------------------------------------------------
+    - page: 1
+      type: theory
+      title: Four ideas of embodied cognition
+      text: >-
+        Interacting with tools changes how we think and perceive; we think with our bodies, not just our brains; we know more by doing
+        than by seeing; and at times we literally think with things.
+      quote: we think with our bodies not just with our brains
+    - page: 2
+      type: theory
+      title: Thinking is distributed and interactive
+      text: >-
+        Older views placed thought inside the head, with gesture and speech only expressing it. On newer accounts thinking is spread
+        over brain, body and world, so changing the body changes the possible trajectories of thought.
+      quote: Body movement can literally be part of thinking.
+    - page: 7
+      type: theory
+      title: Tools are absorbed into the body schema
+      text: >-
+        We code nearby space by what is within reach. When we use a tool, the brain's map of the body extends to the tool's tip, so
+        the tool becomes part of our functioning body and redefines our peripersonal space.
+    - page: 10
+      type: theory
+      title: Enactive landscape
+      text: >-
+        The world we perceive depends on our goals, tools and skills. Picking up a tool changes what we see as possible: designers
+        create enactive landscapes by designing tools.
+      quote: the structure that an agent cocreates with the world when he or she acts in a goal-oriented manner
+    - page: 11
+      type: theory
+      title: Tools change our conceptions
+      text: >-
+        Activity produces situated, ad hoc concepts (Barsalou). Each tool multiplies them, which is why design is never finished:
+        new tools create new behaviours, which create new design needs.
+    - page: 18
+      type: theory
+      title: Projection and anchoring
+      text: >-
+        Between perceiving and imagining lies projection: attaching a mental image to a physical structure that anchors it. A marked
+        movement is such an anchor for the full movement the dancer has in mind.
+      quote: Projection is a mental process akin to attaching a mental image to a physical structure.
+    - page: 26
+      type: theory
+      title: Thinking with things
+      text: >-
+        Manipulating an object is an external simulation: it revises our expectations of what will happen next. Choosing whether to
+        simulate in the head or with real things is a matter of cost.
+      quote: when people think with things they rely on the world to simulate itself and in so doing they stimulate themselves.
+
+    # ---- experiments --------------------------------------------------------
+    - page: 8
+      type: experiment
+      title: The enlarged virtual hand (Iriki)
+      text: >-
+        Monkeys controlled a joystick while seeing a video image of their hand. When the image was enlarged, the brain's hand area
+        expanded as if the real hand had grown, so body maps can be remapped.
+    - page: 15
+      type: experiment
+      title: Marking study with expert dancers
+      text: >-
+        Ten dancers from Random Dance learned new 55-second phrases and practised each in one of three conditions: full-out, marking,
+        or lying down and simulating mentally (3×3 Latin square). Performance was graded on technicality, memory, timing and dynamics.
+    - page: 17
+      type: experiment
+      title: Marking beats full-out practice
+      text: >-
+        Marking produced the most learning on memory, technicality and timing (+0.31 over full-out, p = .0189). Full-out was better
+        only for dynamics (n.s.). Mental simulation gave no learning, and sometimes made performance worse.
+    - page: 19
+      type: experiment
+      title: Tic-tac-toe in the head
+      text: >-
+        24 people played by calling out moves, over a blank grid or a blank page. On 3×3 boards the grid made no difference. On 4×4
+        boards it saved 1.6 s per move (p = .002), mostly for weak visualizers (3.7 s, p = .014).
+    - page: 21
+      type: experiment
+      title: Mental abacus
+      text: >-
+        Students who calculate on an imagined abacus flick their fingers as if moving beads. When they cannot move their hands, their
+        performance suffers (Frank & Barner 2012).
+      quote: Hand motions seem to improve mental simulation.
+
+    # ---- important for my work ----------------------------------------------
+    - page: 5
+      type: important
+      title: Simplified models can beat the real thing
+      text: >-
+        Working with an imperfect, simplified model lets people focus on the aspect they care about and has a lower cost. For maths in
+        VR, the most realistic object is not always the best one to learn with.
+      quote: Sometimes working with a simpler thing, even if it is imperfect, is better than working with a perfect thing.
+    - page: 8
+      type: important
+      title: Feedback timing makes remote bodies feel like ours
+      text: >-
+        Operators can absorb remote "body parts" from the start, if action and feedback are close in time. This links directly to my
+        MSc work on asynchronous visuomotor feedback in VR.
+      quote: as long as action and feedback are close enough in time
+    - page: 20
+      type: important
+      title: External structure helps weak visualizers
+      text: >-
+        When spatial memory load is high, everyone benefits from external structure, and people with weaker imagery benefit most. In
+        VR maths, scaffolds matter more for some learners than others.
+      quote: at some point, when a spatial memory task becomes hard enough, everyone benefits from external structure.
+    - page: 22
+      type: important
+      title: Work on one aspect at a time
+      text: >-
+        Marking lets dancers practise aspects of a movement one by one, without the interference of doing everything at once. Bodies
+        also help manage attention, as pointing does when counting.
+      quote: Marking “keeps the dancers honest”.
+    - page: 23
+      type: important
+      title: Watching is not the same as doing
+      text: >-
+        Force, resistance and balance are felt, not seen, so an observer misses what the mover knows. In collaborative VR, the partner
+        who only watches the manipulation learns something different.
+      quote: We feel more than we show.
+
+    # ---- ideas for my thesis ------------------------------------------------
+    - page: 5
+      type: idea
+      title: A "marking mode" for maths objects
+      text: >-
+        Let learners first handle a stripped-down version of a 3D shape (only its edges, or only its symmetry axes) to explore one
+        aspect at a time, then switch to the full object.
+    - page: 8
+      type: idea
+      title: Shared manipulatives and latency
+      text: >-
+        Test whether a dyad's shared virtual object is absorbed into both partners' peripersonal space, and whether adding latency to
+        one partner's feedback breaks it, building on my MSc paradigm.
+    - page: 20
+      type: idea
+      title: Projection scaffolds for weak visualizers
+      text: >-
+        Offer toggleable anchors in VR geometry tasks (grids, axes, ghost outlines). Measure imagery with VVIQ and predict that weak
+        visualizers gain the most from them.
+    - page: 21
+      type: idea
+      title: Gestures as a window on mathematical thinking
+      text: >-
+        Use VR hand tracking to log the gestures partners make while reasoning about a shape, and test whether restricting the hands
+        lowers performance, as with the mental abacus.
+    - page: 24
+      type: idea
+      title: Rotate the doer and the observer
+      text: >-
+        In dyads, swap who manipulates and who watches during a task. Compare what each learns, since the hands know things the eyes
+        do not.
+      quote: The hands know things the eyes do not

@@ -23,7 +23,7 @@
         {%- endif %}
         <a
           href="{{ p.url | relative_url }}"
-          class="{% if p.section == 'phd' %}is-phd{% endif %}{% if is_active %} is-active{% endif %}"
+          class="{% if is_active %}is-active{% endif %}"
           {% if is_active %}
             aria-current="page"
           {% endif %}

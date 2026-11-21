@@ -1,0 +1,13 @@
+# The four kinds of marks on a paper's page bar (colours live in assets/zf/zf.css as --m-<key>).
+- key: theory
+  label: Theory
+  short: theory
+- key: experiment
+  label: Experiment
+  short: exp.
+- key: important
+  label: Important for my work
+  short: important
+- key: idea
+  label: Idea for my thesis
+  short: ideas
