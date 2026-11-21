@@ -1,32 +1,82 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Thesis Literature Map</title>
-<style>
-  :root{
-    --bg:#f5f7f9; --panel:#ffffff; --ink:#15181d; --muted:#5c6673;
-    --line:#e5e9ef; --accent:#0e9f8e; --accent-ink:#0b7d70;
-    --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.06);
-    --radius:14px;
-    --c-collaborative:#0e9f8e; --c-embodied:#e8743b; --c-learning:#3e6fd6;
-    --c-mathematics:#8a5cf0;   --c-vr:#d64d8a;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --bg:#121519; --panel:#1a1e25; --ink:#e8ebef; --muted:#9aa4b2;
-      --line:#2a303a; --accent:#2fd2be; --accent-ink:#2fd2be;
-      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.35);
+<title>My PhD · Literature Universe · Zahra Fallah</title>
+<meta name="description" content="An interactive map of the literature behind my PhD on collaborative embodied learning of mathematics in virtual reality.">
+<meta name="author" content="Zahra Fallah">
+<meta name="theme-color" content="#f2eee4">
+<link rel="canonical" href="https://zahrafalla.github.io/phd/">
+<link rel="icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%F0%9F%A7%A0&lt;/text&gt;&lt;/svg&gt;">
+<script>
+  (function () {
+    var d = document.documentElement,
+      t;
+    d.classList.add("js");
+    try {
+      t = localStorage.getItem("zf-theme");
+    } catch (e) {}
+    if (t !== "light" && t !== "dark") {
+      t = "light"; // the cream grid is the default look; dark is opt-in
     }
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:var(--bg); color:var(--ink); line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-  }
+    d.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100..125,300..800;1,100..125,300..800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="/assets/zf/zf.css?v=1795248710">
+
+  </head>
+  <body class="zf zf-phd">
+    <a class="zf-skip" href="#main">Skip to content</a>
+    <div class="zf-board" id="zf-board">
+      <div class="zf-hovercell" aria-hidden="true"></div>
+      <header class="zf-row zf-head" id="zf-nav">
+  <a class="zf-logo" href="/" aria-label="Zahra Fallah, home">
+    <span>Zahra</span>
+    <span>Fallah</span>
+  </a>
+  <nav class="zf-navstrip b" id="zf-links" aria-label="Main">
+    <a href="/">About</a>
+        <a href="/projects/" class="">Projects</a>
+        <a href="/phd/" class="is-phd is-active" aria-current="page">My PhD</a>
+        <a href="/cv/" class="">CV</a>
+    <a href="/#contact">Contact</a>
+  </nav>
+  <div class="zf-util b">
+    
+      <a class="soc" href="https://www.linkedin.com/in/zahra-fallah95" target="_blank" rel="noopener">LinkedIn</a>
+    
+    
+      <a class="soc" href="https://github.com/zahrafalla" target="_blank" rel="noopener">GitHub</a>
+    
+    <button class="zf-theme" id="zf-theme" type="button" aria-label="Switch between light and dark mode">
+      <i aria-hidden="true"></i><span>Dark</span>
+    </button>
+  </div>
+  <button class="zf-burger" id="zf-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="zf-links">Menu</button>
+</header>
+
+      <main id="main">
+        <div class="zf-row zf-phdbar">
+  <a class="zf-phdbar-title b" href="/phd/">
+    <small>My PhD ✦</small>
+    <b>Literature Universe</b>
+  </a>
+  <nav class="zf-phdtabs b" aria-label="PhD sections">
+    <a href="/phd/" class="is-active" aria-current="page"><i class="ti ti-layout-dashboard"></i>Overview</a>
+    <a href="/phd/library.html"><i class="ti ti-books"></i>Library</a>
+    <a href="/phd/constellation.html"><i class="ti ti-sparkles"></i>Constellation</a>
+    <a href="/phd/add-paper.html"><i class="ti ti-dna-2"></i>Analyze a paper</a>
+  </nav>
+</div>
+
+
+<style>
   .wrap{max-width:1080px; margin:0 auto; padding:28px 16px 64px;}
 
   header.hero{margin-bottom:18px;}
@@ -147,9 +197,8 @@
   .count-pill{display:inline-block; background:color-mix(in srgb,var(--ink) 8%, transparent);
     border-radius:999px; padding:2px 10px; font-size:12.5px; color:var(--muted); font-weight:600;}
 </style>
-</head>
-<body>
-<script src="nav.js"></script>
+
+<div class="phd-app">
 <div class="wrap">
 
   <header class="hero">
@@ -159,7 +208,7 @@
       thesis appear, on their own and in every combination, across the papers in my review.</p>
     <div class="samplebar" id="sampleBar" hidden>
       <span>👋</span><span><b>Sample data.</b> Replace <code>papers.js</code> with your own papers
-      (open <b>Analyze&nbsp;a&nbsp;paper</b> below) to see your real map.</span>
+      (open <b>Analyze a paper</b> below) to see your real map.</span>
     </div>
   </header>
 
@@ -176,10 +225,10 @@
   </section>
 
   <nav class="tabs" id="tabs" role="tablist">
-    <button class="tab" role="tab" data-view="coverage"   aria-selected="true">Coverage</button>
-    <button class="tab" role="tab" data-view="heatmap"    aria-selected="false">Connections</button>
-    <button class="tab" role="tab" data-view="combos"     aria-selected="false">Combinations</button>
-    <button class="tab" role="tab" data-view="papers"     aria-selected="false">Papers</button>
+    <button class="tab" role="tab" data-view="coverage" aria-selected="true">Coverage</button>
+    <button class="tab" role="tab" data-view="heatmap" aria-selected="false">Connections</button>
+    <button class="tab" role="tab" data-view="combos" aria-selected="false">Combinations</button>
+    <button class="tab" role="tab" data-view="papers" aria-selected="false">Papers</button>
   </nav>
 
   <!-- COVERAGE -->
@@ -227,12 +276,12 @@
 
   <footer>
     <span id="legendline"></span><br><br>
-    <a href="constellation.html">✦ Explore the 3D constellation</a> &nbsp;·&nbsp;
-    <a href="add-paper.html">🧬 Analyze&nbsp;a&nbsp;paper</a> &nbsp;·&nbsp; built as a static site · hosted free on GitHub&nbsp;Pages
+    <a href="constellation.html">✦ Explore the 3D constellation</a>  · 
+    <a href="add-paper.html">🧬 Analyze a paper</a>  ·  built as a static site · hosted free on GitHub Pages
   </footer>
 </div>
 
-<script src="papers.js"></script>
+<script src="/phd/papers.js"></script>
 <script>
 (function(){
   "use strict";
@@ -261,10 +310,16 @@
     return ALL.filter(p => [...state.filter].every(k => p.keywords && p.keywords[k]));
   }
 
-  /* dark-mode aware heat colours */
-  const dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const HEAT_A = dark ? [28,36,44]  : [237,246,245];   // low
-  const HEAT_B = dark ? [47,210,190]: [12,120,109];    // high
+  /* heat colours follow the site's light/dark theme */
+  let HEAT_A, HEAT_B;
+  function setHeat(){
+    const dark = document.documentElement.getAttribute("data-theme") === "dark";
+    HEAT_A = dark ? [28,36,44]  : [237,246,245];   // low
+    HEAT_B = dark ? [47,210,190]: [12,120,109];    // high
+    document.documentElement.style.setProperty('--heatA', `rgb(${HEAT_A.join(',')})`);
+    document.documentElement.style.setProperty('--heatB', `rgb(${HEAT_B.join(',')})`);
+  }
+  setHeat();
   function heatColor(t){
     t = Math.max(0, Math.min(1, t));
     const r=Math.round(HEAT_A[0]+(HEAT_B[0]-HEAT_A[0])*t);
@@ -273,8 +328,6 @@
     return [r,g,b];
   }
   const textOn = ([r,g,b]) => (0.299*r+0.587*g+0.114*b) > 140 ? "#15181d" : "#ffffff";
-  document.documentElement.style.setProperty('--heatA', `rgb(${HEAT_A.join(',')})`);
-  document.documentElement.style.setProperty('--heatB', `rgb(${HEAT_B.join(',')})`);
 
   /* ---------- build static chrome ---------- */
   function buildChips(){
@@ -437,9 +490,34 @@
 
   if(window.PAPERS_IS_SAMPLE){ $("#sampleBar").hidden=false; }
 
+  document.addEventListener("zf:theme", ()=>{ setHeat(); render(); });
+
   buildChips();
   render();
 })();
 </script>
-</body>
+</div>
+
+      </main>
+      
+        <footer class="zf-row zf-foot">
+  <div class="zf-foot-box b">
+    <span>© 2026 Zahra Fallah · Cognitive Science &amp; HCI · Tehran</span>
+    <nav aria-label="Footer">
+      <a href="mailto:zfallah10874@gmail.com">Email</a>
+      
+        <a href="https://www.linkedin.com/in/zahra-fallah95" target="_blank" rel="noopener">LinkedIn</a>
+      
+      
+        <a href="https://github.com/zahrafalla" target="_blank" rel="noopener">GitHub</a>
+      
+      <a href="#main">Top ↑</a>
+    </nav>
+  </div>
+</footer>
+
+      
+    </div>
+    <script src="/assets/zf/zf.js?v=1795248710"></script>
+  </body>
 </html>

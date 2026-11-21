@@ -11,14 +11,21 @@ ninja.data = [{
     },
   },{id: "nav-projects",
           title: "projects",
-          description: "Research and applied projects in VR, human-computer interaction, and game-based learning.",
+          description: "Research tools, experiments and playful learning environments, from VR studies to an interactive universe of PhD literature.",
           section: "Navigation",
           handler: () => {
             window.location.href = "/projects/";
           },
+        },{id: "nav-my-phd",
+          title: "my phd",
+          description: "An interactive map of the literature behind my PhD on collaborative embodied learning of mathematics in virtual reality.",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/phd/";
+          },
         },{id: "nav-cv",
           title: "cv",
-          description: "MSc Researcher in Cognitive Science &amp;amp; Human-Computer Interaction",
+          description: "Education, research, teaching and awards. The full CV is also available as a PDF.",
           section: "Navigation",
           handler: () => {
             window.location.href = "/cv/";

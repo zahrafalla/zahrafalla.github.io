@@ -1,18 +1,87 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Paper Constellation</title>
+<title>Constellation · My PhD · Zahra Fallah</title>
+<meta name="description" content="A 3D constellation of the papers in my PhD literature review and the ideas they share.">
+<meta name="author" content="Zahra Fallah">
+<meta name="theme-color" content="#f2eee4">
+<link rel="canonical" href="https://zahrafalla.github.io/phd/constellation.html">
+<link rel="icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%F0%9F%A7%A0&lt;/text&gt;&lt;/svg&gt;">
+<script>
+  (function () {
+    var d = document.documentElement,
+      t;
+    d.classList.add("js");
+    try {
+      t = localStorage.getItem("zf-theme");
+    } catch (e) {}
+    if (t !== "light" && t !== "dark") {
+      t = "light"; // the cream grid is the default look; dark is opt-in
+    }
+    d.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100..125,300..800;1,100..125,300..800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="/assets/zf/zf.css?v=1795248710">
+
+  </head>
+  <body class="zf zf-phd zf-immersive">
+    <a class="zf-skip" href="#main">Skip to content</a>
+    <div class="zf-board" id="zf-board">
+      <div class="zf-hovercell" aria-hidden="true"></div>
+      <header class="zf-row zf-head" id="zf-nav">
+  <a class="zf-logo" href="/" aria-label="Zahra Fallah, home">
+    <span>Zahra</span>
+    <span>Fallah</span>
+  </a>
+  <nav class="zf-navstrip b" id="zf-links" aria-label="Main">
+    <a href="/">About</a>
+        <a href="/projects/" class="">Projects</a>
+        <a href="/phd/" class="is-phd is-active" aria-current="page">My PhD</a>
+        <a href="/cv/" class="">CV</a>
+    <a href="/#contact">Contact</a>
+  </nav>
+  <div class="zf-util b">
+    
+      <a class="soc" href="https://www.linkedin.com/in/zahra-fallah95" target="_blank" rel="noopener">LinkedIn</a>
+    
+    
+      <a class="soc" href="https://github.com/zahrafalla" target="_blank" rel="noopener">GitHub</a>
+    
+    <button class="zf-theme" id="zf-theme" type="button" aria-label="Switch between light and dark mode">
+      <i aria-hidden="true"></i><span>Dark</span>
+    </button>
+  </div>
+  <button class="zf-burger" id="zf-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="zf-links">Menu</button>
+</header>
+
+      <main id="main">
+        <div class="zf-row zf-phdbar">
+  <a class="zf-phdbar-title b" href="/phd/">
+    <small>My PhD ✦</small>
+    <b>Literature Universe</b>
+  </a>
+  <nav class="zf-phdtabs b" aria-label="PhD sections">
+    <a href="/phd/"><i class="ti ti-layout-dashboard"></i>Overview</a>
+    <a href="/phd/library.html"><i class="ti ti-books"></i>Library</a>
+    <a href="/phd/constellation.html" class="is-active" aria-current="page"><i class="ti ti-sparkles"></i>Constellation</a>
+    <a href="/phd/add-paper.html"><i class="ti ti-dna-2"></i>Analyze a paper</a>
+  </nav>
+</div>
+
+
 <style>
-  :root{
-    --space:#04060d; --panel:rgba(12,16,30,.78); --line:rgba(255,255,255,.09);
-    --ink:#e9edf5; --muted:#8e9ab0; --gold:#ffd27a; --accent:#2fd2be;
-  }
-  *{box-sizing:border-box} html,body{margin:0; height:100%;}
-  body{background:var(--space); color:var(--ink); overflow:hidden;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased;}
-  #stage{position:fixed; inset:0; top:var(--navh,49px);}
+  #stage{--space:#04060d; --panel:rgba(12,16,30,.78); --line:rgba(255,255,255,.09);
+    --ink:#e9edf5; --muted:#8e9ab0; --gold:#ffd27a; --accent:#2fd2be;}
+
+  #stage{position:fixed; inset:0; top:var(--navh,170px); background:var(--space); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
   #sky{display:block; width:100%; height:100%; cursor:grab; touch-action:none;}
   #sky.grabbing{cursor:grabbing;} #sky.pointing{cursor:pointer;}
 
@@ -123,12 +192,12 @@
     #zoom{bottom:auto; top:16px;}
   }
 </style>
-</head>
-<body>
+
+<div class="phd-app">
 <div id="stage">
   <canvas id="sky" aria-label="3D constellation of papers"></canvas>
 
-  <button id="menuBtn" class="glass">☰ Controls & ideas</button>
+  <button id="menuBtn" class="glass">☰ Controls &amp; ideas</button>
 
   <aside id="controls" class="glass">
     <h1>✦ Constellation</h1>
@@ -138,9 +207,13 @@
     <input id="search" list="titles" placeholder="Find a paper…" autocomplete="off">
     <datalist id="titles"></datalist>
 
-    <div class="sec"><h3>Focus on themes</h3><div class="chips" id="themeChips"></div></div>
+    <div class="sec">
+<h3>Focus on themes</h3>
+<div class="chips" id="themeChips"></div>
+</div>
 
-    <div class="sec"><h3>Show</h3>
+    <div class="sec">
+<h3>Show</h3>
       <div class="toggles">
         <label class="tg"><input type="checkbox" id="tLinks" checked> Word links</label>
         <label class="tg"><input type="checkbox" id="tStars" checked> Idea stars</label>
@@ -149,11 +222,17 @@
       </div>
     </div>
 
-    <div class="sec"><h3>Link strength</h3>
-      <div class="range"><span>loose</span><input type="range" id="strength" min="0" max="60" value="12"><span>tight</span><b id="strengthVal">12%</b></div>
+    <div class="sec">
+<h3>Link strength</h3>
+      <div class="range">
+<span>loose</span><input type="range" id="strength" min="0" max="60" value="12"><span>tight</span><b id="strengthVal">12%</b>
+</div>
     </div>
 
-    <div class="sec"><h3>✦ Ideas with the strongest support</h3><div id="ideas"></div></div>
+    <div class="sec">
+<h3>✦ Ideas with the strongest support</h3>
+<div id="ideas"></div>
+</div>
   </aside>
 
   <aside id="detail" class="glass" aria-live="polite">
@@ -170,12 +249,20 @@
   <div id="hint" class="glass">drag to orbit · scroll to fly in · click a planet or a star</div>
   <div id="notice" class="glass"></div>
   <div id="tip"></div>
-  <div id="empty"><div><h2>No papers yet</h2><p>Analyse papers on the <a href="add-paper.html">Analyze a paper</a> page, then update <code>papers.js</code>.</p></div></div>
+  <div id="empty"><div>
+<h2>No papers yet</h2>
+<p>Analyse papers on the <a href="add-paper.html">Analyze a paper</a> page, then update <code>papers.js</code>.</p>
+</div></div>
 </div>
 
-<script src="nav.js"></script>
-<script src="lexicon.js"></script>
-<script src="papers.js"></script>
-<script src="constellation.js"></script>
-</body>
+<script src="/phd/lexicon.js"></script>
+<script src="/phd/papers.js"></script>
+<script src="/phd/constellation.js"></script>
+</div>
+
+      </main>
+      
+    </div>
+    <script src="/assets/zf/zf.js?v=1795248710"></script>
+  </body>
 </html>
