@@ -16,13 +16,6 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/projects/";
           },
-        },{id: "nav-my-phd",
-          title: "my phd",
-          description: "An interactive map of the literature behind my PhD on collaborative embodied learning of mathematics in virtual reality.",
-          section: "Navigation",
-          handler: () => {
-            window.location.href = "/phd/";
-          },
         },{id: "nav-cv",
           title: "cv",
           description: "Education, research, teaching and awards. The full CV is also available as a PDF.",
@@ -30,9 +23,9 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/cv/";
           },
-        },{id: "projects-my-phd",
-          title: 'My PhD',
-          description: "An interactive literature map for my PhD on collaborative embodied learning of mathematics in virtual reality.",
+        },{id: "projects-let-39-s-look-at-papers-through-my-eyes",
+          title: 'Let&amp;#39;s look at papers through my eyes',
+          description: "How I read for my PhD on collaborative embodied learning of mathematics in virtual reality. Every paper becomes a bar as long as its pages, marked with its theories, experiments, what matters for my work and ideas for my thesis.",
           section: "Projects",handler: () => {
               window.location.href = "/projects/1_phd/";
             },},{
