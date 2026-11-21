@@ -14,21 +14,21 @@
   (function () {
     var d = document.documentElement,
       t;
-    d.classList.add("js");
+    d.classList.add('js');
     try {
-      t = localStorage.getItem("zf-theme");
+      t = localStorage.getItem('zf-theme');
     } catch (e) {}
-    if (t !== "light" && t !== "dark") {
-      t = "light"; // the cream grid is the default look; dark is opt-in
+    if (t !== 'light' && t !== 'dark') {
+      t = 'light'; // the cream grid is the default look; dark is opt-in
     }
-    d.setAttribute("data-theme", t);
+    d.setAttribute('data-theme', t);
   })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100..125,300..800;1,100..125,300..800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-<link rel="stylesheet" href="/assets/zf/zf.css?v=1795248710">
+<link rel="stylesheet" href="/assets/zf/zf.css?v=1795248725">
 
   </head>
   <body class="zf zf-phd">
@@ -570,7 +570,9 @@
       
         <footer class="zf-row zf-foot">
   <div class="zf-foot-box b">
-    <span>© 2026 Zahra Fallah · Cognitive Science &amp; HCI · Tehran</span>
+    <span>© 2026
+      Zahra
+      Fallah · Cognitive Science &amp; HCI · Tehran</span>
     <nav aria-label="Footer">
       <a href="mailto:zfallah10874@gmail.com">Email</a>
       
@@ -586,6 +588,6 @@
 
       
     </div>
-    <script src="/assets/zf/zf.js?v=1795248710"></script>
+    <script src="/assets/zf/zf.js?v=1795248725"></script>
   </body>
 </html>

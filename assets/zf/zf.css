@@ -221,8 +221,14 @@ p {
   background-color: var(--paper);
   background-image: radial-gradient(circle at 30% 40%, var(--ink) 0.85px, transparent 1.25px),
     radial-gradient(circle at 70% 75%, var(--ink) 0.8px, transparent 1.2px), radial-gradient(circle at 50% 50%, var(--ink) 0.7px, transparent 1.1px);
-  background-size: 7px 7px, 9px 9px, 5px 11px;
-  background-position: 0 0, 3px 2px, 1px 5px;
+  background-size:
+    7px 7px,
+    9px 9px,
+    5px 11px;
+  background-position:
+    0 0,
+    3px 2px,
+    1px 5px;
 }
 .zf-hatch {
   background-color: var(--paper);
@@ -347,7 +353,9 @@ a.zf-red:hover {
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  transition: background-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
 }
 .zf-logo:hover span {
   background: var(--ink);
@@ -923,7 +931,9 @@ a.zf-red:hover {
   flex-direction: column;
   gap: 10px;
   text-decoration: none;
-  transition: background-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
 }
 .zf-tile-top {
   display: flex;
@@ -1113,7 +1123,9 @@ a.zf-red:hover {
   padding: 14px 16px 16px;
   border-bottom: 1px solid var(--ink);
   text-decoration: none;
-  transition: background-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
 }
 .zf-links a:last-child {
   border-bottom: 0;
