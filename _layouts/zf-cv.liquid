@@ -1,0 +1,101 @@
+---
+layout: zf
+---
+<header class="zf-row zf-pagehead">
+  <p class="zf-label b">Curriculum vitae</p>
+  <h1 class="zf-big b">My journey</h1>
+  {% if page.cv_pdf %}
+    <div class="zf-actions b">
+      <a class="zf-red" href="{{ page.cv_pdf | prepend: '/assets/pdf/' | relative_url }}" target="_blank" rel="noopener">Download PDF</a>
+    </div>
+  {% endif %}
+  {% if page.description %}<p class="zf-lede b">{{ page.description }}</p>{% endif %}
+</header>
+
+<div class="zf-row">
+  <nav class="zf-cv-index b" aria-label="CV sections">
+    <ul>
+      {% for entry in site.data.cv %}
+        <li><a href="#{{ entry.title | slugify }}">{{ entry.title }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <div class="zf-cv-body zf-stack">
+    {% for entry in site.data.cv %}
+      <section class="zf-cv-sec b" id="{{ entry.title | slugify }}">
+        <h2 class="zf-cv-h">
+          <span>{{ forloop.index | prepend: '0' | slice: -2, 2 }} — {{ entry.title }}</span>
+          {% if entry.type == 'time_table' %}<small>{{ entry.contents.size }}</small>{% endif %}
+        </h2>
+
+        {% case entry.type %}
+          {% when 'map' %}
+            <dl class="zf-cv-map">
+              {% for c in entry.contents %}
+                <dt>{{ c.name }}</dt>
+                <dd>{{ c.value }}</dd>
+              {% endfor %}
+            </dl>
+
+          {% when 'list' %}
+            {% if entry.contents.size == 1 %}
+              <p class="zf-cv-pad zf-prose">{{ entry.contents | first }}</p>
+            {% else %}
+              <ul class="zf-cv-tags">
+                {% for c in entry.contents %}<li>{{ c }}</li>{% endfor %}
+              </ul>
+            {% endif %}
+
+          {% when 'nested_list' %}
+            <div class="zf-cv-pad zf-cv-nested">
+              {% for c in entry.contents %}
+                <h3>{{ c.title }}</h3>
+                <ul>
+                  {% for it in c.items %}<li>{{ it }}</li>{% endfor %}
+                </ul>
+              {% endfor %}
+            </div>
+
+          {% when 'time_table' %}
+            <ol class="zf-cv-tl">
+              {% for c in entry.contents %}
+                <li class="zf-cv-item">
+                  <div class="zf-cv-year">{{ c.year }}</div>
+                  <div>
+                    {% if c.title %}<h3>{{ c.title }}</h3>{% endif %}
+                    {% if c.institution %}<p class="zf-cv-inst">{{ c.institution }}</p>{% endif %}
+                    {% if c.maindescription %}<p class="zf-cv-main">{{ c.maindescription }}</p>{% endif %}
+                    {% if c.description %}
+                      <ul>
+                        {% for d in c.description %}
+                          {% if d.title %}
+                            <li>
+                              {{ d.title }}
+                              <ul>
+                                {% for sub in d.contents %}<li>{{ sub }}</li>{% endfor %}
+                              </ul>
+                            </li>
+                          {% else %}
+                            <li>{{ d }}</li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                    {% if c.items %}
+                      <ul class="zf-cv-items">
+                        {% for it in c.items %}<li>{{ it }}</li>{% endfor %}
+                      </ul>
+                    {% endif %}
+                  </div>
+                </li>
+              {% endfor %}
+            </ol>
+
+          {% else %}
+            <div class="zf-cv-pad">{{ entry.contents }}</div>
+        {% endcase %}
+      </section>
+    {% endfor %}
+  </div>
+</div>

@@ -31,7 +31,6 @@ anything.
 | `add-paper.html`     | **Analyze a paper** — drop a PDF, get its analysis, then add it (with its full analysis) to `papers.js`. |
 | `papers.js`          | Your data — each paper's themes, its DNA (concept fingerprint) and its saved analysis. Powers every page. |
 | `lexicon.js`         | The shared vocabulary: theme words, DNA‑lens concepts and idea prompts. Edit here to tune detection. |
-| `nav.js`             | The top navigation bar shared by every page. |
 | `README.md`          | This guide. |
 
 Upload **all** of these files to GitHub together.

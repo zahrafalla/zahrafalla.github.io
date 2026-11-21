@@ -1,32 +1,18 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Thesis Literature Map</title>
+---
+layout: zf
+title: my phd
+head_title: My PhD · Literature Universe
+permalink: /phd/
+section: phd
+phd_tab: overview
+description: An interactive map of the literature behind my PhD on collaborative embodied learning of mathematics in virtual reality.
+nav: true
+nav_order: 2
+body_class: zf-phd
+---
+{% include zf/phd-bar.liquid %}
+
 <style>
-  :root{
-    --bg:#f5f7f9; --panel:#ffffff; --ink:#15181d; --muted:#5c6673;
-    --line:#e5e9ef; --accent:#0e9f8e; --accent-ink:#0b7d70;
-    --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.06);
-    --radius:14px;
-    --c-collaborative:#0e9f8e; --c-embodied:#e8743b; --c-learning:#3e6fd6;
-    --c-mathematics:#8a5cf0;   --c-vr:#d64d8a;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --bg:#121519; --panel:#1a1e25; --ink:#e8ebef; --muted:#9aa4b2;
-      --line:#2a303a; --accent:#2fd2be; --accent-ink:#2fd2be;
-      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.35);
-    }
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:var(--bg); color:var(--ink); line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-  }
   .wrap{max-width:1080px; margin:0 auto; padding:28px 16px 64px;}
 
   header.hero{margin-bottom:18px;}
@@ -147,9 +133,8 @@
   .count-pill{display:inline-block; background:color-mix(in srgb,var(--ink) 8%, transparent);
     border-radius:999px; padding:2px 10px; font-size:12.5px; color:var(--muted); font-weight:600;}
 </style>
-</head>
-<body>
-<script src="nav.js"></script>
+
+<div class="phd-app">
 <div class="wrap">
 
   <header class="hero">
@@ -232,7 +217,7 @@
   </footer>
 </div>
 
-<script src="papers.js"></script>
+<script src="{{ '/phd/papers.js' | relative_url }}"></script>
 <script>
 (function(){
   "use strict";
@@ -261,10 +246,16 @@
     return ALL.filter(p => [...state.filter].every(k => p.keywords && p.keywords[k]));
   }
 
-  /* dark-mode aware heat colours */
-  const dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const HEAT_A = dark ? [28,36,44]  : [237,246,245];   // low
-  const HEAT_B = dark ? [47,210,190]: [12,120,109];    // high
+  /* heat colours follow the site's light/dark theme */
+  let HEAT_A, HEAT_B;
+  function setHeat(){
+    const dark = document.documentElement.getAttribute("data-theme") === "dark";
+    HEAT_A = dark ? [28,36,44]  : [237,246,245];   // low
+    HEAT_B = dark ? [47,210,190]: [12,120,109];    // high
+    document.documentElement.style.setProperty('--heatA', `rgb(${HEAT_A.join(',')})`);
+    document.documentElement.style.setProperty('--heatB', `rgb(${HEAT_B.join(',')})`);
+  }
+  setHeat();
   function heatColor(t){
     t = Math.max(0, Math.min(1, t));
     const r=Math.round(HEAT_A[0]+(HEAT_B[0]-HEAT_A[0])*t);
@@ -273,8 +264,6 @@
     return [r,g,b];
   }
   const textOn = ([r,g,b]) => (0.299*r+0.587*g+0.114*b) > 140 ? "#15181d" : "#ffffff";
-  document.documentElement.style.setProperty('--heatA', `rgb(${HEAT_A.join(',')})`);
-  document.documentElement.style.setProperty('--heatB', `rgb(${HEAT_B.join(',')})`);
 
   /* ---------- build static chrome ---------- */
   function buildChips(){
@@ -437,9 +426,10 @@
 
   if(window.PAPERS_IS_SAMPLE){ $("#sampleBar").hidden=false; }
 
+  document.addEventListener("zf:theme", ()=>{ setHeat(); render(); });
+
   buildChips();
   render();
 })();
 </script>
-</body>
-</html>
+</div>

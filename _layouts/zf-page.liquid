@@ -1,0 +1,13 @@
+---
+layout: zf
+---
+<header class="zf-row zf-pagehead">
+  <p class="zf-label b">{{ page.kicker | default: 'Page' }}</p>
+  <h1 class="zf-big b">{{ page.title }}</h1>
+  {% if page.description %}<p class="zf-lede b">{{ page.description }}</p>{% endif %}
+</header>
+<div class="zf-row">
+  <article class="w-main zf-page zf-prose b">
+    {{ content }}
+  </article>
+</div>

@@ -1,23 +1,16 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Paper analysis</title>
+---
+layout: zf
+title: Paper analysis
+head_title: Paper analysis · My PhD
+permalink: /phd/paper.html
+section: phd
+phd_tab: library
+description: The full analysis of one paper from my PhD literature review.
+body_class: zf-phd
+---
+{% include zf/phd-bar.liquid %}
+
 <style>
-  :root{
-    --bg:#f5f7f9; --panel:#ffffff; --ink:#15181d; --muted:#5c6673; --line:#e5e9ef;
-    --accent:#0e9f8e; --accent-ink:#0b7d70; --radius:14px;
-    --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.06);
-    --c-collaborative:#0e9f8e; --c-embodied:#e8743b; --c-learning:#3e6fd6; --c-mathematics:#8a5cf0; --c-vr:#d64d8a; --c-method:#7a8699;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{ --bg:#121519; --panel:#1a1e25; --ink:#e8ebef; --muted:#9aa4b2; --line:#2a303a; --accent:#2fd2be; --accent-ink:#2fd2be;
-      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.35); }
-  }
-  *{box-sizing:border-box} html,body{margin:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink);
-    line-height:1.55; -webkit-font-smoothing:antialiased;}
   .wrap{max-width:1000px; margin:0 auto; padding:22px 16px 72px;}
   .topline{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
   .topline a.back{color:var(--accent-ink); text-decoration:none; font-weight:650; font-size:14px;}
@@ -65,9 +58,8 @@
   .missing a{color:var(--accent-ink);}
   @media (max-width:600px){ .hero{flex-direction:column; align-items:flex-start;} .tile{width:110px; height:110px;} .pos{width:100%; margin-left:0;} }
 </style>
-</head>
-<body>
-<script src="nav.js"></script>
+
+<div class="phd-app">
 <div class="wrap">
   <div class="topline">
     <a class="back" href="library.html">← Library</a>
@@ -78,9 +70,9 @@
   <div id="page"></div>
 </div>
 
-<script src="lexicon.js"></script>
-<script src="papers.js"></script>
-<script src="analysis-view.js"></script>
+<script src="{{ '/phd/lexicon.js' | relative_url }}"></script>
+<script src="{{ '/phd/papers.js' | relative_url }}"></script>
+<script src="{{ '/phd/analysis-view.js' | relative_url }}"></script>
 <script>
 (function(){
   "use strict";
@@ -157,5 +149,4 @@
   AnalysisView.render($("#view"), vm);
 })();
 </script>
-</body>
-</html>
+</div>

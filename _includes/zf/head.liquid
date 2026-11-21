@@ -1,0 +1,45 @@
+{%- assign full_name = site.first_name | append: ' ' | append: site.last_name -%}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{%- if page.redirect %}
+  <meta http-equiv="refresh" content="0; url={{ page.redirect | relative_url }}">
+{%- endif %}
+<title>
+  {%- if page.permalink == '/' -%}
+    {{ full_name }} · Cognitive Science &amp; HCI
+  {%- elsif page.head_title -%}
+    {{ page.head_title }} · {{ full_name }}
+  {%- else -%}
+    {{ page.title | capitalize }} · {{ full_name }}
+  {%- endif -%}
+</title>
+<meta name="description" content="{{ page.description | default: site.description | strip_html | strip_newlines | escape }}">
+<meta name="author" content="{{ full_name }}">
+<meta name="theme-color" content="#f2eee4">
+<link rel="canonical" href="{{ page.url | replace: 'index.html', '' | absolute_url }}">
+<link
+  rel="icon"
+  href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>{{ site.icon }}</text></svg>"
+>
+<script>
+  (function () {
+    var d = document.documentElement,
+      t;
+    d.classList.add("js");
+    try {
+      t = localStorage.getItem("zf-theme");
+    } catch (e) {}
+    if (t !== "light" && t !== "dark") {
+      t = "light"; // the cream grid is the default look; dark is opt-in
+    }
+    d.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100..125,300..800;1,100..125,300..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="{{ '/assets/zf/zf.css' | relative_url }}?v={{ site.time | date: '%s' }}">

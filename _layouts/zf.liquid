@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="{{ site.lang }}" data-theme="light">
+  <head>
+    {% include zf/head.liquid %}
+  </head>
+  <body class="zf {{ page.body_class }}">
+    <a class="zf-skip" href="#main">Skip to content</a>
+    <div class="zf-board" id="zf-board">
+      <div class="zf-hovercell" aria-hidden="true"></div>
+      {% include zf/nav.liquid %}
+      <main id="main">
+        {{ content }}
+      </main>
+      {% unless page.hide_footer %}
+        {% include zf/footer.liquid %}
+      {% endunless %}
+    </div>
+    <script src="{{ '/assets/zf/zf.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
+  </body>
+</html>

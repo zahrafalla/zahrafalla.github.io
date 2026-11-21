@@ -1,11 +1,10 @@
 ---
-layout: cv
+layout: zf-cv
 permalink: /cv/
 title: cv
+section: cv
 nav: true
-nav_order: 2
+nav_order: 3
 cv_pdf: Zahra_Fallah_CV.pdf
-description: MSc Researcher in Cognitive Science &amp; Human-Computer Interaction
-toc:
-  sidebar: left
+description: Education, research, teaching and awards. The full CV is also available as a PDF.
 ---

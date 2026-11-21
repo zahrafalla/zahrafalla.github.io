@@ -1,18 +1,22 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Paper Constellation</title>
+---
+layout: zf
+title: Constellation
+head_title: Constellation · My PhD
+permalink: /phd/constellation.html
+section: phd
+phd_tab: constellation
+description: A 3D constellation of the papers in my PhD literature review and the ideas they share.
+body_class: zf-phd zf-immersive
+hide_footer: true
+---
+{% include zf/phd-bar.liquid %}
+
 <style>
-  :root{
-    --space:#04060d; --panel:rgba(12,16,30,.78); --line:rgba(255,255,255,.09);
-    --ink:#e9edf5; --muted:#8e9ab0; --gold:#ffd27a; --accent:#2fd2be;
-  }
-  *{box-sizing:border-box} html,body{margin:0; height:100%;}
-  body{background:var(--space); color:var(--ink); overflow:hidden;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased;}
-  #stage{position:fixed; inset:0; top:var(--navh,49px);}
+  #stage{--space:#04060d; --panel:rgba(12,16,30,.78); --line:rgba(255,255,255,.09);
+    --ink:#e9edf5; --muted:#8e9ab0; --gold:#ffd27a; --accent:#2fd2be;}
+
+  #stage{position:fixed; inset:0; top:var(--navh,170px); background:var(--space); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
   #sky{display:block; width:100%; height:100%; cursor:grab; touch-action:none;}
   #sky.grabbing{cursor:grabbing;} #sky.pointing{cursor:pointer;}
 
@@ -123,8 +127,8 @@
     #zoom{bottom:auto; top:16px;}
   }
 </style>
-</head>
-<body>
+
+<div class="phd-app">
 <div id="stage">
   <canvas id="sky" aria-label="3D constellation of papers"></canvas>
 
@@ -173,9 +177,7 @@
   <div id="empty"><div><h2>No papers yet</h2><p>Analyse papers on the <a href="add-paper.html">Analyze a paper</a> page, then update <code>papers.js</code>.</p></div></div>
 </div>
 
-<script src="nav.js"></script>
-<script src="lexicon.js"></script>
-<script src="papers.js"></script>
-<script src="constellation.js"></script>
-</body>
-</html>
+<script src="{{ '/phd/lexicon.js' | relative_url }}"></script>
+<script src="{{ '/phd/papers.js' | relative_url }}"></script>
+<script src="{{ '/phd/constellation.js' | relative_url }}"></script>
+</div>

@@ -1,0 +1,264 @@
+---
+layout: zf
+---
+{%- assign s = site.data.socials -%}
+{%- assign research = site.data.cv | where: 'title', 'Research Experience' | first -%}
+{%- assign pubs = site.data.cv | where: 'title', 'Publications & Presentations' | first -%}
+{%- assign awards = site.data.cv | where: 'title', 'Honors & Awards' | first -%}
+{%- assign academic = site.data.cv | where: 'title', 'Academic Experience' | first -%}
+{%- assign applied = site.data.cv | where: 'title', 'Professional & Applied Experience' | first -%}
+
+<!-- ===================== HERO ===================== -->
+<section class="zf-row zf-hero" id="top" aria-label="Introduction">
+  <h1 class="zf-hero-title zf-big b">{{ page.hero.title | default: 'Minds in virtual worlds' }}</h1>
+
+  <div class="zf-hero-left zf-stack">
+    <div class="zf-intro b">
+      <p class="zf-meta">{{ page.hero.kicker }}</p>
+      <h2 class="zf-big">
+        <a href="#about">
+          {{- page.hero.lede_before }}
+          <span class="zf-rotate" data-words="{{ page.hero.words | join: '|' }}">{{ page.hero.words | first }}</span>
+          {{ page.hero.lede_after -}}
+        </a>
+      </h2>
+      <div class="zf-intro-foot">
+        <span class="zf-meta">{{ page.hero.affiliation }} · {{ page.hero.location }}</span>
+        <a class="zf-red" href="{{ '/phd/' | relative_url }}">My PhD map →</a>
+        <a class="zf-red" href="{{ '/cv/' | relative_url }}">CV</a>
+      </div>
+    </div>
+    <div class="zf-dotblock zf-dots b" aria-hidden="true"><span>{{ page.hero.badge }}</span></div>
+
+    <div class="zf-cards">
+      {% for c in page.cards %}
+        <a class="zf-card snap" href="{{ c.url | relative_url }}">
+          <div class="zf-card-img">
+            {% if c.image %}
+              <img src="{{ c.image | prepend: '/assets/img/' | relative_url }}" alt="{{ c.alt }}" loading="lazy">
+            {% elsif c.art == 'swatch' %}
+              <div class="zf-swatch" aria-hidden="true">
+                <i></i><i class="dot" style="--c: var(--c-collaborative)"></i><i></i><i class="fill" style="--c: var(--c-embodied)"></i>
+                <i class="dot" style="--c: var(--c-learning)"></i><i></i><i class="fill" style="--c: var(--c-mathematics)"></i><i></i>
+                <i></i><i class="dot" style="--c: var(--c-vr)"></i><i></i><i class="dot" style="--c: var(--red)"></i>
+              </div>
+            {% else %}
+              <div class="zf-hatch" style="height: 100%" aria-hidden="true"></div>
+            {% endif %}
+          </div>
+          <div class="zf-card-body">
+            <h3>{{ c.title }}</h3>
+            <p class="zf-meta">{{ c.text }}</p>
+            <span class="zf-more">{{ c.more | default: 'Read more' }}</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="zf-hero-right zf-list b">
+    <div class="zf-list-head zf-meta"><b>TIMELINE</b><span>{{ page.timeline.size }} entries</span></div>
+    <ol>
+      {% for t in page.timeline %}
+        <li>
+          <span class="d">{{ t.date }}</span>
+          <span class="t">
+            <b>{{ t.tag }}</b> | {{ t.title }}
+            {% if t.meta %}<small>{{ t.meta }}</small>{% endif %}
+            {% if t.url %}<a class="zf-red" href="{{ t.url | relative_url }}">{{ t.link | default: 'Details' }}</a>{% endif %}
+          </span>
+        </li>
+      {% endfor %}
+    </ol>
+    <div class="zf-list-foot"><a class="zf-more" href="{{ '/cv/' | relative_url }}">Full CV</a></div>
+  </div>
+</section>
+
+<!-- ===================== ABOUT ===================== -->
+<section class="zf-row" id="about" aria-labelledby="about-h">
+  <div class="zf-row zf-shead">
+    <p class="zf-label b"><span class="n">01</span> About</p>
+    <h2 class="zf-h zf-big b" id="about-h">Minds, bodies &amp; virtual worlds</h2>
+  </div>
+  <div class="w-main zf-about-text zf-prose b">
+    {{ content }}
+  </div>
+  {% if page.stats %}
+    <div class="w-side zf-stats">
+      {% for st in page.stats %}
+        <div class="zf-stat b">
+          <div class="zf-stat-num">{{ st.num }}{% if st.suffix %}<sup>{{ st.suffix }}</sup>{% endif %}</div>
+          <p>{{ st.text }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+
+<!-- ===================== INTERESTS ===================== -->
+{% if page.interests %}
+  <section class="zf-row" id="interests" aria-labelledby="interests-h">
+    <div class="zf-row zf-shead">
+      <p class="zf-label b"><span class="n">02</span> Interests</p>
+      <h2 class="zf-h zf-big b" id="interests-h">What keeps me curious</h2>
+    </div>
+    <div class="w-full zf-tiles">
+      {% for it in page.interests %}
+        <article class="zf-tile b" style="--c: {{ it.color }}">
+          <div class="zf-tile-top"><span>0{{ forloop.index }}</span><span class="sq"></span></div>
+          <h3>{{ it.title }}</h3>
+          <p>{{ it.text }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+
+<!-- ===================== RESEARCH ===================== -->
+{% if research %}
+  <section class="zf-row" id="research" aria-labelledby="research-h">
+    <div class="zf-row zf-shead">
+      <p class="zf-label b"><span class="n">03</span> Research</p>
+      <h2 class="zf-h zf-big b" id="research-h">Experiments I have built</h2>
+    </div>
+    <div class="w-full zf-table b">
+      {% for r in research.contents %}
+        <div class="zf-table-row">
+          <div class="yr">{{ r.year }}</div>
+          <div>
+            <h3>{{ r.title }}</h3>
+            {% if r.institution %}<p class="inst">{{ r.institution }}</p>{% endif %}
+          </div>
+          <div>
+            {% if r.description %}
+              <ul>
+                {% for d in r.description %}<li>{{ d }}</li>{% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+
+<!-- ===================== MY PHD ===================== -->
+<section class="zf-row" id="phd" aria-labelledby="phd-h">
+  <div class="zf-row zf-shead">
+    <p class="zf-label b"><span class="n">04</span> My PhD</p>
+    <h2 class="zf-h zf-big b" id="phd-h">A universe of papers</h2>
+  </div>
+  <div class="w-main zf-stack">
+    <div class="zf-phd-text b">
+      <p class="zf-meta" style="text-transform: uppercase">Collaborative · Embodied · Learning · Mathematics · VR</p>
+      <h3 class="zf-big">Collaborative, embodied <span class="zf-under">mathematics</span> in virtual reality</h3>
+      <p>
+        I built a Literature Universe to map the research behind my PhD. Every paper becomes a planet, shared ideas link papers into
+        constellations, and concepts that several papers support light up as possible research directions.
+      </p>
+      <a class="zf-red" href="{{ '/phd/' | relative_url }}">Enter the Literature Universe →</a>
+    </div>
+    <div class="zf-phd-sky b" aria-hidden="true">
+      <canvas data-sky></canvas>
+      <div class="zf-legend">
+        <span><i style="--c: var(--c-collaborative)"></i>Collaborative</span>
+        <span><i style="--c: var(--c-embodied)"></i>Embodied</span>
+        <span><i style="--c: var(--c-learning)"></i>Learning</span>
+        <span><i style="--c: var(--c-mathematics)"></i>Mathematics</span>
+        <span><i style="--c: var(--c-vr)"></i>VR</span>
+      </div>
+    </div>
+  </div>
+  <nav class="w-side zf-links b" aria-label="PhD sections">
+    <a href="{{ '/phd/' | relative_url }}"><b>Overview</b><small>How the five themes combine across papers</small><span class="arr">→</span></a>
+    <a href="{{ '/phd/constellation.html' | relative_url }}"><b>Constellation</b><small>A 3D universe of papers and ideas</small><span class="arr">→</span></a>
+    <a href="{{ '/phd/library.html' | relative_url }}"><b>Library</b><small>Every paper with its full analysis</small><span class="arr">→</span></a>
+    <a href="{{ '/phd/add-paper.html' | relative_url }}"><b>Analyze a paper</b><small>Read a PDF right in the browser</small><span class="arr">→</span></a>
+  </nav>
+</section>
+
+<!-- ===================== PUBLICATIONS & AWARDS ===================== -->
+<section class="zf-row" id="publications" aria-labelledby="pubs-h">
+  <div class="zf-row zf-shead">
+    <p class="zf-label b"><span class="n">05</span> Output</p>
+    <h2 class="zf-h zf-big b" id="pubs-h">Publications &amp; awards</h2>
+  </div>
+  {% if pubs %}
+    <div class="w-main zf-pubs b">
+      {% for p in pubs.contents %}
+        <article class="zf-pub">
+          <div class="zf-pub-top">
+            <span class="zf-tag">{{ p.year }}</span>
+            {% if p.maindescription contains 'Award' %}
+              <span class="zf-tag zf-tag--red">Award</span>
+            {% elsif p.maindescription contains 'preparation' %}
+              <span class="zf-tag">In preparation</span>
+            {% endif %}
+          </div>
+          <h3>{{ p.title }}</h3>
+          {% if p.maindescription %}<p class="venue">{{ p.maindescription }}</p>{% endif %}
+          {% if p.description %}<p>{{ p.description | first }}</p>{% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% if awards %}
+    <div class="w-side zf-list b">
+      <div class="zf-list-head zf-meta"><b>HONOURS</b><span>{{ awards.contents.size }}</span></div>
+      <ul class="zf-awards">
+        {% for a in awards.contents %}
+          {% for item in a.items %}
+            <li><span class="yr">{{ a.year }}</span><span>{{ item }}</span></li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</section>
+
+<!-- ===================== BEYOND THE LAB ===================== -->
+<section class="zf-row" id="beyond" aria-labelledby="beyond-h">
+  <div class="zf-row zf-shead">
+    <p class="zf-label b"><span class="n">06</span> Teaching</p>
+    <h2 class="zf-h zf-big b" id="beyond-h">Beyond the lab</h2>
+  </div>
+  <div class="w-full zf-tiles zf-tiles--4">
+    {%- assign rail_items = academic.contents | concat: applied.contents -%}
+    {% for c in rail_items %}
+      <article class="zf-tile b">
+        <div class="zf-tile-top"><span>{{ c.year }}</span><span>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span></div>
+        <h3>{{ c.title }}</h3>
+        {% if c.institution %}<p class="where">{{ c.institution }}</p>{% endif %}
+        {% if c.description %}
+          <ul>
+            {% for d in c.description %}<li>{{ d }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ===================== CONTACT ===================== -->
+<section class="zf-row" id="contact" aria-labelledby="contact-h">
+  <div class="zf-row zf-shead">
+    <p class="zf-label b"><span class="n">07</span> Contact</p>
+    <h2 class="zf-h zf-big b" id="contact-h">Let's explore together</h2>
+  </div>
+  <div class="w-full zf-contact b">
+    <p>
+      I'm always happy to talk about VR experiments, embodied interaction, decision-making or game-based learning, and about new
+      collaborations.
+    </p>
+    {% if s.email %}<a class="zf-mail" href="mailto:{{ s.email }}">{{ s.email }}</a>{% endif %}
+    <div class="zf-contact-links">
+      {% if s.linkedin_username %}
+        <a class="zf-red" href="https://www.linkedin.com/in/{{ s.linkedin_username }}" target="_blank" rel="noopener">LinkedIn ↗</a>
+      {% endif %}
+      {% if s.github_username %}
+        <a class="zf-red" href="https://github.com/{{ s.github_username }}" target="_blank" rel="noopener">GitHub ↗</a>
+      {% endif %}
+      <a class="zf-red" href="{{ '/assets/pdf/Zahra_Fallah_CV.pdf' | relative_url }}" target="_blank" rel="noopener">Download CV (PDF)</a>
+    </div>
+  </div>
+</section>

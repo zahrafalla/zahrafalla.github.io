@@ -12,8 +12,11 @@
   const $ = s => document.querySelector(s);
   const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
-  const nav = document.querySelector(".topnav");
-  document.documentElement.style.setProperty("--navh", (nav ? nav.offsetHeight : 49) + "px");
+  /* the 3D stage starts just below the site's PhD bar */
+  const bar = document.querySelector(".zf-phdbar");
+  const placeStage = () => document.documentElement.style.setProperty("--navh",
+    (bar ? Math.round(bar.getBoundingClientRect().bottom + 14) : 170) + "px");
+  placeStage();
 
   const FAM_THEME = { "Collaboration & social":"collaborative", "Embodiment & gesture":"embodied",
     "Learning & cognition":"learning", "Mathematics":"mathematics", "VR, HCI & immersion":"vr" };
@@ -129,7 +132,7 @@
   let W=0, H=0, DPR=1, F=600;
   function resize(){ DPR = Math.min(2, window.devicePixelRatio||1); W = cvs.clientWidth; H = cvs.clientHeight;
     cvs.width = W*DPR; cvs.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); F = 0.95*Math.min(W,H); }
-  window.addEventListener("resize", resize); resize();
+  window.addEventListener("resize", () => { placeStage(); resize(); }); resize();
 
   const cam  = { yaw:0.7, pitch:-0.28, dist:1500, tx:0, ty:0, tz:0, cx:0 };
   const goal = { dist:560, tx:0, ty:0, tz:0 };

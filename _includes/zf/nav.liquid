@@ -1,0 +1,43 @@
+{%- assign nav_pages = site.pages | sort: 'nav_order' -%}
+{%- assign s = site.data.socials -%}
+<header class="zf-row zf-head" id="zf-nav">
+  <a class="zf-logo" href="{{ '/' | relative_url }}" aria-label="{{ site.first_name }} {{ site.last_name }}, home">
+    <span>{{ site.first_name }}</span>
+    <span>{{ site.last_name }}</span>
+  </a>
+  <nav class="zf-navstrip b" id="zf-links" aria-label="Main">
+    <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="is-active" aria-current="page"{% endif %}>About</a>
+    {%- for p in nav_pages -%}
+      {%- if p.nav -%}
+        {%- assign is_active = false -%}
+        {%- if page.section and page.section == p.section -%}
+          {%- assign is_active = true -%}
+        {%- elsif page.collection == 'projects' and p.section == 'projects' -%}
+          {%- assign is_active = true -%}
+        {%- endif %}
+        <a
+          href="{{ p.url | relative_url }}"
+          class="{% if p.section == 'phd' %}is-phd{% endif %}{% if is_active %} is-active{% endif %}"
+          {% if is_active %}
+            aria-current="page"
+          {% endif %}
+        >
+          {{- p.title | capitalize | replace: 'Cv', 'CV' | replace: 'My phd', 'My PhD' -}}
+        </a>
+      {%- endif -%}
+    {%- endfor %}
+    <a href="{{ '/#contact' | relative_url }}">Contact</a>
+  </nav>
+  <div class="zf-util b">
+    {% if s.linkedin_username %}
+      <a class="soc" href="https://www.linkedin.com/in/{{ s.linkedin_username }}" target="_blank" rel="noopener">LinkedIn</a>
+    {% endif %}
+    {% if s.github_username %}
+      <a class="soc" href="https://github.com/{{ s.github_username }}" target="_blank" rel="noopener">GitHub</a>
+    {% endif %}
+    <button class="zf-theme" id="zf-theme" type="button" aria-label="Switch between light and dark mode">
+      <i aria-hidden="true"></i><span>Dark</span>
+    </button>
+  </div>
+  <button class="zf-burger" id="zf-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="zf-links">Menu</button>
+</header>
