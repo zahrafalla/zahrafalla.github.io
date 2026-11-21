@@ -6,7 +6,13 @@
     <span>{{ site.last_name }}</span>
   </a>
   <nav class="zf-navstrip b" id="zf-links" aria-label="Main">
-    <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="is-active" aria-current="page"{% endif %}>About</a>
+    <a
+      href="{{ '/' | relative_url }}"
+      {% if page.url == '/' %}
+        class="is-active" aria-current="page"
+      {% endif %}
+      >About</a
+    >
     {%- for p in nav_pages -%}
       {%- if p.nav -%}
         {%- assign is_active = false -%}

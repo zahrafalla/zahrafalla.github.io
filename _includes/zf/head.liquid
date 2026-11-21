@@ -25,14 +25,14 @@
   (function () {
     var d = document.documentElement,
       t;
-    d.classList.add("js");
+    d.classList.add('js');
     try {
-      t = localStorage.getItem("zf-theme");
+      t = localStorage.getItem('zf-theme');
     } catch (e) {}
-    if (t !== "light" && t !== "dark") {
-      t = "light"; // the cream grid is the default look; dark is opt-in
+    if (t !== 'light' && t !== 'dark') {
+      t = 'light'; // the cream grid is the default look; dark is opt-in
     }
-    d.setAttribute("data-theme", t);
+    d.setAttribute('data-theme', t);
   })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">

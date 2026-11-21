@@ -1,9 +1,15 @@
 {%- assign s = site.data.socials -%}
 <footer class="zf-row zf-foot">
   <div class="zf-foot-box b">
-    <span>&copy; {{ site.time | date: '%Y' }} {{ site.first_name }} {{ site.last_name }} · Cognitive Science &amp; HCI · Tehran</span>
+    <span
+      >&copy; {{ site.time | date: '%Y' }}
+      {{ site.first_name }}
+      {{ site.last_name }} · Cognitive Science &amp; HCI · Tehran</span
+    >
     <nav aria-label="Footer">
-      {% if s.email %}<a href="mailto:{{ s.email }}">Email</a>{% endif %}
+      {% if s.email -%}
+        <a href="mailto:{{ s.email }}">Email</a>
+      {%- endif %}
       {% if s.linkedin_username %}
         <a href="https://www.linkedin.com/in/{{ s.linkedin_username }}" target="_blank" rel="noopener">LinkedIn</a>
       {% endif %}

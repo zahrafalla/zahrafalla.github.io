@@ -3,13 +3,19 @@ layout: zf
 ---
 {%- assign projects = site.projects | sort: 'importance' -%}
 <header class="zf-row zf-pagehead">
-  <p class="zf-label b"><span class="n">{{ projects.size | prepend: '0' | slice: -2, 2 }}</span> Projects</p>
+  <p class="zf-label b">
+    <span class="n">{{ projects.size | prepend: '0' | slice: -2, 2 }}</span> Projects
+  </p>
   <h1 class="zf-big b">Things I make</h1>
-  {% if page.description %}<p class="zf-lede b">{{ page.description }}</p>{% endif %}
+  {% if page.description %}
+    <p class="zf-lede b">{{ page.description }}</p>
+  {% endif %}
 </header>
 
 <div class="zf-row">
-  {% if content != '' %}<div class="w-main zf-page zf-prose b">{{ content }}</div>{% endif %}
+  {% if content != '' %}
+    <div class="w-main zf-page zf-prose b">{{ content }}</div>
+  {% endif %}
   <div class="w-full zf-tiles">
     {% for project in projects %}
       {%- if project.redirect -%}
@@ -20,7 +26,9 @@ layout: zf
       <a class="zf-project b" href="{{ href }}">
         <div class="zf-project-art {% unless project.img %}zf-dots{% endunless %}">
           {% if project.img %}<img src="{{ project.img | relative_url }}" alt="" loading="lazy">{% endif %}
-          {% if project.tag %}<span class="zf-tag">{{ project.tag }}</span>{% endif %}
+          {% if project.tag -%}
+            <span class="zf-tag">{{ project.tag }}</span>
+          {%- endif %}
         </div>
         <div class="zf-project-body">
           <h2>{{ project.title }}</h2>

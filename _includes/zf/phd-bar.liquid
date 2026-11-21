@@ -5,16 +5,32 @@
     <b>Literature Universe</b>
   </a>
   <nav class="zf-phdtabs b" aria-label="PhD sections">
-    <a href="{{ '/phd/' | relative_url }}" {% if page.phd_tab == 'overview' %}class="is-active" aria-current="page"{% endif %}
+    <a
+      href="{{ '/phd/' | relative_url }}"
+      {% if page.phd_tab == 'overview' %}
+        class="is-active" aria-current="page"
+      {% endif %}
       ><i class="ti ti-layout-dashboard"></i>Overview</a
     >
-    <a href="{{ '/phd/library.html' | relative_url }}" {% if page.phd_tab == 'library' %}class="is-active" aria-current="page"{% endif %}
+    <a
+      href="{{ '/phd/library.html' | relative_url }}"
+      {% if page.phd_tab == 'library' %}
+        class="is-active" aria-current="page"
+      {% endif %}
       ><i class="ti ti-books"></i>Library</a
     >
-    <a href="{{ '/phd/constellation.html' | relative_url }}" {% if page.phd_tab == 'constellation' %}class="is-active" aria-current="page"{% endif %}
+    <a
+      href="{{ '/phd/constellation.html' | relative_url }}"
+      {% if page.phd_tab == 'constellation' %}
+        class="is-active" aria-current="page"
+      {% endif %}
       ><i class="ti ti-sparkles"></i>Constellation</a
     >
-    <a href="{{ '/phd/add-paper.html' | relative_url }}" {% if page.phd_tab == 'analyze' %}class="is-active" aria-current="page"{% endif %}
+    <a
+      href="{{ '/phd/add-paper.html' | relative_url }}"
+      {% if page.phd_tab == 'analyze' %}
+        class="is-active" aria-current="page"
+      {% endif %}
       ><i class="ti ti-dna-2"></i>Analyze a paper</a
     >
   </nav>
