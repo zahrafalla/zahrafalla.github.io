@@ -113,6 +113,45 @@
   }
   relayout();
   root.classList.add("zf-ready");
+
+  /* ---------- the header follows you: fixed once you scroll past it, plus a red reading line ----------
+     (a grid item can't be position: sticky beyond its own row, so it becomes fixed, and a
+     spacer of the same height holds its place in the board) */
+  var head = $("#zf-nav");
+  if (head) {
+    var spacer = document.createElement("div");
+    spacer.className = "zf-head-spacer";
+    spacer.setAttribute("aria-hidden", "true");
+    head.parentNode.insertBefore(spacer, head.nextSibling);
+    var ticking = false;
+    var onScroll = function () {
+      ticking = false;
+      var y = window.scrollY,
+        max = document.documentElement.scrollHeight - window.innerHeight;
+      var anchor = (head.classList.contains("is-fixed") ? spacer : head).getBoundingClientRect().top + y;
+      var fix = y > anchor;
+      if (fix) {
+        var r = board ? board.getBoundingClientRect() : { left: 0, width: root.clientWidth };
+        head.style.setProperty("--hx", r.left + "px");
+        head.style.setProperty("--hw", r.width + "px");
+      }
+      if (fix !== head.classList.contains("is-fixed")) {
+        head.classList.toggle("is-fixed", fix);
+        spacer.style.display = fix ? "block" : "";
+      }
+      head.style.setProperty("--read", max > 0 ? Math.min(1, y / max).toFixed(4) : 0);
+    };
+    var queue = function () {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(onScroll);
+      }
+    };
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    onScroll();
+  }
+
   window.addEventListener("resize", relayout);
   window.addEventListener("load", relayout);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);

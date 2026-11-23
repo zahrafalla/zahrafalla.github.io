@@ -1,49 +1,67 @@
-{%- assign nav_pages = site.pages | sort: 'nav_order' -%}
+{%- assign nav_pages = site.pages | where: 'nav', true | sort: 'nav_order' -%}
 {%- assign s = site.data.socials -%}
+{%- comment -%}
+  The site header: one slim row that stays at the top while you scroll (zf.js fixes it once you scroll
+  and fills the red reading line). The brand tile's four cells use the colours of the marks.
+{%- endcomment -%}
 <header class="zf-row zf-head" id="zf-nav">
-  <a class="zf-logo" href="{{ '/' | relative_url }}" aria-label="{{ site.first_name }} {{ site.last_name }}, home">
-    <span>{{ site.first_name }}</span>
-    <span>{{ site.last_name }}</span>
+  <a class="zf-brand b" href="{{ '/' | relative_url }}" aria-label="{{ site.first_name }} {{ site.last_name }}, home">
+    <span class="zf-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><b>ZF</b></span>
+    <span class="zf-brand-t">
+      <b>
+        {{- site.first_name }}
+        {{ site.last_name -}}
+      </b>
+      <small>Cognitive science · HCI</small>
+    </span>
   </a>
   <nav class="zf-navstrip b" id="zf-links" aria-label="Main">
+    {%- assign k = 1 -%}
     <a
       href="{{ '/' | relative_url }}"
       {% if page.url == '/' %}
         class="is-active" aria-current="page"
       {% endif %}
-      >About</a
+    >
+      <small>0{{ k }}</small><span>About</span></a
     >
     {%- for p in nav_pages -%}
       {%- if p.nav -%}
+        {%- assign k = k | plus: 1 -%}
         {%- assign is_active = false -%}
         {%- if page.section and page.section == p.section -%}
           {%- assign is_active = true -%}
-        {%- elsif page.collection == 'projects' and p.section == 'projects' -%}
+        {%- elsif page.collection == 'projects' and p.section == 'papers' -%}
           {%- assign is_active = true -%}
         {%- endif %}
         <a
           href="{{ p.url | relative_url }}"
-          class="{% if is_active %}is-active{% endif %}"
           {% if is_active %}
-            aria-current="page"
+            class="is-active" aria-current="page"
           {% endif %}
         >
-          {{- p.title | capitalize | replace: 'Cv', 'CV' | replace: 'My phd', 'My PhD' -}}
-        </a>
+          <small>0{{ k }}</small><span>{{- p.nav_title | default: p.title | capitalize | replace: 'Cv', 'CV' -}}</span></a
+        >
       {%- endif -%}
     {%- endfor %}
-    <a href="{{ '/#contact' | relative_url }}">Contact</a>
+    {%- assign k = k | plus: 1 -%}
+    <a href="{{ '/#contact' | relative_url }}"
+      ><small>0{{ k }}</small><span>Contact</span></a
+    >
   </nav>
   <div class="zf-util b">
     {% if s.linkedin_username %}
-      <a class="soc" href="https://www.linkedin.com/in/{{ s.linkedin_username }}" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="soc" href="https://www.linkedin.com/in/{{ s.linkedin_username }}" target="_blank" rel="noopener"
+        >LinkedIn<i aria-hidden="true">↗</i></a
+      >
     {% endif %}
     {% if s.github_username %}
-      <a class="soc" href="https://github.com/{{ s.github_username }}" target="_blank" rel="noopener">GitHub</a>
+      <a class="soc" href="https://github.com/{{ s.github_username }}" target="_blank" rel="noopener">GitHub<i aria-hidden="true">↗</i></a>
     {% endif %}
     <button class="zf-theme" id="zf-theme" type="button" aria-label="Switch between light and dark mode">
       <i aria-hidden="true"></i><span>Dark</span>
     </button>
   </div>
   <button class="zf-burger" id="zf-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="zf-links">Menu</button>
+  <span class="zf-progress" aria-hidden="true"></span>
 </header>

@@ -1,0 +1,20 @@
+# What experiments measure: the columns of the matrix under each paper in the Library.
+# Each experiment in _data/papers.yml lists the keys it measures under `tags`.
+- key: perf
+  label: Performance
+- key: rt
+  label: Time
+- key: learn
+  label: Learning gain
+- key: gesture
+  label: Gesture & movement
+- key: speech
+  label: Explanations
+- key: rating
+  label: Expert ratings
+- key: self
+  label: Self-report
+- key: imagery
+  label: Imagery ability
+- key: brain
+  label: Brain activity

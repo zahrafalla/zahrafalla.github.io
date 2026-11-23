@@ -1,0 +1,334 @@
+# -----------------------------------------------------------------------------
+# Data for the Overview (/phd/overview/). Paper ids refer to _data/papers.yml.
+#
+# roots        older works papers build on (timeline); papers point to them with `builds_on`
+# people       researchers worth knowing; papers point to them with `mentions`
+#              (`my_note`: my own note about the person, shown on the back of their card)
+# concepts     shared ideas (connections network); papers point to them with `ideas`
+#
+# Everything that links a paper to these lives in that paper's block in _data/papers.yml,
+# so adding a paper means adding one block there.
+# -----------------------------------------------------------------------------
+
+roots:
+  - id: vygotsky-1934
+    year: 1934
+    who: Vygotsky
+    title: Thought and Language
+    note: Action came before the word; spontaneous versus scientific concepts.
+  - id: polanyi-1958
+    year: 1958
+    who: Polanyi
+    title: Personal Knowledge
+    note: Tacit knowledge; the blind person's stick becomes part of perceiving.
+  - id: mcluhan-1964
+    year: 1964
+    who: McLuhan
+    title: Understanding Media
+    note: "We shape our tools and thereafter our tools shape us."
+  - id: gibson-1966
+    year: 1966
+    who: Gibson
+    title: The Senses Considered as Perceptual Systems
+    note: Perception defined by what the perceiver can do; affordances.
+  - id: piaget-1968
+    year: 1968
+    who: Piaget
+    title: Genetic Epistemology
+    note: Logical thought is rooted in the coordination of actions.
+  - id: gibson-1979
+    year: 1979
+    who: Gibson
+    title: The Ecological Approach to Visual Perception
+    note: The environment shapes cognition; perception and action are coupled.
+  - id: lakoff-johnson-1980
+    year: 1980
+    who: Lakoff & Johnson
+    title: Metaphors We Live By
+    note: Abstract concepts are grounded in bodily experience through metaphor.
+  - id: strack-1988
+    year: 1988
+    who: Strack et al.
+    title: The pen study (facial feedback)
+    note: Holding a pen so as to smile or not changes how funny cartoons seem.
+  - id: varela-1991
+    year: 1991
+    who: Varela et al.
+    title: The Embodied Mind
+    note: Cognition as enaction; the classic statement of embodied cognitive science.
+  - id: kirsh-maglio-1994
+    year: 1994
+    who: Kirsh & Maglio
+    title: Epistemic versus pragmatic action
+    note: Some actions are done to help thinking, not to reach a goal.
+  - id: iriki-1996
+    year: 1996
+    who: Iriki et al.
+    title: Tool use and the body schema
+    note: After training with a rake, monkeys' hand neurons treat the rake as part of the hand.
+  - id: clark-1997
+    year: 1997
+    who: Clark
+    title: Being There
+    note: Mind, body and world working together.
+  - id: barsalou-1999
+    year: 1999
+    who: Barsalou
+    title: Perceptual Symbol Systems
+    note: Concepts as simulations in the brain's modal systems.
+  - id: lakoff-nunez-2000
+    year: 2000
+    who: Lakoff & Núñez
+    title: Where Mathematics Comes From
+    note: Mathematics grounded in bodily experience and conceptual metaphor.
+  - id: rizzolatti-craighero-2004
+    year: 2004
+    who: Rizzolatti & Craighero
+    title: The mirror-neuron system
+    note: Understanding others' actions by simulating them in one's own motor system.
+  - id: goldin-meadow-2005
+    year: 2005
+    who: Goldin-Meadow
+    title: Hearing Gesture
+    note: How our hands help us think.
+  - id: lindgren-johnson-glenberg-2013
+    year: 2013
+    who: Lindgren & Johnson-Glenberg
+    title: Emboldened by embodiment
+    note: Six precepts for embodied and mixed-reality learning, including gestural congruency.
+  - id: nathan-2014
+    year: 2014
+    who: Nathan et al.
+    title: Actions speak louder with words
+    note: Directed actions give insight; actions with language give proof.
+
+people:
+  - id: barsalou
+    name: Lawrence W. Barsalou
+    known: Perceptual symbol systems and grounded cognition
+    where: Emory University
+    idea: Concepts are simulations in the brain's perceptual, motor and introspective systems, not abstract symbols.
+    read: Grounded Cognition (2008); Perceptual Symbol Systems (1999)
+    author: true
+  - id: kirsh
+    name: David Kirsh
+    known: Distributed cognition, epistemic actions, dance marking
+    where: University of California, San Diego
+    idea: We think with our bodies and with things; actions can be done to help thinking.
+    read: Embodied Cognition and the Magical Future of Interaction Design (2013)
+    author: true
+  - id: abrahamson
+    name: Dor Abrahamson
+    known: Embodied design, the Mathematical Imagery Trainer
+    where: Embodied Design Research Laboratory, UC Berkeley
+    idea: Design activities where learners discover a movement first and then see it as mathematics.
+    read: Embodiment and Embodied Design (2014)
+    author: true
+  - id: lindgren
+    name: Robb Lindgren
+    known: Whole-body mixed reality for science learning (MEteor)
+    where: University of Illinois Urbana-Champaign
+    idea: Cue learners' body movements so that they enact the scientific idea.
+    read: Embodiment and Embodied Design (2014); Emboldened by Embodiment (2013)
+    author: true
+  - id: nathan
+    name: Mitchell J. Nathan
+    known: Grounded and embodied mathematical cognition (GEMC)
+    where: University of Wisconsin–Madison
+    idea: Action and cognition run both ways; actions with language lead to proof.
+    read: Grounded and Embodied Mathematical Cognition (2017)
+    author: true
+    my_note: He could help me look at cognitive science through the lens of mechanics (my background).
+  - id: walkington
+    name: Candace Walkington
+    known: The Hidden Village, gesture in geometry proof
+    where: Southern Methodist University
+    idea: Dynamic gestures predict mathematical insight and valid proof.
+    read: Grounded and Embodied Mathematical Cognition (2017)
+    author: true
+  - id: strack
+    name: Fritz Strack
+    known: The pen study (facial feedback); reflective and impulsive processes
+    where: University of Würzburg
+    idea: Bodily states can change judgements without people knowing why.
+    read: Routes to Embodiment (2015); Strack, Martin & Stepper (1988)
+    author: true
+  - id: koerner
+    name: Anita Körner
+    known: Mechanisms of embodiment
+    where: University of Würzburg
+    idea: Three routes from body to mind, each with its own test.
+    read: Routes to Embodiment (2015)
+    author: true
+  - id: topolinski
+    name: Sascha Topolinski
+    known: Motor simulation, fluency and preference
+    where: University of Cologne
+    idea: Covert motor simulations, like silently pronouncing a word, shape what we like.
+    read: Routes to Embodiment (2015)
+    author: true
+  - id: lakoff
+    name: George Lakoff
+    known: Conceptual metaphor theory
+    idea: Abstract thought, mathematics included, is built from bodily experience through metaphor.
+    read: Metaphors We Live By (1980, with Johnson); Where Mathematics Comes From (2000, with Núñez)
+  - id: goldin-meadow
+    name: Susan Goldin-Meadow
+    known: Gesture and thinking
+    idea: Our hands help us think; gesturing can help learners, in mathematics too.
+    read: Hearing Gesture (2003/2005)
+  - id: clark
+    name: Andy Clark
+    known: The extended mind
+    idea: Cognition can extend into the body and the world.
+    read: Being There (1997); Supersizing the Mind (2008)
+  - id: johnson
+    name: Mark Johnson
+    known: Conceptual metaphor, image schemas
+    idea: Patterns of bodily movement and orientation structure abstract reasoning.
+    read: Metaphors We Live By (1980, with Lakoff)
+  - id: rizzolatti
+    name: Giacomo Rizzolatti
+    known: Mirror neurons
+    idea: We understand others' actions by simulating them in our own motor system.
+    read: The Mirror-Neuron System (2004, with Craighero)
+  - id: glenberg
+    name: Arthur Glenberg
+    known: Embodied language and memory
+    idea: Memory and language serve action; understanding a sentence uses the action system.
+    read: What Memory Is For (1997); Grounding Language in Action (2002, with Kaschak)
+  - id: nunez
+    name: Rafael Núñez
+    known: Embodied mathematics
+    idea: Mathematical ideas, like sets as containers, come from bodily experience.
+    read: Where Mathematics Comes From (2000, with Lakoff)
+  - id: gibson
+    name: James J. Gibson
+    known: Ecological perception, affordances
+    idea: We perceive the world in terms of what we can do in it.
+    read: The Ecological Approach to Visual Perception (1979)
+  - id: alibali
+    name: Martha W. Alibali
+    known: Gesture in mathematical reasoning
+    idea: Gestures reveal and shape how learners reason about mathematics.
+    read: Work with Nathan on gesture and proof
+  - id: johnson-glenberg
+    name: Mina Johnson-Glenberg
+    known: Embodied mixed-reality learning
+    idea: Learners' movements should be congruent with the ideas they learn.
+    read: Emboldened by Embodiment (2013, with Lindgren)
+  - id: kahneman
+    name: Daniel Kahneman
+    known: Fast and slow thinking
+    idea: An intuitive, effortless system and a slow, deliberate one; embodied learning starts in the first.
+    read: Thinking, Fast and Slow (2011)
+  - id: varela
+    name: Francisco Varela
+    known: Enaction
+    idea: Cognition is enacted through a living body's interaction with its world.
+    read: The Embodied Mind (1991, with Thompson & Rosch)
+  - id: piaget
+    name: Jean Piaget
+    known: Cognitive development
+    idea: The roots of logical thought lie in the coordination of actions.
+    read: Genetic Epistemology (1968)
+  - id: vygotsky
+    name: Lev Vygotsky
+    known: Cultural-historical psychology
+    idea: Action comes before the word; tools and signs mediate thinking.
+    read: Thought and Language (1934)
+  - id: iriki
+    name: Atsushi Iriki
+    known: Tool use and the body schema
+    idea: A tool in skilled use becomes part of the body's map.
+    read: Iriki, Tanaka & Iwamura (1996)
+  - id: noe
+    name: Alva Noë
+    known: Enactive perception
+    idea: Perceiving is a skilled activity, not passive reception.
+    read: Action in Perception (2005)
+
+# concept groups use the colours of the connections picture
+concept_groups:
+  - key: hub
+    label: Core idea
+    color: "#1c1c1c"
+  - key: theory
+    label: Theory
+    color: "#7fae92"
+  - key: body
+    label: Body & tools
+    color: "#8fb3dc"
+  - key: action
+    label: Action & gesture
+    color: "#ec6a3c"
+  - key: learning
+    label: Learning & mathematics
+    color: "#f7d33b"
+  - key: meaning
+    label: Meaning & others
+    color: "#f4c1cf"
+
+concepts:
+  - id: grounded
+    label: Grounded cognition
+    group: hub
+    text: Cognition rests on simulations, bodily states and situated action.
+  - id: simulation
+    label: Simulation
+    group: theory
+    text: Reenacting perception and action, inside the head or with real things.
+  - id: routes
+    label: Routes to embodiment
+    group: theory
+    text: State induction, modal priming and sensorimotor simulation.
+  - id: dual
+    label: Intuition versus analysis
+    group: theory
+    text: A fast, bodily, intuitive mode and a slow, verbal, analytic one.
+  - id: body-schema
+    label: Tools & the body schema
+    group: body
+    text: Tools and reach change where the body ends and how space is perceived.
+  - id: enactive
+    label: Perception for action
+    group: body
+    text: We perceive in terms of what we can do; enactive landscapes and affordances.
+  - id: marking
+    label: Simplified models
+    group: body
+    text: Practising a partial, imperfect version can teach more than the full thing.
+  - id: gesture
+    label: Gesture
+    group: action
+    text: Gestures help speakers think and predict insight and proof.
+  - id: directed
+    label: Directed & cued movement
+    group: action
+    text: Movements learners are asked or cued to make, as in MEteor and The Hidden Village.
+  - id: design
+    label: Embodied design
+    group: learning
+    text: Designing activities and environments around bodily know-how.
+  - id: maths
+    label: Mathematics
+    group: learning
+    text: Proportion, geometry proof, mental abacus, mathematical discovery.
+  - id: metaphor
+    label: Conceptual metaphor
+    group: meaning
+    text: Abstract ideas understood through bodily experience.
+  - id: mirror
+    label: Understanding others
+    group: meaning
+    text: Mirror systems let us understand others' actions by simulating them.
+  - id: language
+    label: Action with language
+    group: meaning
+    text: Putting bodily experience into words turns it into concepts and proof.
+  - id: collaboration
+    label: Collaboration · my gap
+    group: gap
+    text: >-
+      Only touched on: MIT-P children sometimes worked in pairs, Barsalou names joint attention and timing, and Nathan & Walkington
+      plan collaborative proof next. This is where my PhD comes in.

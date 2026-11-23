@@ -1,8 +1,18 @@
-{%- comment -%} Sub-navigation shared by the pages of the "Papers through my eyes" project. {%- endcomment -%}
+{%- comment -%}
+  The ribbon shared by the pages of the "Papers through my eyes" project: the project's name with a
+  small living grid, then one big tab per section, each with a caption counted from the data.
+{%- endcomment -%}
+{%- assign nmine = site.data.my_papers | size -%}
 <div class="zf-row zf-phdbar">
   <a class="zf-phdbar-title b" href="{{ '/phd/' | relative_url }}">
-    <small>My PhD · Project</small>
-    <b>Papers through my eyes</b>
+    <span class="zf-phdbar-ico" aria-hidden="true">
+      <i class="t-theory"></i><i></i><i class="t-idea"></i><i></i><i class="t-experiment"></i><i class="t-concept"></i><i class="t-important"></i
+      ><i></i><i class="t-framework"></i>
+    </span>
+    <span class="zf-phdbar-name">
+      <small>Paper organizer · My PhD</small>
+      <b>Papers through my eyes</b>
+    </span>
   </a>
   <nav class="zf-phdtabs b" aria-label="Project sections">
     <a
@@ -10,21 +20,24 @@
       {% if page.phd_tab == 'library' %}
         class="is-active" aria-current="page"
       {% endif %}
-      >Library</a
     >
+      <small>01</small><b>Library</b><em>{{ site.data.papers.size }} papers read</em>
+    </a>
     <a
       href="{{ '/phd/collage/' | relative_url }}"
       {% if page.phd_tab == 'collage' %}
         class="is-active" aria-current="page"
       {% endif %}
-      >Paper collage</a
     >
+      <small>02</small><b>Paper collage</b><em>{{ nmine }} papers I'm writing</em>
+    </a>
     <a
       href="{{ '/phd/overview/' | relative_url }}"
       {% if page.phd_tab == 'overview' %}
         class="is-active" aria-current="page"
       {% endif %}
-      >Overview</a
     >
+      <small>03</small><b>Overview</b><em>Timeline, people, links</em>
+    </a>
   </nav>
 </div>

@@ -3,18 +3,60 @@ layout: zf
 title: Paper collage
 head_title: Paper collage · Papers through my eyes
 permalink: /phd/collage/
-section: projects
+section: papers
 phd_tab: collage
-description: A collage of the papers I have read. Coming soon.
+description: The papers I will write at the end of my thesis, each collaged section by section from passages of the papers I have read.
 ---
+{%- assign letters = 'ABCDEFGHIJ' -%}
 {% include zf/phd-bar.liquid %}
 
-<header class="zf-row zf-pagehead">
-  <p class="zf-label b"><span class="n">02</span> Paper collage</p>
-  <h1 class="zf-big b">My paper collage</h1>
-  <p class="zf-lede b">This section is being built. It will bring the papers I have read together in one picture.</p>
-</header>
+<h1 class="zf-sr">Paper collage: papers I will write</h1>
+
+<div class="zf-row cl-covers" id="cl-covers">
+  {% for mp in site.data.my_papers %}
+    {%- assign total = 0 -%}
+    {%- for p in site.data.papers -%}
+      {%- assign n = p.uses | where: 'paper', mp.id | size -%}
+      {%- assign total = total | plus: n -%}
+    {%- endfor -%}
+    {%- assign i = 0 -%}
+    <a class="cl-cover b" href="{{ '/phd/collage/' | append: mp.id | append: '/' | relative_url }}">
+      <span class="cl-cover-top">
+        <span class="cl-cover-letter" aria-hidden="true">{{ letters | slice: forloop.index0, 1 }}</span>
+        <span class="cl-cover-t">
+          <small>{{ mp.label }} · {{ mp.sections.size }} sections · {{ total }} passages</small>
+          <b>{{ mp.title }}</b>
+        </span>
+      </span>
+      <span class="cl-mosaic" aria-hidden="true">
+        {%- for sec in mp.sections -%}
+          <span class="cl-mosaic-row">
+            <em>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</em>
+            {%- for p in site.data.papers -%}
+              {%- for u in p.uses -%}
+                {%- if u.paper == mp.id and u.section == sec.key -%}
+                  {%- assign i = i | plus: 1 -%}
+                  <i style="--c: {{ p.color }}; --i: {{ i }}"></i>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endfor -%}
+            <small>{{ sec.title }}</small>
+          </span>
+        {%- endfor -%}
+      </span>
+      <span class="cl-cover-go zf-red">Open {{ mp.label }} →</span>
+    </a>
+  {% endfor %}
+</div>
 
 <div class="zf-row">
-  <div class="w-full zf-soon zf-hatch b" aria-hidden="true"><span>Coming soon</span></div>
+  <div class="w-full b cl-legend">
+    <p class="zf-meta">Papers I've read</p>
+    {% for p in site.data.papers %}
+      {%- assign n = p.uses | size -%}
+      <span style="--c: {{ p.color }}"><i></i><b>{{ p.cite }}</b> {{ n }}</span>
+    {% endfor %}
+  </div>
 </div>
+
+<script src="{{ '/phd/collage.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>

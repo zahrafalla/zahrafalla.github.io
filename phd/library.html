@@ -3,44 +3,58 @@ layout: zf
 title: Library
 head_title: Library · Papers through my eyes
 permalink: /phd/
-section: projects
+section: papers
+nav: true
+nav_order: 2
+nav_title: Paper organizer
 phd_tab: library
-description: The papers I have read for my PhD. Each paper becomes a bar as long as its pages, marked with its theories, experiments, what matters for my work and ideas for my thesis.
+description: The papers I have read for my PhD. Each paper becomes a grid of its paragraphs, coloured by its theories, frameworks, concepts, experiments, people, what matters for my work, ideas to build and gaps.
 ---
 {%- assign papers = site.data.papers | sort: 'year' | reverse -%}
 {% include zf/phd-bar.liquid %}
 
 <!-- ===================== LIST OF PAPERS ===================== -->
 <div class="zf-row zf-rows2" id="lib-list">
-  <header class="zf-row zf-pagehead">
-    <p class="zf-label b">
-      <span class="n">{{ papers.size | prepend: '0' | slice: -2, 2 }}</span> Library
-    </p>
-    <h1 class="zf-big b">Papers I've read</h1>
-    <p class="zf-lede b">
-      Open a paper and it turns into a bar as long as its pages. The circles on it are my marks: theories, experiments, what matters
-      for my work, and ideas for my thesis.
-    </p>
-  </header>
+  <h1 class="zf-sr">Library: papers I've read</h1>
 
   <div class="zf-row">
-    <div class="w-full zf-tiles">
+    <div class="w-full b lib-tools">
+      <label class="ov-find"><span>Find</span><input type="search" id="lib-find" placeholder="title, author, year or idea" autocomplete="off" /></label>
+      <span class="lib-sort zf-meta"
+        ><span>Sort</span><button type="button" data-sort="new" aria-pressed="true">Newest</button
+        ><button type="button" data-sort="old" aria-pressed="false">Oldest</button
+        ><button type="button" data-sort="az" aria-pressed="false">A–Z</button
+        ><button type="button" data-sort="marks" aria-pressed="false">Most marks</button></span
+      >
+      <span class="lib-sort zf-meta lib-view"
+        ><span>View</span><button type="button" data-view="cards" aria-pressed="true">Cards</button
+        ><button type="button" data-view="list" aria-pressed="false">List</button></span
+      >
+      <b class="lib-count zf-meta" id="lib-count" aria-live="polite">{{ papers.size }} papers</b>
+    </div>
+    <div class="w-full zf-tiles" id="lib-cards">
       {% for p in papers %}
-        <a class="zf-tile pcard b" href="#{{ p.id }}" data-id="{{ p.id }}">
+        <a
+          class="zf-tile pcard b"
+          href="#{{ p.id }}"
+          data-id="{{ p.id }}"
+          data-year="{{ p.year }}"
+          data-title="{{ p.title | downcase | escape }}"
+          data-marks="{{ p.marks.size }}"
+          data-find="{{ p.title | downcase | escape }} {{ p.authors | downcase | escape }} {{ p.year }} {{ p.cite | downcase | escape }} {{ p.ideas | join: ' ' }}"
+        >
           <div class="zf-tile-top">
-            <span>{{ p.year }} · {{ p.pages }} pages</span><span>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            <span>{{ p.year }} · {{ p.pages }} pages</span><span>{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
           </div>
           <h3>{{ p.title }}</h3>
           <p class="where">{{ p.authors }}</p>
-          <div class="pmini" style="--pages: {{ p.pages }}; width: calc({{ p.pages }} * 7px)" aria-hidden="true">
-            {%- for m in p.marks -%}
-              <i class="t-{{ m.type }}" style="--x: {{ m.page | minus: 0.5 | divided_by: p.pages | times: 100 }}"></i>
-            {%- endfor -%}
-          </div>
+          <div class="pmini" data-id="{{ p.id }}" aria-hidden="true"></div>
           <p class="pcounts">
             {%- for t in site.data.mark_types -%}
               {%- assign n = p.marks | where: 'type', t.key | size -%}
-              <span class="t-{{ t.key }}" title="{{ t.label }}"><i></i>{{ n }} {{ t.short }}</span>
+              {%- if n > 0 -%}
+                <span class="t-{{ t.key }}" title="{{ t.label }}"><i></i>{{ n }} {{ t.short }}</span>
+              {%- endif -%}
             {%- endfor -%}
           </p>
         </a>
@@ -55,5 +69,8 @@ description: The papers I have read for my PhD. Each paper becomes a bar as long
 <script>
   window.PAPERS = {{ site.data.papers | jsonify }};
   window.MARK_TYPES = {{ site.data.mark_types | jsonify }};
+  window.MY_PAPERS = {{ site.data.my_papers | jsonify }};
+  window.MEASURES = {{ site.data.measures | jsonify }};
+  window.COLLAGE_URL = {{ '/phd/collage/' | relative_url | jsonify }};
 </script>
 <script src="{{ '/phd/library.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>

@@ -1,13 +1,26 @@
-# The four kinds of marks on a paper's page bar (colours live in assets/zf/zf.css as --m-<key>).
+# The eight kinds of marks: each marked paragraph is a coloured cell in a paper's grid
+# in the Library. Colours live in assets/zf/zf.css as --m-<key>.
 - key: theory
   label: Theory
   short: theory
+- key: framework
+  label: New framework
+  short: framework
+- key: concept
+  label: New concept
+  short: concept
 - key: experiment
   label: Experiment
   short: exp.
+- key: people
+  label: People
+  short: people
 - key: important
   label: Important for my work
   short: important
 - key: idea
-  label: Idea for my thesis
-  short: ideas
+  label: Idea to build
+  short: idea
+- key: gap
+  label: Gap
+  short: gap

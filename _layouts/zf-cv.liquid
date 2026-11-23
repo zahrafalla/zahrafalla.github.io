@@ -1,121 +1,311 @@
 ---
 layout: zf
 ---
-<header class="zf-row zf-pagehead">
-  <p class="zf-label b">Curriculum vitae</p>
-  <h1 class="zf-big b">My journey</h1>
+{%- comment -%}
+  The CV. Everything comes from _data/cv.yml. Known sections get their own design
+  (an ID card, boarding passes, a skills table, ranks…); any other section falls back to a
+  plain timeline. The card tilt, rails, skills table and ranks are built by
+  assets/zf/cv.js; titles, reveals, counters and accordions by assets/zf/home.js.
+{%- endcomment -%}
+{%- assign research = site.data.cv | where: 'title', 'Research Experience' | first -%}
+{%- assign pubs = site.data.cv | where: 'title', 'Publications & Presentations' | first -%}
+{%- assign awards = site.data.cv | where: 'title', 'Honors & Awards' | first -%}
+{%- assign academic = site.data.cv | where: 'title', 'Academic Experience' | first -%}
+{%- assign applied = site.data.cv | where: 'title', 'Professional & Applied Experience' | first -%}
+{%- assign nhonours = 0 -%}
+{%- for a in awards.contents -%}
+  {%- assign nhonours = nhonours | plus: a.items.size -%}
+{%- endfor -%}
+{%- assign nroles = academic.contents.size | plus: applied.contents.size -%}
+
+<!-- ===================== HERO ===================== -->
+<header class="zf-row cv-hero">
+  <p class="zf-label b cv-hero-k">Curriculum vitae</p>
+  <h1 class="zf-big b cv-hero-t" data-split>My journey</h1>
   {% if page.cv_pdf %}
-    <div class="zf-actions b">
-      <a class="zf-red" href="{{ page.cv_pdf | prepend: '/assets/pdf/' | relative_url }}" target="_blank" rel="noopener">Download PDF</a>
+    <a class="b cv-pdf" href="{{ page.cv_pdf | prepend: '/assets/pdf/' | relative_url }}" target="_blank" rel="noopener">
+      <span class="cv-pdf-ico" aria-hidden="true"><i>↓</i></span>
+      <span
+        ><b>Download PDF</b><small>{{ page.cv_pdf }}</small></span
+      >
+    </a>
+  {% endif %}
+  <div class="cv-facts">
+    <div class="b hm-rv">
+      <b data-count="{{ research.contents.size }}">{{ research.contents.size }}</b><span>VR &amp; HCI research projects</span>
     </div>
-  {% endif %}
-  {% if page.description %}
-    <p class="zf-lede b">{{ page.description }}</p>
-  {% endif %}
+    <div class="b hm-rv">
+      <b data-count="{{ pubs.contents.size }}">{{ pubs.contents.size }}</b><span>papers &amp; posters</span>
+    </div>
+    <div class="b hm-rv">
+      <b data-count="{{ nroles }}">{{ nroles }}</b><span>roles in teaching &amp; making</span>
+    </div>
+    <div class="b hm-rv">
+      <b data-count="{{ nhonours }}">{{ nhonours }}</b><span>honours &amp; awards</span>
+    </div>
+  </div>
 </header>
 
-<div class="zf-row">
+<!-- ===================== SECTIONS ===================== -->
+<div class="zf-row cv-main">
   <nav class="zf-cv-index b" aria-label="CV sections">
+    <p class="zf-meta cv-index-k">Contents</p>
     <ul>
       {% for entry in site.data.cv %}
         <li>
-          <a href="#{{ entry.title | slugify }}">{{ entry.title }}</a>
+          <a href="#{{ entry.title | slugify }}"
+            ><small>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</small><span>{{ entry.title }}</span><i aria-hidden="true"></i
+          ></a>
         </li>
       {% endfor %}
     </ul>
   </nav>
 
-  <div class="zf-cv-body zf-stack">
+  <div class="zf-cv-body">
     {% for entry in site.data.cv %}
-      <section class="zf-cv-sec b" id="{{ entry.title | slugify }}">
-        <h2 class="zf-cv-h">
-          <span>{{ forloop.index | prepend: '0' | slice: -2, 2 }} — {{ entry.title }}</span>
-          {% if entry.type == 'time_table' -%}
+      {%- assign slug = entry.title | slugify -%}
+      <section class="zf-cv-sec cv-sec b hm-rv" id="{{ slug }}">
+        <h2 class="cv-h">
+          <span class="cv-h-n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+          <span class="cv-h-t" data-split>{{ entry.title }}</span>
+          {% if entry.type == 'time_table' and entry.title != 'Honors & Awards' -%}
             <small>{{ entry.contents.size }}</small>
           {%- endif %}
         </h2>
 
-        {% case entry.type %}
-          {% when 'map' %}
-            <dl class="zf-cv-map">
+        {% case entry.title %}
+          {% when 'General Information' %}
+            {%- comment -%} a researcher ID card that tilts towards the pointer {%- endcomment -%}
+            {%- assign fullname = entry.contents | where: 'name', 'Full Name' | first -%}
+            <div class="cv-id-wrap">
+              <div class="cv-id" data-tilt>
+                <div class="cv-id-top"><span>Researcher ID</span><span class="cv-id-chip" aria-hidden="true"></span></div>
+                <div class="cv-id-body">
+                  <img
+                    class="cv-id-photo"
+                    src="{{ '/assets/img/prof_pic.jpg' | relative_url }}"
+                    alt="Portrait of {{ fullname.value }}"
+                    loading="lazy"
+                  >
+                  <div class="cv-id-txt">
+                    <p class="cv-id-name">{{ fullname.value }}</p>
+                    <dl>
+                      {% for c in entry.contents %}
+                        {% unless c.name == 'Full Name' %}
+                          <dt>{{ c.name }}</dt>
+                          <dd>{{ c.value }}</dd>
+                        {% endunless %}
+                      {% endfor %}
+                    </dl>
+                  </div>
+                </div>
+                <div class="cv-id-code" aria-hidden="true"><span>ZF · COG-SCI · HCI · VR</span></div>
+                <span class="cv-id-shine" aria-hidden="true"></span>
+              </div>
+            </div>
+
+          {% when 'Research Profile' %}
+            <p class="cv-statement" data-words>{{ entry.contents | first }}</p>
+
+          {% when 'Research Interests' %}
+            <ul class="cv-chips">
               {% for c in entry.contents %}
-                <dt>{{ c.name }}</dt>
-                <dd>{{ c.value }}</dd>
+                <li style="--i: {{ forloop.index0 }}">{{ c }}</li>
               {% endfor %}
-            </dl>
+            </ul>
 
-          {% when 'list' %}
-            {% if entry.contents.size == 1 %}
-              <p class="zf-cv-pad zf-prose">{{ entry.contents | first }}</p>
-            {% else %}
-              <ul class="zf-cv-tags">
-                {% for c in entry.contents %}
-                  <li>{{ c }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-
-          {% when 'nested_list' %}
-            <div class="zf-cv-pad zf-cv-nested">
-              {% for c in entry.contents %}
-                <h3>{{ c.title }}</h3>
-                <ul>
-                  {% for it in c.items %}
-                    <li>{{ it }}</li>
-                  {% endfor %}
-                </ul>
+          {% when 'Education' %}
+            {%- comment -%} boarding passes, oldest first: from one field to the next {%- endcomment -%}
+            <div class="cv-tickets">
+              {% for c in entry.contents reversed %}
+                {%- assign gpa = '' -%}
+                {%- assign k = entry.contents.size | minus: forloop.index0 -%}
+                <article class="cv-ticket" id="{{ slug }}-{{ k }}" style="--i: {{ forloop.index0 }}">
+                  <div class="cv-ticket-main">
+                    <p class="cv-ticket-k">Boarding pass · {{ forloop.index }} / {{ entry.contents.size }}</p>
+                    <h3>{{ c.title }}</h3>
+                    <p class="cv-ticket-inst">{{ c.institution }}</p>
+                    <ul>
+                      {% for d in c.description %}
+                        {% if d contains 'GPA' %}
+                          {%- assign gpa = d | remove: 'GPA:' | strip -%}
+                        {% else %}
+                          <li>{{ d }}</li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </div>
+                  <div class="cv-ticket-stub">
+                    <span>Years</span><b>{{ c.year }}</b>
+                    {% if gpa != '' -%}
+                      <span>GPA</span><b class="cv-ticket-gpa">{{ gpa }}</b>
+                    {%- endif %}
+                  </div>
+                </article>
+                {% unless forloop.last %}
+                  <div class="cv-hop" aria-hidden="true"><span>then</span><i></i></div>
+                {% endunless %}
               {% endfor %}
             </div>
 
-          {% when 'time_table' %}
-            <ol class="zf-cv-tl">
+          {% when 'Research Experience' %}
+            <div class="hm-acc cv-acc">
               {% for c in entry.contents %}
-                <li class="zf-cv-item">
-                  <div class="zf-cv-year">{{ c.year }}</div>
-                  <div>
-                    {% if c.title %}
-                      <h3>{{ c.title }}</h3>
-                    {% endif %}
-                    {% if c.institution %}
-                      <p class="zf-cv-inst">{{ c.institution }}</p>
-                    {% endif %}
-                    {% if c.maindescription %}
-                      <p class="zf-cv-main">{{ c.maindescription }}</p>
-                    {% endif %}
-                    {% if c.description %}
+                <div class="hm-acc-item{% if forloop.first %} is-open{% endif %}" id="{{ slug }}-{{ forloop.index }}">
+                  <button type="button" class="hm-acc-btn" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}">
+                    <span class="hm-acc-yr zf-meta">{{ c.year }}</span>
+                    <span class="hm-acc-t">{{ c.title }}</span>
+                    <span class="hm-acc-in zf-meta">{{ c.institution }}</span>
+                    <i class="hm-acc-x" aria-hidden="true"></i>
+                  </button>
+                  <div class="hm-acc-panel">
+                    <div>
                       <ul>
                         {% for d in c.description %}
-                          {% if d.title %}
-                            <li>
-                              {{ d.title }}
-                              <ul>
-                                {% for sub in d.contents %}
-                                  <li>{{ sub }}</li>
-                                {% endfor %}
-                              </ul>
-                            </li>
-                          {% else %}
-                            <li>{{ d }}</li>
-                          {% endif %}
+                          <li>{{ d }}</li>
                         {% endfor %}
                       </ul>
-                    {% endif %}
-                    {% if c.items %}
-                      <ul class="zf-cv-items">
-                        {% for it in c.items %}
-                          <li>{{ it }}</li>
-                        {% endfor %}
-                      </ul>
-                    {% endif %}
+                    </div>
                   </div>
-                </li>
+                </div>
+              {% endfor %}
+            </div>
+
+          {% when 'Publications & Presentations' %}
+            <div class="cv-pubs">
+              {% for c in entry.contents %}
+                {%- assign award = false -%}
+                {%- if c.maindescription contains 'Award' -%}{%- assign award = true -%}{%- endif -%}
+                <article class="cv-pub{% if award %} is-award{% endif %}" id="{{ slug }}-{{ forloop.index }}">
+                  <span class="cv-pub-yr">{{ c.year }}</span>
+                  <h3>{{ c.title }}</h3>
+                  {% if c.maindescription %}
+                    <p class="cv-pub-venue">{{ c.maindescription }}</p>
+                  {% endif %}
+                  {% if c.description %}
+                    <p class="cv-pub-d">{{ c.description | first }}</p>
+                  {% endif %}
+                  {% if award %}
+                    <svg class="cv-stamp" viewBox="0 0 120 120" aria-hidden="true">
+                      <defs><path id="cv-ring-{{ forloop.index }}" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0" /></defs>
+                      <g class="cv-stamp-ring">
+                        <text><textPath href="#cv-ring-{{ forloop.index }}">AWARD · {{ c.year }} · AWARD · {{ c.year }} · AWARD · {{ c.year }} ·</textPath></text>
+                      </g>
+                      <circle cx="60" cy="60" r="30" />
+                      <text class="cv-stamp-c" x="60" y="67" data-place="{{ c.maindescription | strip_html }}">★</text>
+                    </svg>
+                  {% elsif c.maindescription contains 'preparation' %}
+                    <span class="cv-tape" aria-hidden="true">In preparation · In preparation · In preparation</span>
+                  {% endif %}
+                </article>
+              {% endfor %}
+            </div>
+
+          {% when 'Academic Experience', 'Professional & Applied Experience' %}
+            {%- comment -%} a rail of cards: drag it, or use the arrows {%- endcomment -%}
+            <div class="cv-rail" data-rail>
+              <div class="cv-rail-track" tabindex="0" aria-label="{{ entry.title }}: scroll sideways">
+                {% for c in entry.contents %}
+                  <article class="cv-card" id="{{ slug }}-{{ forloop.index }}" style="--i: {{ forloop.index0 }}">
+                    <p class="cv-card-yr">{{ c.year }}</p>
+                    <h3>{{ c.title }}</h3>
+                    {% if c.institution %}
+                      <p class="cv-card-in">{{ c.institution }}</p>
+                    {% endif %}
+                    <ul>
+                      {% for d in c.description %}
+                        <li>{{ d }}</li>
+                      {% endfor %}
+                    </ul>
+                  </article>
+                {% endfor %}
+              </div>
+              <div class="cv-rail-foot">
+                <button type="button" class="cv-rail-btn" data-dir="-1" aria-label="Previous">←</button>
+                <span class="cv-rail-bar" aria-hidden="true"><i></i></span>
+                <button type="button" class="cv-rail-btn" data-dir="1" aria-label="Next">→</button>
+              </div>
+            </div>
+
+          {% when 'Technical Skills' %}
+            {%- comment -%} a periodic table of skills (built by cv.js; the list is the fallback) {%- endcomment -%}
+            <div class="cv-ptable" data-skills="{{ entry.contents | jsonify | escape }}">
+              <dl class="zf-cv-map cv-ptable-fallback">
+                {% for c in entry.contents %}
+                  <dt>{{ c.name }}</dt>
+                  <dd>{{ c.value }}</dd>
+                {% endfor %}
+              </dl>
+            </div>
+
+          {% when 'Honors & Awards' %}
+            {%- assign n = 0 -%}
+            <ol class="cv-honours">
+              {% for a in entry.contents %}
+                {% for item in a.items %}
+                  {%- assign n = n | plus: 1 -%}
+                  <li class="cv-honour" id="{{ slug }}-{{ n }}" style="--i: {{ n | minus: 1 }}">
+                    <span class="cv-honour-yr">{{ a.year }}</span>
+                    <p class="cv-honour-t">{{ item }}</p>
+                  </li>
+                {% endfor %}
               {% endfor %}
             </ol>
 
           {% else %}
-            <div class="zf-cv-pad">{{ entry.contents }}</div>
+            {%- comment -%} any other section: a plain timeline or list {%- endcomment -%}
+            {% case entry.type %}
+              {% when 'map' %}
+                <dl class="zf-cv-map">
+                  {% for c in entry.contents %}
+                    <dt>{{ c.name }}</dt>
+                    <dd>{{ c.value }}</dd>
+                  {% endfor %}
+                </dl>
+              {% when 'list' %}
+                <ul class="cv-chips">
+                  {% for c in entry.contents %}
+                    <li style="--i: {{ forloop.index0 }}">{{ c }}</li>
+                  {% endfor %}
+                </ul>
+              {% when 'time_table' %}
+                <ol class="zf-cv-tl">
+                  {% for c in entry.contents %}
+                    <li class="zf-cv-item" id="{{ slug }}-{{ forloop.index }}">
+                      <div class="zf-cv-year">{{ c.year }}</div>
+                      <div>
+                        {% if c.title %}
+                          <h3>{{ c.title }}</h3>
+                        {% endif %}
+                        {% if c.institution %}
+                          <p class="zf-cv-inst">{{ c.institution }}</p>
+                        {% endif %}
+                        {% if c.description %}
+                          <ul>
+                            {% for d in c.description %}
+                              <li>{{ d }}</li>
+                            {% endfor %}
+                          </ul>
+                        {% endif %}
+                        {% if c.items %}
+                          <ul>
+                            {% for it in c.items %}
+                              <li>{{ it }}</li>
+                            {% endfor %}
+                          </ul>
+                        {% endif %}
+                      </div>
+                    </li>
+                  {% endfor %}
+                </ol>
+              {% else %}
+                <div class="zf-cv-pad">{{ entry.contents }}</div>
+            {% endcase %}
         {% endcase %}
       </section>
     {% endfor %}
   </div>
 </div>
+
+<script src="{{ '/assets/zf/home.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>
+<script src="{{ '/assets/zf/cv.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>

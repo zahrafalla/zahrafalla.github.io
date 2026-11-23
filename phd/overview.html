@@ -3,18 +3,160 @@ layout: zf
 title: Overview
 head_title: Overview · Papers through my eyes
 permalink: /phd/overview/
-section: projects
+section: papers
 phd_tab: overview
-description: An overview of what the papers I have read say together. Coming soon.
+description: The papers I have read, seen three ways — on a timeline, by the people behind them, and by how they connect.
 ---
+{%- assign ov = site.data.overview -%}
+{%- assign npapers = site.data.papers | size -%}
+{%- assign nmarks = 0 -%}
+{%- assign nuses = 0 -%}
+{%- assign nexps = 0 -%}
+{%- for p in site.data.papers -%}
+  {%- assign nmarks = nmarks | plus: p.marks.size -%}
+  {%- assign nuses = nuses | plus: p.uses.size -%}
+  {%- assign nexps = nexps | plus: p.experiments.size -%}
+{%- endfor -%}
 {% include zf/phd-bar.liquid %}
 
-<header class="zf-row zf-pagehead">
-  <p class="zf-label b"><span class="n">03</span> Overview</p>
-  <h1 class="zf-big b">Overview</h1>
-  <p class="zf-lede b">This section is being built. It will show what the papers I have read say together, across all my notes.</p>
-</header>
+<h1 class="zf-sr">Overview: looking at papers differently</h1>
 
+<!-- ===================== NUMBERS ===================== -->
 <div class="zf-row">
-  <div class="w-full zf-soon zf-dots b" aria-hidden="true"><span>Coming soon</span></div>
+  <div class="w-full ov-stats">
+    <div class="b"><b data-count="{{ npapers }}">{{ npapers }}</b><span>papers read</span></div>
+    <div class="b"><b data-count="{{ nmarks }}">{{ nmarks }}</b><span>marks on their bars</span></div>
+    <div class="b"><b data-count="{{ nuses }}">{{ nuses }}</b><span>passages in my papers</span></div>
+    <div class="b"><b data-count="{{ nexps }}">{{ nexps }}</b><span>experiments</span></div>
+    <div class="b"><b data-count="{{ ov.people.size }}">{{ ov.people.size }}</b><span>people to know</span></div>
+    <div class="b"><b data-count="{{ ov.concepts.size }}">{{ ov.concepts.size }}</b><span>shared ideas</span></div>
+  </div>
 </div>
+
+<!-- ===================== THE BAR: THREE WAYS OF LOOKING ===================== -->
+<div class="zf-row ov-nav-row">
+  <nav class="w-full b ov-nav" role="tablist" aria-label="Ways of looking at the papers">
+    <a href="#timeline" role="tab" data-view="timeline">
+      <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M2 12h36" /><circle cx="8" cy="12" r="3" /><circle cx="19" cy="12" r="4.5" /><circle cx="32" cy="12" r="3" /></svg>
+      <span><small>01</small>Timeline</span>
+    </a>
+    <a href="#people" role="tab" data-view="people">
+      <svg viewBox="0 0 40 24" aria-hidden="true"><circle cx="13" cy="8" r="4" /><path d="M5 22c1-6 15-6 16 0" /><circle cx="27" cy="8" r="4" class="f" /><path d="M19 22c1-6 15-6 16 0" /></svg>
+      <span><small>02</small>People</span>
+    </a>
+    <a href="#connections" role="tab" data-view="connections">
+      <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M8 18l8-8h8l8-6M16 10v10" /><circle cx="8" cy="18" r="3.5" class="f" /><circle cx="16" cy="10" r="3.5" /><circle cx="24" cy="10" r="3.5" class="f" /><rect x="29" y="1" width="6" height="6" /><circle cx="16" cy="20" r="3" /></svg>
+      <span><small>03</small>Connections</span>
+    </a>
+    <span class="ov-nav-ink" aria-hidden="true"></span>
+  </nav>
+</div>
+
+<!-- ===================== 01 · TIMELINE ===================== -->
+<section class="zf-row ov-panel" id="timeline" data-view="timeline" role="tabpanel" aria-label="Timeline">
+  <div class="zf-row zf-shead">
+    <p class="zf-label b"><span class="n">01</span> Timeline</p>
+    <h2 class="zf-h zf-big b">What they build on</h2>
+  </div>
+  <div class="w-full b ov-board">
+    <div class="ov-board-h zf-meta">
+      <span>Papers I've read stack up by year (top); the older works they cite sit below. Before 2000, one cell is a decade.</span>
+      <span>Hover a circle</span>
+    </div>
+    <div class="ov-scroll"><svg class="ov-tl" id="ov-tl" role="img" aria-label="Timeline of the papers and their roots"></svg></div>
+    <div class="ov-info" id="ov-tl-info" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ===================== 02 · PEOPLE ===================== -->
+<section class="zf-row ov-panel" id="people" data-view="people" role="tabpanel" aria-label="People">
+  <div class="zf-row zf-shead">
+    <p class="zf-label b"><span class="n">02</span> People</p>
+    <h2 class="zf-h zf-big b">Who to know</h2>
+  </div>
+  <div class="w-full b ov-board-h ov-people-h zf-meta">
+    <span>Sorted by how many of my papers mention them; the coloured squares show which. Click a card to turn it over.</span>
+    <label class="ov-find"><span>Find</span><input type="search" id="ov-people-find" placeholder="a name or an idea" autocomplete="off" /></label>
+  </div>
+  {%- assign groups = 'author,other' | split: ',' -%}
+  {% for g in groups %}
+    <p class="w-full zf-label b ov-people-label">
+      {% if g == 'author' %}Authors of papers I've read{% else %}Names that keep coming up{% endif %}
+    </p>
+    <div class="w-full ov-people" data-limit="{% if g == 'author' %}8{% else %}12{% endif %}">
+      {%- for person in ov.people -%}
+        {%- assign want = false -%}
+        {%- if g == 'author' -%}
+          {%- if person.author -%}{%- assign want = true -%}{%- endif -%}
+        {%- else -%}
+          {%- unless person.author -%}{%- assign want = true -%}{%- endunless -%}
+        {%- endif -%}
+        {%- if want -%}
+          {%- assign n = 0 -%}
+          {%- capture dots -%}
+            {%- for p in site.data.papers -%}
+              {%- if p.mentions contains person.id -%}
+                {%- assign n = n | plus: 1 -%}
+                {%- if n <= 10 -%}<i style="--c: {{ p.color }}" title="{{ p.cite }}"></i>{%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endcapture -%}
+          {%- assign parts = person.name | split: ' ' -%}
+          {%- assign big = n | at_most: 5 -%}
+          <button
+            type="button"
+            class="ov-person{% if person.my_note %} has-note{% endif %}"
+            aria-pressed="false"
+            data-n="{{ n }}"
+            data-find="{{ person.name | downcase | escape }} {{ person.known | downcase | escape }}"
+            style="--n: {{ big }}"
+          >
+            <span class="ov-person-in">
+              <span class="ov-mono" aria-hidden="true">{{ parts.first | slice: 0, 1 }}{{ parts.last | slice: 0, 1 }}</span>
+              <b>{{ person.name }}</b>
+              <small>{{ person.known }}</small>
+              {% if person.my_note %}<span class="ov-person-mine"><em>✎ My note</em>{{ person.my_note }}</span>{% endif %}
+              <span class="ov-person-dots" aria-label="Mentioned in {{ n }} of my papers"
+                >{{ dots }}{% if n > 10 %}<em>+{{ n | minus: 10 }}</em>{% endif %}<em>{{ n }}/{{ npapers }}</em></span
+              >
+            </span>
+            <span class="ov-person-back">
+              <b>{{ person.name }}</b>
+              {% if person.where %}<small>{{ person.where }}</small>{% endif %}
+              <span class="ov-person-idea">{{ person.idea }}</span>
+              <span class="ov-person-read"><em>Read</em>{{ person.read }}</span>
+            </span>
+          </button>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  {% endfor %}
+</section>
+
+<!-- ===================== 03 · CONNECTIONS ===================== -->
+<section class="zf-row ov-panel" id="connections" data-view="connections" role="tabpanel" aria-label="Connections">
+  <div class="zf-row zf-shead">
+    <p class="zf-label b"><span class="n">03</span> Connections</p>
+    <h2 class="zf-h zf-big b">How it all connects</h2>
+  </div>
+  <div class="w-full b ov-net-box">
+    <div class="ov-net-wrap"><svg class="ov-net" id="ov-net" role="img" aria-label="Network of papers, shared ideas and my research questions"></svg></div>
+    <aside class="ov-net-side">
+      <div class="ov-info" id="ov-net-info" aria-live="polite"></div>
+      <ol class="ov-net-legend" id="ov-net-legend"></ol>
+    </aside>
+  </div>
+</section>
+
+<script>
+  window.OV = {
+    papers: {{ site.data.papers | jsonify }},
+    roots: {{ ov.roots | jsonify }},
+    concepts: {{ ov.concepts | jsonify }},
+    groups: {{ ov.concept_groups | jsonify }},
+    myPapers: {{ site.data.my_papers | jsonify }},
+    library: {{ '/phd/' | relative_url | jsonify }},
+    collage: {{ '/phd/collage/' | relative_url | jsonify }}
+  };
+</script>
+<script src="{{ '/phd/overview.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>

@@ -1,285 +1,138 @@
 ---
 layout: zf
 ---
+{%- comment -%}
+  The home page (About), kept simple: the intro, the news strip, what I study, and contact.
+  Content comes from the front matter of _pages/about.md;
+  the behaviour (the rolling word, live decision, portrait reveal, glyphs) is in assets/zf/home.js.
+{%- endcomment -%}
 {%- assign s = site.data.socials -%}
-{%- assign research = site.data.cv | where: 'title', 'Research Experience' | first -%}
-{%- assign pubs = site.data.cv | where: 'title', 'Publications & Presentations' | first -%}
-{%- assign awards = site.data.cv | where: 'title', 'Honors & Awards' | first -%}
-{%- assign academic = site.data.cv | where: 'title', 'Academic Experience' | first -%}
-{%- assign applied = site.data.cv | where: 'title', 'Professional & Applied Experience' | first -%}
-
 <!-- ===================== HERO ===================== -->
-<section class="zf-row zf-hero" id="top" aria-label="Introduction">
-  <h1 class="zf-hero-title zf-big b">{{ page.hero.title | default: 'Minds in virtual worlds' }}</h1>
-
-  <div class="zf-hero-left zf-stack">
-    <div class="zf-intro b">
-      <p class="zf-meta">{{ page.hero.kicker }}</p>
-      <h2 class="zf-big">
-        <a href="#about">
-          {{- page.hero.lede_before }}
-          <span class="zf-rotate" data-words="{{ page.hero.words | join: '|' }}">{{ page.hero.words | first }}</span>
-          {{ page.hero.lede_after -}}
-        </a>
-      </h2>
-      <div class="zf-intro-foot">
-        <span class="zf-meta">{{ page.hero.affiliation }} · {{ page.hero.location }}</span>
-        <a class="zf-red" href="{{ '/phd/' | relative_url }}">Paper library →</a>
-        <a class="zf-red" href="{{ '/cv/' | relative_url }}">CV</a>
-      </div>
-    </div>
-    <div class="zf-dotblock zf-dots b" aria-hidden="true">
-      <span>{{ page.hero.badge }}</span>
-    </div>
-
-    <div class="zf-cards">
-      {% for c in page.cards %}
-        <a class="zf-card snap" href="{{ c.url | relative_url }}">
-          <div class="zf-card-img">
-            {% if c.image %}
-              <img src="{{ c.image | prepend: '/assets/img/' | relative_url }}" alt="{{ c.alt }}" loading="lazy">
-            {% elsif c.art == 'swatch' %}
-              <div class="zf-swatch" aria-hidden="true">
-                <i></i><i class="dot" style="--c: var(--m-theory)"></i><i></i><i class="fill" style="--c: var(--m-experiment)"></i>
-                <i class="dot" style="--c: var(--m-important)"></i><i></i><i class="fill" style="--c: var(--m-idea)"></i><i></i> <i></i
-                ><i class="dot" style="--c: var(--m-theory)"></i><i></i><i class="dot" style="--c: var(--red)"></i>
-              </div>
-            {% else %}
-              <div class="zf-hatch" style="height: 100%" aria-hidden="true"></div>
-            {% endif %}
-          </div>
-          <div class="zf-card-body">
-            <h3>{{ c.title }}</h3>
-            <p class="zf-meta">{{ c.text }}</p>
-            <span class="zf-more">{{ c.more | default: 'Read more' }}</span>
-          </div>
-        </a>
-      {% endfor %}
-    </div>
+<section class="zf-row hm-hero" id="top" aria-label="Introduction">
+  <div class="hm-intro b hm-rv">
+    <p class="zf-meta hm-kicker">{{ page.hero.kicker }}</p>
+    <h1 class="hm-lede zf-big" aria-label="{{ page.hero.lede_before }} {{ page.hero.words | join: ', ' }}{{ page.hero.lede_after }}">
+      {{ page.hero.lede_before }}
+      <span class="hm-roll" aria-hidden="true"
+        ><span class="hm-roll-track">
+          {%- for w in page.hero.words -%}
+            <span>{{ w }}</span>
+          {%- endfor -%}
+        </span></span
+      >
+      {{- page.hero.lede_after }}
+    </h1>
   </div>
 
-  <div class="zf-hero-right zf-list b">
-    <div class="zf-list-head zf-meta">
-      <b>TIMELINE</b><span>{{ page.timeline.size }} entries</span>
+  <figure class="hm-portrait b">
+    <img class="hm-portrait-bw" src="{{ '/assets/img/prof_pic.jpg' | relative_url }}" alt="Portrait of Zahra Falah">
+    <div class="hm-cells" aria-hidden="true"></div>
+    <figcaption class="zf-meta">Zahra Falah</figcaption>
+  </figure>
+
+  <div class="hm-ddm b" id="hm-ddm">
+    <div class="hm-ddm-head zf-meta"><b>A decision, live</b><span id="hm-ddm-n">0 decisions</span></div>
+    <div class="hm-ddm-stage">
+      <span class="hm-ddm-b hm-ddm-b--up zf-meta">Left ↑</span>
+      <canvas aria-label="A drift diffusion model: noisy evidence moves until it reaches the upper or lower bound." role="img"></canvas>
+      <span class="hm-ddm-b hm-ddm-b--down zf-meta">Right ↓</span>
+      <span class="hm-ddm-flash" id="hm-ddm-flash" aria-hidden="true"></span>
     </div>
-    <ol>
-      {% for t in page.timeline %}
-        <li>
-          <span class="d">{{ t.date }}</span>
-          <span class="t">
-            <b>{{ t.tag }}</b> | {{ t.title }}
-            {% if t.meta -%}
-              <small>{{ t.meta }}</small>
-            {%- endif %}
-            {% if t.url -%}
-              <a class="zf-red" href="{{ t.url | relative_url }}">{{ t.link | default: 'Details' }}</a>
-            {%- endif %}
-          </span>
-        </li>
-      {% endfor %}
-    </ol>
-    <div class="zf-list-foot"><a class="zf-more" href="{{ '/cv/' | relative_url }}">Full CV</a></div>
+    <p class="hm-ddm-foot zf-meta">Noisy evidence piles up until it hits a bound. <b>Move your pointer up or down</b> to push it.</p>
   </div>
 </section>
 
-<!-- ===================== ABOUT ===================== -->
-<section class="zf-row" id="about" aria-labelledby="about-h">
+<!-- ===================== TICKER ===================== -->
+<div class="zf-row" aria-label="Highlights">
+  <div class="hm-ticker">
+    <div class="hm-ticker-track">
+      {%- for k in (1..2) -%}
+        <span
+          class="hm-ticker-set"
+          {% if k == 2 %}
+            aria-hidden="true"
+          {% endif %}
+        >
+          {%- for t in page.timeline -%}
+            <a
+              href="{{ t.url | relative_url }}"
+              {% if k == 2 %}
+                tabindex="-1"
+              {% endif %}
+              ><b>{{ t.tag }}</b> {{ t.title -}}</a
+            ><i>✦</i>
+          {%- endfor -%}
+        </span>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<!-- ===================== WHAT I STUDY ===================== -->
+<section class="zf-row" id="research" aria-labelledby="research-h">
   <div class="zf-row zf-shead">
-    <p class="zf-label b"><span class="n">01</span> About</p>
-    <h2 class="zf-h zf-big b" id="about-h">Minds, bodies &amp; virtual worlds</h2>
+    <p class="zf-label b">Research</p>
+    <h2 class="zf-h zf-big b" id="research-h" data-split>What I study</h2>
   </div>
-  <div class="w-main zf-about-text zf-prose b">
-    {{ content }}
-  </div>
-  {% if page.stats %}
-    <div class="w-side zf-stats">
-      {% for st in page.stats %}
-        <div class="zf-stat b">
-          <div class="zf-stat-num">
-            {{ st.num -}}
-            {%- if st.suffix -%}
-              <sup>{{ st.suffix }}</sup>
-            {%- endif %}
-          </div>
-          <p>{{ st.text }}</p>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-</section>
 
-<!-- ===================== INTERESTS ===================== -->
-{% if page.interests %}
-  <section class="zf-row" id="interests" aria-labelledby="interests-h">
-    <div class="zf-row zf-shead">
-      <p class="zf-label b"><span class="n">02</span> Interests</p>
-      <h2 class="zf-h zf-big b" id="interests-h">What keeps me curious</h2>
-    </div>
-    <div class="w-full zf-tiles">
+  {% if page.interests %}
+    <div class="w-full hm-glyphs">
       {% for it in page.interests %}
-        <article class="zf-tile b" style="--c: {{ it.color }}">
-          <div class="zf-tile-top">
-            <span>0{{ forloop.index }}</span><span class="sq"></span>
-          </div>
+        <article class="hm-glyph b hm-rv{% if it.wide %} is-wide{% endif %}" style="--c: {{ it.color }}" tabindex="0">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            {%- case it.glyph -%}
+              {%- when 'game' -%}
+                <path d="M11 17 H37 C44 17 47 31 43 37 C40 41 35 39 32 34 H16 C13 39 8 41 5 37 C1 31 4 17 11 17 Z" pathLength="1" />
+                <path d="M15 23 V31 M11 27 H19" pathLength="1" />
+                <circle class="f" cx="32" cy="24" r="3" />
+                <circle class="f" cx="37" cy="29" r="3" />
+              {%- when 'hci' -%}
+                <circle class="f" cx="15" cy="11" r="7" />
+                <path d="M15 11 L15 37 L21 31 L26 41 L30 39 L25 29 L33 29 Z" pathLength="1" />
+                <path d="M4 11 h4 M15 0 v4 M7 3 l3 3" pathLength="1" />
+              {%- when 'vr' -%}
+                <path d="M5 17 H43 V33 H30 L24 28 L18 33 H5 Z" pathLength="1" />
+                <circle class="f" cx="14" cy="24" r="3.5" />
+                <circle class="f" cx="34" cy="24" r="3.5" />
+                <path d="M9 17 C 12 7, 36 7, 39 17" pathLength="1" />
+              {%- when 'decision' -%}
+                <path class="dash" d="M4 8 H44 M4 40 H44" pathLength="1" />
+                <path d="M4 24 L8 21 L11 26 L15 19 L18 22 L22 14 L25 18 L29 12 L32 15 L36 8" pathLength="1" />
+                <circle class="f" cx="36" cy="8" r="3.5" />
+              {%- when 'embodied' -%}
+                <circle class="f" cx="25" cy="8" r="4.5" />
+                <path d="M24 13 L21 27 L13 41 M21 27 L30 33 L33 43 M23 17 L12 22 M23 17 L33 13 L41 16" pathLength="1" />
+              {%- when 'edtech' -%}
+                <path d="M6 42 H22 V26 H6 Z M22 42 H38 V26 H22 Z M14 26 H30 V10 H14 Z" pathLength="1" />
+                <rect class="f" x="30" y="10" width="12" height="12" />
+              {%- when 'model' -%}
+                <path d="M6 4 V42 H44" pathLength="1" />
+                <path d="M8 38 C 20 38, 22 10, 42 10" pathLength="1" />
+                <circle class="f" cx="25" cy="24" r="3.5" />
+              {%- else -%}
+                <rect class="f" x="12" y="12" width="24" height="24" />
+            {%- endcase -%}
+          </svg>
           <h3>{{ it.title }}</h3>
           <p>{{ it.text }}</p>
         </article>
       {% endfor %}
     </div>
-  </section>
-{% endif %}
-
-<!-- ===================== RESEARCH ===================== -->
-{% if research %}
-  <section class="zf-row" id="research" aria-labelledby="research-h">
-    <div class="zf-row zf-shead">
-      <p class="zf-label b"><span class="n">03</span> Research</p>
-      <h2 class="zf-h zf-big b" id="research-h">Experiments I have built</h2>
-    </div>
-    <div class="w-full zf-table b">
-      {% for r in research.contents %}
-        <div class="zf-table-row">
-          <div class="yr">{{ r.year }}</div>
-          <div>
-            <h3>{{ r.title }}</h3>
-            {% if r.institution %}
-              <p class="inst">{{ r.institution }}</p>
-            {% endif %}
-          </div>
-          <div>
-            {% if r.description %}
-              <ul>
-                {% for d in r.description %}
-                  <li>{{ d }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  </section>
-{% endif %}
-
-<!-- ===================== MY PHD ===================== -->
-<section class="zf-row" id="phd" aria-labelledby="phd-h">
-  <div class="zf-row zf-shead">
-    <p class="zf-label b"><span class="n">04</span> My PhD</p>
-    <h2 class="zf-h zf-big b" id="phd-h">Papers through my eyes</h2>
-  </div>
-  <div class="w-main zf-stack">
-    <div class="zf-phd-text b">
-      <p class="zf-meta" style="text-transform: uppercase">Collaborative · Embodied · Learning · Mathematics · VR</p>
-      <h3 class="zf-big">Collaborative, embodied <span class="zf-under">mathematics</span> in virtual reality</h3>
-      <p>
-        This is how I read for my PhD. Every paper becomes a bar as long as its pages, and the circles on it mark its theories, its experiments, what
-        matters for my work, and the ideas it gives me for my thesis.
-      </p>
-      <a class="zf-red" href="{{ '/phd/' | relative_url }}">Open the library →</a>
-    </div>
-    <div class="zf-phd-sky b" aria-hidden="true">
-      <canvas data-sky></canvas>
-      <div class="zf-legend">
-        <span><i style="--c: var(--m-theory)"></i>Theory</span>
-        <span><i style="--c: var(--m-experiment)"></i>Experiment</span>
-        <span><i style="--c: var(--m-important)"></i>Important for my work</span>
-        <span><i style="--c: var(--m-idea)"></i>Idea for my thesis</span>
-      </div>
-    </div>
-  </div>
-  <nav class="w-side zf-links b" aria-label="PhD project sections">
-    <a href="{{ '/phd/' | relative_url }}"><b>Library</b><small>The papers I've read, each as a page bar</small><span class="arr">→</span></a>
-    <a href="{{ '/phd/collage/' | relative_url }}"><b>Paper collage</b><small>Coming soon</small><span class="arr">→</span></a>
-    <a href="{{ '/phd/overview/' | relative_url }}"><b>Overview</b><small>Coming soon</small><span class="arr">→</span></a>
-  </nav>
-</section>
-
-<!-- ===================== PUBLICATIONS & AWARDS ===================== -->
-<section class="zf-row" id="publications" aria-labelledby="pubs-h">
-  <div class="zf-row zf-shead">
-    <p class="zf-label b"><span class="n">05</span> Output</p>
-    <h2 class="zf-h zf-big b" id="pubs-h">Publications &amp; awards</h2>
-  </div>
-  {% if pubs %}
-    <div class="w-main zf-pubs b">
-      {% for p in pubs.contents %}
-        <article class="zf-pub">
-          <div class="zf-pub-top">
-            <span class="zf-tag">{{ p.year }}</span>
-            {% if p.maindescription contains 'Award' %}
-              <span class="zf-tag zf-tag--red">Award</span>
-            {% elsif p.maindescription contains 'preparation' %}
-              <span class="zf-tag">In preparation</span>
-            {% endif %}
-          </div>
-          <h3>{{ p.title }}</h3>
-          {% if p.maindescription %}
-            <p class="venue">{{ p.maindescription }}</p>
-          {% endif %}
-          {% if p.description %}
-            <p>{{ p.description | first }}</p>
-          {% endif %}
-        </article>
-      {% endfor %}
-    </div>
   {% endif %}
-  {% if awards %}
-    <div class="w-side zf-list b">
-      <div class="zf-list-head zf-meta">
-        <b>HONOURS</b><span>{{ awards.contents.size }}</span>
-      </div>
-      <ul class="zf-awards">
-        {% for a in awards.contents %}
-          {% for item in a.items %}
-            <li>
-              <span class="yr">{{ a.year }}</span><span>{{ item }}</span>
-            </li>
-          {% endfor %}
-        {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
-</section>
-
-<!-- ===================== BEYOND THE LAB ===================== -->
-<section class="zf-row" id="beyond" aria-labelledby="beyond-h">
-  <div class="zf-row zf-shead">
-    <p class="zf-label b"><span class="n">06</span> Teaching</p>
-    <h2 class="zf-h zf-big b" id="beyond-h">Beyond the lab</h2>
-  </div>
-  <div class="w-full zf-tiles zf-tiles--4">
-    {%- assign rail_items = academic.contents | concat: applied.contents -%}
-    {% for c in rail_items %}
-      <article class="zf-tile b">
-        <div class="zf-tile-top">
-          <span>{{ c.year }}</span><span>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
-        </div>
-        <h3>{{ c.title }}</h3>
-        {% if c.institution %}
-          <p class="where">{{ c.institution }}</p>
-        {% endif %}
-        {% if c.description %}
-          <ul>
-            {% for d in c.description %}
-              <li>{{ d }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </article>
-    {% endfor %}
-  </div>
 </section>
 
 <!-- ===================== CONTACT ===================== -->
 <section class="zf-row" id="contact" aria-labelledby="contact-h">
   <div class="zf-row zf-shead">
-    <p class="zf-label b"><span class="n">07</span> Contact</p>
-    <h2 class="zf-h zf-big b" id="contact-h">Let's explore together</h2>
+    <p class="zf-label b">Contact</p>
+    <h2 class="zf-h zf-big b" id="contact-h" data-split>Let's explore together</h2>
   </div>
-  <div class="w-full zf-contact b">
-    <p>I'm always happy to talk about VR experiments, embodied interaction, decision-making or game-based learning, and about new collaborations.</p>
+  <div class="w-full zf-contact b hm-rv">
+    <p>
+      I'm always happy to talk about serious games, experiments, embodied interaction, decision-making and learning, and about new collaborations.
+    </p>
     {% if s.email -%}
-      <a class="zf-mail" href="mailto:{{ s.email }}">{{ s.email }}</a>
+      <a class="zf-mail hm-mail" href="mailto:{{ s.email }}" data-split>{{ s.email }}</a>
     {%- endif %}
     <div class="zf-contact-links">
       {% if s.linkedin_username %}
@@ -292,3 +145,5 @@ layout: zf
     </div>
   </div>
 </section>
+
+<script src="{{ '/assets/zf/home.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>

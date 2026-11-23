@@ -1,0 +1,100 @@
+# -----------------------------------------------------------------------------
+# The papers I want to write at the end of my thesis.
+# The Paper collage (/phd/collage/) builds each one from passages of papers I've
+# read; the passages themselves live under `uses:` in _data/papers.yml.
+#
+# id        short slug, referred to by `uses: - paper: <id>` in papers.yml
+# label     short name shown on tags
+# title     working title
+# sections  key (referred to by `uses: - section: <key>`), title, goal
+# questions my research questions for this paper; `from: notes` marks the ones that come from
+#           my own Zotero notes, the others are drafts. `ideas` are concept ids from
+#           _data/overview.yml — they appear in the Overview's Connections as square nodes
+#           linked to those ideas
+# -----------------------------------------------------------------------------
+
+- id: embodied-learning
+  label: Paper A
+  title: Embodied learning (beyond VR)
+  about: >-
+    Why the body takes part in learning, and how simplified, bodily practice can help people learn, in any medium, not only in
+    virtual reality.
+  sections:
+    - key: intro
+      title: Introduction
+      goal: Why learning cannot be understood as something that happens only in the head.
+    - key: background
+      title: Theoretical background
+      goal: The ideas the paper stands on, from embodied and enactive cognition to thinking with things.
+    - key: method
+      title: Method
+      goal: How practice conditions are compared and how learning is measured.
+    - key: results
+      title: Hypotheses & expected results
+      goal: What we expect, stated so it can be tested.
+    - key: discussion
+      title: Discussion
+      goal: Why doing differs from watching and imagining, and what that means for teaching.
+    - key: conclusion
+      title: Conclusion
+      goal: The take-home message for learning and design.
+  questions:
+    - id: rq1
+      text: >-
+        Does practising a simplified, partial version of a movement help people learn as much as practising it in full, and more
+        than rehearsing it mentally?
+      ideas: [marking, simulation, design]
+    - id: rq2
+      text: Through which route (state, priming or sensorimotor simulation) does bodily practice change learning?
+      ideas: [routes, simulation, grounded]
+    # from my Zotero notes (Kirsh 2013, p. 5)
+    - id: rq7
+      from: notes
+      text: >-
+        If learners can choose between a simple, a medium and a difficult model of a task in VR, which one do they work with, and how
+        does that change what they learn?
+      ideas: [marking, simulation, design]
+
+- id: cel-math-vr
+  label: Paper B
+  title: Collaborative embodied learning of mathematics in virtual reality
+  about: >-
+    How two learners who share a virtual space learn mathematics with their hands and bodies, and how the VR environment can be
+    designed to support it.
+  sections:
+    - key: intro
+      title: Introduction
+      goal: Why bodily, shared interaction in VR is a new opportunity for learning mathematics.
+    - key: related
+      title: Related work
+      goal: What we already know about gesture, external structure and mathematical thinking.
+    - key: design
+      title: The VR environment
+      goal: The design choices of the learning environment, and the reasons for them.
+    - key: method
+      title: Method
+      goal: Participants, roles within the dyad, tasks and measures.
+    - key: discussion
+      title: Discussion
+      goal: What the results mean for collaborative embodied learning.
+    - key: limits
+      title: Limitations & future work
+      goal: What this study cannot answer yet.
+  questions:
+    - id: rq3
+      text: How do two learners use gesture and shared manipulation to reach mathematical insight together in VR?
+      ideas: [gesture, collaboration, maths, mirror, language]
+    - id: rq4
+      text: >-
+        How should a shared VR space be designed (feedback timing, reach, scaffolds, cued movement) to support collaborative
+        embodied learning of mathematics?
+      ideas: [design, body-schema, directed, collaboration]
+    # from my Zotero notes (Kirsh 2013, p. 20; Nathan & Walkington 2017, p. 5)
+    - id: rq5
+      from: notes
+      text: When a learner watches a partner act on objects in VR, without talking, does it change what they learn?
+      ideas: [collaboration, mirror, gesture, maths]
+    - id: rq6
+      from: notes
+      text: In VR, is a directed action enough on its own, because immersion does part of the work that language does on paper?
+      ideas: [directed, dual, design, language]

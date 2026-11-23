@@ -1,0 +1,169 @@
+{%- comment -%}
+  One paper I will write, collaged from passages of papers I have read.
+  Used by phd/collage-<id>.html pages; set `my_paper: <id>` in their front matter.
+  Every passage is one tile, coloured by the paper it comes from; phd/collage.js
+  shows its text on hover / click and filters tiles by source paper.
+{%- endcomment -%}
+{%- assign mp = site.data.my_papers | where: 'id', page.my_paper | first -%}
+{%- assign letters = 'ABCDEFGHIJ' -%}
+{%- assign mp_index = 0 -%}
+{%- for x in site.data.my_papers -%}
+  {%- if x.id == mp.id -%}{%- assign mp_index = forloop.index0 -%}{%- endif -%}
+{%- endfor -%}
+{%- assign letter = letters | slice: mp_index, 1 -%}
+{%- assign total = 0 -%}
+{%- assign nsources = 0 -%}
+{%- for p in site.data.papers -%}
+  {%- assign n = p.uses | where: 'paper', mp.id | size -%}
+  {%- if n > 0 -%}
+    {%- assign total = total | plus: n -%}
+    {%- assign nsources = nsources | plus: 1 -%}
+  {%- endif -%}
+{%- endfor -%}
+
+<div class="zf-row cl-sheet" id="cl-sheet" data-paper="{{ mp.id }}">
+  <!-- ===================== HEAD ===================== -->
+  <div class="zf-row cl-head">
+    <p class="cl-letter b" aria-hidden="true">
+      <span>{{ letter }}</span>
+    </p>
+    <h1 class="cl-title zf-big b">{{ mp.title }}</h1>
+    <p class="cl-about b">
+      <span class="zf-meta">
+        {{- mp.label }} · working title · <b data-count="{{ total }}">{{ total }}</b> passages from {{ nsources }} papers</span
+      >
+      {{ mp.about }}
+    </p>
+  </div>
+
+  <!-- ===================== SWITCH BETWEEN MY PAPERS ===================== -->
+  <nav class="zf-row cl-switch" aria-label="My papers">
+    <a class="zf-label b cl-back" href="{{ '/phd/collage/' | relative_url }}">← All my papers</a>
+    <div class="b cl-switch-tabs">
+      {% for x in site.data.my_papers %}
+        <a
+          href="{{ '/phd/collage/' | append: x.id | append: '/' | relative_url }}"
+          {% if x.id == mp.id %}
+            class="is-active" aria-current="page"
+          {% endif %}
+          ><b>{{ letters | slice: forloop.index0, 1 }}</b>{{ x.title -}}
+        </a>
+      {% endfor %}
+    </div>
+  </nav>
+
+  <!-- ===================== SOURCES: CLICK TO FILTER ===================== -->
+  <div class="zf-row">
+    <div class="w-full b cl-sources" role="group" aria-label="Show passages from one paper">
+      <p class="cl-sources-h zf-meta">
+        <span>Papers I've read · click a square to see only its passages</span
+        ><b class="cl-sources-now" aria-live="polite">All papers · {{ total }} passages</b>
+      </p>
+      <div class="cl-sources-list">
+        {% for p in site.data.papers %}
+          {%- assign n = p.uses | where: 'paper', mp.id | size -%}
+          {% if n > 0 %}
+            <button type="button" class="cl-source" data-src="{{ p.id }}" aria-pressed="false" style="--c: {{ p.color }}">
+              <span class="cl-source-sq" aria-hidden="true">
+                {{- p.short -}}
+                <small>{{ n }}</small></span
+              >
+              <span class="cl-source-t"
+                ><b>{{ p.cite }}</b
+                ><small>
+                  {{- n }} passage{% if n != 1 %}s{% endif -%}
+                </small></span
+              >
+            </button>
+          {% endif %}
+        {% endfor %}
+        <button type="button" class="cl-source cl-source--all" data-src="" aria-pressed="true">
+          <span class="cl-source-sq" aria-hidden="true"
+            >ALL<small>{{ total }}</small></span
+          >
+          <span class="cl-source-t"
+            ><b>All papers</b><small>{{ total }} passages</small></span
+          >
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== THE MANUSCRIPT ===================== -->
+  {%- assign i = 0 -%}
+  {% for sec in mp.sections %}
+    {%- assign secnum = forloop.index | prepend: '0' | slice: -2, 2 -%}
+    <section class="zf-row cl-sec" id="{{ sec.key }}" aria-labelledby="{{ sec.key }}-h">
+      <div class="cl-sec-label b">
+        <span class="n">
+          {{- letter -}}
+          {{- secnum -}}
+        </span>
+        <h2 id="{{ sec.key }}-h">{{ sec.title }}</h2>
+        <p>{{ sec.goal }}</p>
+      </div>
+      <div class="cl-tiles">
+        {%- assign n = 0 -%}
+        {% for p in site.data.papers %}
+          {% for u in p.uses %}
+            {% if u.paper == mp.id and u.section == sec.key %}
+              {%- assign n = n | plus: 1 -%}
+              {%- assign i = i | plus: 1 -%}
+              {%- if p.first_page -%}
+                {%- assign pg = p.first_page | plus: u.page | minus: 1 -%}
+              {%- else -%}
+                {%- assign pg = u.page -%}
+              {%- endif -%}
+              {%- assign ty = site.data.mark_types | where: 'key', u.type | first -%}
+              <button
+                type="button"
+                class="cl-tile"
+                data-src="{{ p.id }}"
+                style="--c: {{ p.color }}; --i: {{ i }}"
+                aria-label="{{ p.cite }}, page {{ pg }}: {{ u.passage | escape }}"
+              >
+                <span class="cl-tile-pg" aria-hidden="true">p.{{ pg }}</span>
+                <span class="cl-tile-ty" aria-hidden="true" title="{{ ty.label }}">
+                  {%- case u.type -%}
+                    {%- when 'theory' -%}
+                      ●
+                    {%- when 'experiment' -%}
+                      ■
+                    {%- when 'important' -%}
+                      ▲
+                    {%- when 'framework' -%}
+                      ◆
+                    {%- when 'concept' -%}
+                      ◐
+                    {%- when 'people' -%}
+                      ☺
+                    {%- when 'gap' -%}
+                      ○
+                    {%- else -%}
+                      ✦
+                  {%- endcase -%}
+                </span>
+                <span class="cl-tile-code" aria-hidden="true">{{ p.short }}</span>
+                <template>
+                  <div class="cl-card-top">
+                    <i></i><b>{{ p.cite }}</b><span>p. {{ pg }}</span><span>{{ ty.label }}</span>
+                  </div>
+                  <q>{{ u.passage }}</q>
+                  <p class="cl-card-use">Suggested text · {{ sec.title }}</p>
+                  <p class="cl-card-suggest">{{ u.suggest }}</p>
+                  <a class="zf-red" href="{{ '/phd/' | relative_url }}#{{ p.id }}/p{{ u.page }}">Open on the page bar →</a>
+                </template>
+              </button>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        {% if n == 0 %}
+          <div class="cl-tile cl-tile--empty zf-hatch" style="--i: {{ i }}"><span>no passage yet</span></div>
+        {% endif %}
+      </div>
+    </section>
+  {% endfor %}
+</div>
+
+<!-- the card that shows a tile's text (filled by collage.js) -->
+<div class="cl-card" id="cl-card" role="dialog" aria-live="polite" hidden></div>
