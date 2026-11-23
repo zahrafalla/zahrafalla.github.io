@@ -9,12 +9,19 @@ ninja.data = [{
     handler: () => {
       window.location.href = "/";
     },
-  },{id: "nav-projects",
-          title: "projects",
-          description: "Research tools, experiments and playful learning environments, from VR studies to an interactive universe of PhD literature.",
+  },{id: "nav-games",
+          title: "games",
+          description: "Serious games I design, to teach and to study how people learn, think and decide.",
           section: "Navigation",
           handler: () => {
-            window.location.href = "/projects/";
+            window.location.href = "/games/";
+          },
+        },{id: "nav-library",
+          title: "Library",
+          description: "The papers I have read for my PhD. Each paper becomes a grid of its paragraphs, coloured by its theories, frameworks, concepts, experiments, people, what matters for my work, ideas to build and gaps.",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/phd/";
           },
         },{id: "nav-cv",
           title: "cv",
