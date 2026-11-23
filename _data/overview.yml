@@ -11,6 +11,11 @@
 # -----------------------------------------------------------------------------
 
 roots:
+  - id: dewey-1910
+    year: 1910
+    who: Dewey
+    title: How We Think
+    note: Understanding turns the strange and perplexing into the plain and familiar.
   - id: vygotsky-1934
     year: 1934
     who: Vygotsky
@@ -31,6 +36,11 @@ roots:
     who: Gibson
     title: The Senses Considered as Perceptual Systems
     note: Perception defined by what the perceiver can do; affordances.
+  - id: bruner-1966
+    year: 1966
+    who: Bruner
+    title: Toward a Theory of Instruction
+    note: "Enactive, iconic, symbolic: the root of concreteness fading."
   - id: piaget-1968
     year: 1968
     who: Piaget
@@ -46,16 +56,36 @@ roots:
     who: Lakoff & Johnson
     title: Metaphors We Live By
     note: Abstract concepts are grounded in bodily experience through metaphor.
+  - id: papert-1980
+    year: 1980
+    who: Papert
+    title: "Mindstorms: the gears of my childhood"
+    note: Gears made equations a comfortable friend.
+  - id: gentner-1983
+    year: 1983
+    who: Gentner & Gentner
+    title: Flowing waters or teeming crowds
+    note: Mental models of electricity as water or as crowds.
   - id: strack-1988
     year: 1988
     who: Strack et al.
     title: The pen study (facial feedback)
     note: Holding a pen so as to smile or not changes how funny cartoons seem.
+  - id: harnad-1990
+    year: 1990
+    who: Harnad
+    title: The symbol grounding problem
+    note: Symbols mean nothing until they are grounded.
   - id: varela-1991
     year: 1991
     who: Varela et al.
     title: The Embodied Mind
     note: Cognition as enaction; the classic statement of embodied cognitive science.
+  - id: wilensky-1991
+    year: 1991
+    who: Wilensky
+    title: Abstract meditations on the concrete
+    note: Concreteness is a property of a person's relation to an object.
   - id: kirsh-maglio-1994
     year: 1994
     who: Kirsh & Maglio
@@ -91,6 +121,16 @@ roots:
     who: Goldin-Meadow
     title: Hearing Gesture
     note: How our hands help us think.
+  - id: kaminski-2008
+    year: 2008
+    who: Kaminski et al.
+    title: The advantage of abstract examples in learning math
+    note: Concrete examples hurt transfer; later replications disagree.
+  - id: chalmers-2011
+    year: 2011
+    who: Chalmers
+    title: Verbal disputes
+    note: Disagreements that exist only because of what a word means.
   - id: lindgren-johnson-glenberg-2013
     year: 2013
     who: Lindgren & Johnson-Glenberg
@@ -101,6 +141,11 @@ roots:
     who: Nathan et al.
     title: Actions speak louder with words
     note: Directed actions give insight; actions with language give proof.
+  - id: fyfe-2014
+    year: 2014
+    who: Fyfe et al.
+    title: Concreteness fading in mathematics and science instruction
+    note: Going from concrete to abstract beats either one alone.
 
 people:
   - id: barsalou
@@ -247,6 +292,58 @@ people:
     known: Enactive perception
     idea: Perceiving is a skilled activity, not passive reception.
     read: Action in Perception (2005)
+  - id: chatain
+    name: Julia Chatain
+    known: Embodied concreteness and VR for mathematics learning
+    where: ETH Zurich
+    idea: "'Concrete' has many meanings; embodied concreteness grounds abstract maths without hurting transfer."
+    read: >-
+      Grounding Graph Theory in Embodied Concreteness with VR (2023); Concreteness and Abstraction in Mathematics Education (2025)
+    author: true
+  - id: kapur
+    name: Manu Kapur
+    known: "Productive failure: problem solving before instruction"
+    where: ETH Zurich
+    idea: >-
+      Struggling with problems before being taught prepares learners to learn from the instruction that follows.
+    read: Co-author of both Chatain papers (2023, 2025)
+    author: true
+  - id: mueller
+    name: Charlotte Müller
+    known: Grounding quantum chemistry in sensory experience
+    where: ETH Zurich
+    idea: Scientific concepts nobody can perceive can be grounded in haptic, sensory experience.
+    read: Concreteness and Abstraction in Mathematics Education (2025)
+    author: true
+  - id: wilensky
+    name: Uri Wilensky
+    known: Concreteness as a relationship; NetLogo
+    where: Northwestern University
+    idea: Something is concrete for a person when they have many connections to it; learning is concretion.
+    read: Abstract meditations on the concrete (1991)
+  - id: fyfe
+    name: Emily R. Fyfe
+    known: Concreteness fading
+    idea: >-
+      Moving from concrete to idealized representations supports transfer; concrete and idealized form a spectrum.
+    read: Fyfe et al. (2014); Fyfe & Nathan (2019)
+  - id: bruner
+    name: Jerome Bruner
+    known: Enactive, iconic and symbolic representation
+    idea: Knowledge is first held in action, then in images, then in symbols.
+    read: Toward a Theory of Instruction (1966)
+  - id: papert
+    name: Seymour Papert
+    known: Logo and constructionism; 'The gears of my childhood'
+    where: MIT
+    idea: We learn by building with things we love; gears made algebra concrete for him.
+    read: Mindstorms (1980)
+  - id: kaminski
+    name: Jennifer A. Kaminski
+    known: The advantage of abstract examples (2008)
+    idea: >-
+      Generic, abstract examples transferred better than concrete ones; later replications softened the claim.
+    read: Kaminski, Sloutsky & Heckler (2008)
 
 # concept groups use the colours of the connections picture
 concept_groups:
@@ -326,6 +423,12 @@ concepts:
     label: Action with language
     group: meaning
     text: Putting bodily experience into words turns it into concepts and proof.
+  - id: concreteness
+    label: Concrete & abstract
+    group: learning
+    text: >-
+      "Concrete" means many things (familiar, situated, sensory, experiential, physical); a representation can be concrete on one
+      axis and abstract on another.
   - id: collaboration
     label: Collaboration · my gap
     group: gap

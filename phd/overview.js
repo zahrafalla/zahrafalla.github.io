@@ -259,7 +259,7 @@
     });
     var H = Math.ceil(top + 1.6 + lanes * 0.62 + 1.2);
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-    svg.style.minWidth = W * 34 + "px";
+    svg.style.minWidth = W * 26 + "px"; // a cell may shrink to 26px before the timeline scrolls sideways
     svg.classList.toggle("is-many", papers.length > 12);
     svg.innerHTML = "";
 

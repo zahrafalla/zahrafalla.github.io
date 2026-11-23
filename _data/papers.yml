@@ -1659,3 +1659,803 @@
       suggest: >-
         Abstract mathematical concepts may be easier to grasp inside a meaningful situation (Barsalou, 2008); future work should compare
         situated and bare versions of the tasks.
+
+- id: chatain-2023
+  title: Grounding Graph Theory in Embodied Concreteness with Virtual Reality
+  authors: Julia Chatain, Rudolf Varga, Violaine Fayolle, Manu Kapur, Robert W. Sumner
+  cite: Chatain et al. 2023
+  short: CH23
+  color: "#62b6e8"
+  year: 2023
+  venue: "TEI '23: 17th International Conference on Tangible, Embedded, and Embodied Interaction"
+  doi: 10.1145/3569009.3572733
+  pages: 13
+  read: 2026-11
+  ideas: [concreteness, grounded, routes, metaphor, design, maths, gesture]
+  builds_on:
+    [
+      dewey-1910,
+      bruner-1966,
+      lakoff-johnson-1980,
+      papert-1980,
+      gentner-1983,
+      harnad-1990,
+      wilensky-1991,
+      lakoff-nunez-2000,
+      kaminski-2008,
+      chalmers-2011,
+      fyfe-2014,
+    ]
+  mentions:
+    [
+      chatain,
+      kapur,
+      mueller,
+      nathan,
+      walkington,
+      abrahamson,
+      lindgren,
+      johnson-glenberg,
+      koerner,
+      lakoff,
+      johnson,
+      nunez,
+      papert,
+      wilensky,
+      fyfe,
+      kaminski,
+      goldin-meadow,
+      bruner,
+    ]
+  cites: [nathan-walkington-2017, koerner-2015, abrahamson-lindgren-2014]
+  summary: >-
+    A VR activity for the maximum-flow problem in graph theory: graphs become pipe networks carrying water from a lake to a town, and
+    learners set the flow with two hands. With 89 students, solving problems in VR (embodied concreteness) or on a tablet (manipulated
+    concreteness) both raised attention, confidence and satisfaction over paper, but only VR raised perceived relevance and grounding,
+    and only the tablet hurt performance on abstract problems.
+  experiments:
+    - id: graph-usability
+      title: Pipes in VR or on a tablet
+      page: 5
+      own: true
+      n: 26
+      who: adults in Zurich and Budapest, none with VR experience
+      design: between subjects, solving max-flow problems before a short video (problem solving, then instruction)
+      conditions: [Tablet, VR]
+      manipulated: [Device and degree of embodiment]
+      measured: [Usability (SUS), Simulator sickness (SSQ), Time]
+      tags: [self, rt]
+      tools: [VR hand tracking, Tablet, System Usability Scale, Simulator Sickness Questionnaire, Ford–Fulkerson video]
+      result: No difference in usability (VR 81, tablet 87) or sickness; VR took longer because people moved more.
+    - id: graph-concreteness
+      title: Abstract, manipulated or embodied graphs
+      page: 6
+      own: true
+      n: 89
+      who: bachelor students in a Data Structures and Algorithms course (ETH Zurich)
+      design: between subjects; problem solving in one condition, then the regular lecture
+      conditions: [Graphs on paper, Graphs on a tablet, Pipes in VR]
+      manipulated: [Kind of concreteness]
+      measured: [Attention, Relevance, Confidence, Satisfaction, Perceived grounding, Transfer to three representations]
+      tags: [self, perf, learn]
+      tools: [VR hand tracking, Tablet, IMMS (ARCS), Body awareness questionnaire, Math anxiety scale (AMAS), Bayesian ANOVA]
+      result: >-
+        Both concrete conditions raised attention, confidence and satisfaction; only VR raised relevance and grounding; only the tablet
+        lowered abstract performance.
+  marks:
+    - page: 1
+      para: 4
+      type: important
+      title: "Embodied concreteness: relevant, and no cost to transfer"
+      text: >-
+        Both tablet and VR raised attention, confidence and satisfaction; only embodied concreteness in VR raised perceived relevance
+        and grounding, and unlike the tablet it did not hurt learning or transfer.
+      quote: >-
+        only embodied concreteness increases perceived relevance and grounding. Moreover, unlike manipulated concreteness, embodied concreteness
+        does not impair learning outcomes nor transfer abilities.
+    - page: 2
+      para: 2
+      type: gap
+      title: A verbal dispute about 'concrete'
+      text: >-
+        In just two papers, 'concrete' meant meaningful, familiar, physical, grounded, pictorial, enactive, real-life or informal, and
+        'abstract' general, symbolic or vague. The field does not agree on its key word.
+      quote: There is a verbal dispute in the field of concreteness for mathematics education.
+    - page: 2
+      para: 4
+      type: concept
+      title: Grounding
+      text: >-
+        Mapping new ideas and symbols to experiences in a particular modality that are personally meaningful (Nathan 2021).
+      quote: >-
+        the process of mapping “novel ideas and symbols to modality-specific experiences that are personally meaningful”
+    - page: 2
+      para: 5
+      type: concept
+      title: Three kinds of concrete
+      text: >-
+        Concrete as sensed (it can be touched or seen), as specific (versus general), and as relatable (Dewey). They do not always align:
+        2x − 4 = 0 cannot be touched, yet it is concrete to a mathematician.
+      quote: This distinction is important as not all concretenesses align.
+    - page: 2
+      para: 6
+      type: people
+      title: Papert's gears and Wilensky's concretion
+      text: >-
+        Papert's gears were a 'comfortable friend' that helped him grasp equations. For Wilensky, learning is concretion: growing connections
+        with something until it becomes relatable.
+      quote: >-
+        From this perspective, learning is a process of concretion, where one grows connections with an abstract element until it is relatable,
+        and in that sense, concrete
+    - page: 3
+      para: 5
+      type: theory
+      title: Thinking as truncated action
+      text: >-
+        Learners' bodies take part in learning; thinking is a truncated action whose sensorimotor processes run without showing outside
+        (Abrahamson & Lindgren), and cognition is situated.
+      quote: >-
+        thinking is described as a form of truncated action, where the sensorimotor processes related to the action are engaged, but not
+        tangibly expressed externally
+    - page: 3
+      para: 6
+      type: framework
+      title: Degrees of embodiment
+      text: >-
+        Embodiment comes in degrees, built from sensorimotor engagement, gestural congruency and immersion (Johnson-Glenberg). 'Embodied
+        concreteness' is concreteness with a high degree of embodiment in a situated, relatable context.
+      quote: >-
+        we define “embodied concreteness” as a form of concreteness that involves a high degree of embodiment, in a situated and relatable
+        context.
+    - page: 4
+      para: 2
+      type: concept
+      title: The WATER-FLOW schema
+      text: >-
+        Electricity is understood through two embodied schemata, flowing water and moving crowds (Gentner & Gentner 1983). They chose
+        water: a graph becomes pipes between water towers, from a lake (source) to a town (sink).
+      quote: >-
+        a graph is represented as a pipe network (edges) between water towers (vertices), and a simple simulation of the water flow through
+        the pipes is displayed in real time.
+    - page: 4
+      para: 5
+      type: important
+      title: Two hands measure the flow
+      text: >-
+        One hand holds the bottom of the pipe, the other sets the water level: the capacity equals the distance between the hands. They
+        got there by testing with six users, starting from a one-handed version.
+      quote: >-
+        it strengthens the embodiment as the capacity of the edge is directly congruent to the distance between the two hands, and it
+        improves usability as the learner can release the lower hand to precisely set the level of the edge.
+    - page: 4
+      para: 6
+      type: idea
+      title: Two learners, two hands
+      text: >-
+        For collaborative maths in VR: one learner holds the pipe, the other sets the level, so one quantity needs both bodies to be set.
+    - page: 5
+      para: 1
+      type: theory
+      title: Problem solving before instruction
+      text: >-
+        PS-I (productive failure, Kapur): solving problems before being taught activates prior knowledge, shows the gap in one's knowledge,
+        and draws attention to deep features.
+      quote: >-
+        This pattern was proven effective for mathematics learning and relies on three mechanisms: activation of prior knowledge, awareness
+        of knowledge gap, and recognition of deep features
+    - page: 5
+      para: 5
+      type: experiment
+      title: VR is as usable as a tablet
+      text: >-
+        26 adults new to VR: usability 81 in VR and 87 on the tablet, not significantly different; minimal simulator sickness; VR took
+        longer because people moved more.
+    - page: 6
+      para: 1
+      type: important
+      title: A winning pose and your own skin
+      text: >-
+        After testing they added a skin-colour panel for diverse bodies, a tutorial, a graph overview on the blackboard, and a 'winning
+        position' (both arms up) to start the next level, for a sense of embodied achievement.
+      quote: >-
+        we designed for a sense of embodied achievement at the end of each level by having the users adopt a “winning position”, that
+        is raising both arms in the air, to launch the next level
+    - page: 6
+      para: 4
+      type: experiment
+      title: Three kinds of concreteness, 89 students
+      text: >-
+        Abstract (graphs on paper), manipulated (graphs on a tablet) and embodied (pipes in VR), each used for problem solving before
+        the regular lecture, then tested on three representations.
+    - page: 7
+      para: 3
+      type: idea
+      title: Measure ARCS in my study
+      text: >-
+        Use the IMMS (attention, relevance, confidence, satisfaction) in my VR maths study: here engagement and relevance came apart,
+        which a single 'motivation' score would hide.
+    - page: 8
+      para: 1
+      type: experiment
+      title: Only VR made it relevant
+      text: >-
+        Attention, confidence and satisfaction rose in both concrete conditions; perceived relevance and grounding after the lecture rose
+        only in VR.
+      quote: >-
+        both forms of concreteness significantly improved Attention, Confidence, and Satisfaction for the learners. However, only embodied
+        concreteness improved perceived Relevance.
+    - page: 8
+      para: 5
+      type: experiment
+      title: The tablet hurt abstract transfer, VR did not
+      text: >-
+        No differences on the concrete tests (Bayes factors favour no effect); on the abstract test the paper group beat the tablet group,
+        while VR was not worse than paper.
+    - page: 10
+      para: 1
+      type: theory
+      title: Mechanisms of learning with concreteness
+      text: >-
+        Feedback (error identification, error understanding, strategy acquisition) plus the three routes of embodiment from Körner et
+        al.: direct state induction, modal priming and sensorimotor simulation.
+    - page: 10
+      para: 3
+      type: theory
+      title: Modal priming explains relevance
+      text: >-
+        They attribute the relevance gain of VR to modal priming: the water schema reconnects the content to learners' own experience.
+      quote: >-
+        only embodied concreteness increases perceived relevance and grounding. We believe that this is explained by the modal priming
+        mechanism as it reconnects the content to the learners’ personal experiences
+    - page: 10
+      para: 4
+      type: important
+      title: Easy feedback, false confidence
+      text: >-
+        On the tablet the representation felt familiar, students felt confident and leaned on feedback, and made more errors on abstract
+        problems: they lacked error understanding.
+      quote: >-
+        as the representation was familiar to the students, they felt confident about solving the problems, and therefore, we believe,
+        were more prone to errors.
+    - page: 10
+      para: 5
+      type: gap
+      title: A taxonomy of concreteness is needed
+      text: They call for a taxonomy of the kinds of concreteness, which their 2025 paper later builds.
+      quote: we believe that a taxonomy of concretenesses should be defined
+    - page: 10
+      para: 6
+      type: gap
+      title: Isolate modal priming
+      text: >-
+        Compare a relatable but disembodied version with a relatable and embodied one, to see what embodiment adds on its own.
+      quote: >-
+        comparing relatable but disembodied opposed to relatable and embodied would help isolate the effect of the modal priming mechanism
+        in embodiment.
+    - page: 11
+      para: 2
+      type: idea
+      title: Separate representation from medium
+      text: >-
+        Their conditions changed technology and representation at once. In my study, cross representation (situated or not) with medium
+        (VR or not), for example with a 'pipes on a tablet' condition.
+    - page: 11
+      para: 3
+      type: gap
+      title: Assess with the body, and over time
+      text: >-
+        Learners show understanding in gesture before speech, yet tests were short-term, timed, in English and on paper only.
+      quote: >-
+        learners are usually able to express understanding through gestures before they can articulate it with speech
+    - page: 11
+      para: 4
+      type: gap
+      title: Who was left out
+      text: Few women, only mathematics students, and only able-bodied participants.
+      quote: our sample only included able-bodied participants
+    - page: 11
+      para: 5
+      type: idea
+      title: Fade concreteness inside VR
+      text: >-
+        Fade within the VR world itself: pipes, then nodes and edges, then symbols, and test when to fade. They suggest the same, with
+        tools for embodied maths input.
+  uses:
+    - paper: cel-math-vr
+      section: intro
+      page: 1
+      type: important
+      passage: >-
+        Studies in math education indicate that many students hold unproductive beliefs about mathematics: they believe mathematics has
+        nothing to do with the real world, and that one must learn solutions to math problems by heart
+      suggest: >-
+        Many students believe mathematics has nothing to do with the real world (Chatain et al., 2023). Embodied VR can let them meet
+        mathematical structures as experiences before they meet them as symbols.
+    - paper: cel-math-vr
+      section: related
+      page: 3
+      type: framework
+      passage: >-
+        we define “embodied concreteness” as a form of concreteness that involves a high degree of embodiment, in a situated and relatable
+        context.
+      suggest: >-
+        Following Chatain et al. (2023), we aim at embodied concreteness: a high degree of embodiment in a situated and relatable context.
+    - paper: cel-math-vr
+      section: design
+      page: 4
+      type: important
+      passage: >-
+        This two-handed interaction has two main advantages: it strengthens the embodiment as the capacity of the edge is directly congruent
+        to the distance between the two hands, and it improves usability as the learner can release the lower hand to precisely set the
+        level of the edge.
+      suggest: >-
+        Interactions are chosen for gestural congruency: as in the pipes of Chatain et al. (2023), where the flow equals the distance
+        between two hands, the quantity learners manipulate is a distance their bodies make.
+    - paper: cel-math-vr
+      section: method
+      page: 7
+      type: experiment
+      passage: >-
+        participants filled in an Instructional Materials Motivation Survey following the ARCS model: Attention, Relevance, Confidence,
+        and Satisfaction
+      suggest: >-
+        Motivation is measured with the IMMS (attention, relevance, confidence, satisfaction), which separated engagement from relevance
+        in a comparable VR study (Chatain et al., 2023).
+    - paper: cel-math-vr
+      section: limits
+      page: 11
+      type: gap
+      passage: >-
+        Another important concern to raise is that our sample only included able-bodied participants. However, a wider diversity of bodies
+        should be included in embodiment research
+      suggest: >-
+        Like most embodiment studies (Chatain et al., 2023), our sample may include only able-bodied learners; a wider diversity of bodies
+        should be included in future work.
+    - paper: embodied-learning
+      section: results
+      page: 9
+      type: experiment
+      passage: >-
+        This means that embodied concreteness did not impair the capabilities of the students to transfer to a different embodied schema.
+      suggest: >-
+        We expect bodily practice not to hurt transfer: embodied concreteness did not impair transfer to a different embodied schema (Chatain
+        et al., 2023).
+    - paper: embodied-learning
+      section: background
+      page: 10
+      type: theory
+      passage: >-
+        only embodied concreteness increases perceived relevance and grounding. We believe that this is explained by the modal priming
+        mechanism as it reconnects the content to the learners’ personal experiences
+      suggest: >-
+        Chatain et al. (2023) explain why embodied VR felt more relevant through modal priming, one of the three routes of embodiment
+        (Körner et al., 2015): the body makes related, personally known concepts accessible.
+
+- id: chatain-2025
+  title: "Concreteness and Abstraction in Mathematics Education: A Taxonomy of the Semantic Landscape"
+  authors: Julia Chatain, Charlotte Müller, Keny Chatain, Leon Calabrese, Manu Kapur
+  cite: Chatain et al. 2025
+  short: CH25
+  color: "#e5c53a"
+  year: 2025
+  venue: Educational Psychology Review 37, Article 92
+  doi: 10.1007/s10648-025-10073-9
+  pages: 49
+  read: 2026-11
+  ideas: [concreteness, grounded, metaphor, design, maths, language]
+  builds_on: [dewey-1910, bruner-1966, papert-1980, harnad-1990, wilensky-1991, lakoff-nunez-2000, kaminski-2008, chalmers-2011, fyfe-2014]
+  mentions: [chatain, kapur, mueller, lakoff, nunez, nathan, fyfe, bruner, papert, wilensky, kaminski, abrahamson, walkington, alibali]
+  cites: [chatain-2023]
+  summary: >-
+    Researchers use 'concrete' and 'abstract' to mean very different things. The authors coded how 368 maths-education papers use the
+    two words and built a taxonomy of eleven axes: five at the interaction level between learner and representation (familiarity, interest,
+    simplicity, relevance, sensoriality) and six at the mapping level between representation and concept (situatedness, experientiality,
+    specificity, informality, approximation, physicality). A representation can be concrete on one axis and abstract on another, which
+    explains several conflicting results.
+  experiments:
+    - id: taxonomy-corpus
+      title: Coding how 368 papers use concrete and abstract
+      page: 11
+      own: true
+      n: 368
+      who: peer-reviewed maths-education papers from ERIC (4309 contexts)
+      design: >-
+        qualitative, data-driven: build the corpus, code the words, organise the codes into a taxonomy (reflexive thematic analysis)
+      conditions: [Data preparation, Coding, Taxonomy]
+      manipulated: [None (corpus analysis)]
+      measured: [Words coded as related to concrete or abstract, Code frequency per paper]
+      tags: [rating]
+      tools: [ERIC database, Poppler, NLTK stemmer, Custom web annotation app, Word clouds, Thematic analysis]
+      result: >-
+        Eleven axes of meaning, five at the interaction level and six at the mapping level; specificity is the most discussed axis.
+    - id: cups
+      title: Three cups as a mathematical group
+      page: 26
+      own: false
+      by: Kaminski et al. 2008; De Bock et al. 2011; Trninic et al. 2020
+      n: null
+      who: students
+      design: an abstract or a concrete example of a mathematical group, then transfer tasks
+      conditions: [Abstract symbols, "Cups, full cup as identity", "Cups, empty cup as identity"]
+      manipulated: [Kind of example, Familiarity of the example]
+      measured: [Abstract transfer, Concrete transfer]
+      tags: [perf, learn]
+      tools: ["Cups filled 1/3, 2/3 and full", Ancient-game transfer task, Tennis-ball buckets]
+      result: >-
+        Abstract beat concrete on symbolic transfer; concrete won on concrete transfer; with a familiar empty-cup identity the abstract
+        advantage disappeared.
+    - id: manipulatives
+      title: Physical or virtual manipulatives
+      page: 27
+      own: false
+      by: Burns & Hamm 2011; Shurr et al. 2021
+      n: null
+      who: third and fourth graders; three elementary students with autism
+      design: the same blocks as physical objects or on an iPad
+      conditions: [Physical blocks, Virtual blocks]
+      manipulated: [Physicality]
+      measured: [Maths performance]
+      tags: [perf]
+      tools: [Physical blocks, iPad]
+      result: >-
+        A small, non-significant advantage for physical blocks with neurotypical children; virtual blocks worked better for the learners
+        with autism.
+  marks:
+    - page: 1
+      para: 4
+      type: important
+      title: Concrete and abstract mean many things
+      text: >-
+        The paper's starting point: in maths education 'concrete' can mean specific, relatable, visual or tangible, and 'abstract' general,
+        rigorous, vague or symbolic. People using the same word may not mean the same thing.
+      quote: >-
+        the word concrete can be used to mean specific, relatable, visual, and tangible, while the word abstract can be used as general,
+        rigorous, vague, and symbolic
+    - page: 2
+      para: 1
+      type: theory
+      title: Is mathematics abstract or concrete?
+      text: >-
+        Formalists see mathematics as abstract; the embodied view (Lakoff & Núñez) sees it as concrete, grounded in bodily experience;
+        others see it as the link between the two worlds.
+      quote: >-
+        others argued that it is concrete, such as proponents of the embodied perspective (Lakoff & Núñez, 2000)
+    - page: 2
+      para: 4
+      type: important
+      title: A spectrum, not two boxes
+      text: >-
+        Concrete and abstract are a spectrum, not a dichotomy, and the same object can be both: a symbol is abstract because it is formal,
+        yet concrete to a mathematician because it is familiar.
+      quote: >-
+        while a mathematical symbol may be abstract because it is formal, it may also be concrete to a mathematician because it is familiar.
+    - page: 4
+      para: 1
+      type: theory
+      title: Vertical and horizontal abstraction
+      text: >-
+        In the vertical view, abstraction peels away details to reach ideal objects. In the horizontal view (Wagner), abstraction is translating
+        between concrete presentations, which may support cognitive flexibility.
+      quote: imperfect and somewhat unstable translation between symbolic systems
+    - page: 6
+      para: 3
+      type: experiment
+      title: Concrete examples can hurt transfer, or not
+      text: >-
+        Kaminski et al. (2008): pizzas, cups and tennis balls impaired transfer to abstract tasks. Follow-ups made the examples more relatable
+        or aligned the test, and the effect disappeared.
+      quote: >-
+        the effectiveness of concrete representations may lie more in how relatable they are rather than in the sole fact that they exist
+        in the real world.
+    - page: 6
+      para: 5
+      type: concept
+      title: The representational dilemma
+      text: >-
+        Students must make sense of both the representation and the concept it stands for (Rau 2017); success depends on the quality of
+        that mapping and on the learner.
+      quote: Students must make sense of both the representations and the concepts they represent
+    - page: 7
+      para: 1
+      type: concept
+      title: Concreteness fading
+      text: >-
+        Bruner's sequence: an enactive (physical) form, then an iconic (pictorial) form, then a symbolic form. What counts as concrete
+        differs between STEM domains.
+      quote: >-
+        (1) an enactive form, which is a physical, concrete model of the concept; (2) an iconic form, which is a graphic or pictorial
+        model; and finally (3) a symbolic form, which is an abstract model of the concept
+    - page: 7
+      para: 2
+      type: people
+      title: "Papert and Dewey: learning as concretion"
+      text: >-
+        Papert's gears turned equations into a 'comfortable friend'; Dewey saw understanding as turning the strange and perplexing into
+        the plain and familiar.
+      quote: >-
+        understanding is changing something abstract, i.e., “strange and perplexing,” into something concrete, i.e., “plain and familiar”
+    - page: 8
+      para: 3
+      type: concept
+      title: Verbal disputes
+      text: >-
+        Chalmers (2011): a disagreement that exists only because people mean different things by a word. 'Maths is hard because it is
+        abstract' can be agreed or denied depending on what 'abstract' means.
+      quote: >-
+        A dispute over S is (broadly) verbal when, for some expression T in S, the parties disagree about the meaning of T, and the dispute
+        over S arises wholly in virtue of this disagreement regarding T.
+    - page: 11
+      para: 5
+      type: experiment
+      title: 368 papers, 4309 contexts
+      text: >-
+        They searched ERIC, kept 368 peer-reviewed papers, and cut out every passage around a word like concrete or abstract (4309 contexts).
+      quote: >-
+        From this sample, we could retrieve the content of 368 papers through open or institutional access, which constitutes our final
+        sample
+    - page: 12
+      para: 5
+      type: experiment
+      title: Coding with two colours
+      text: >-
+        Four coders, two outsiders and two experts, highlighted in green the words related to concrete and in purple those related to
+        abstract, in a web app; every context was coded twice.
+      quote: >-
+        select in green the words that are more related to concrete and in purple the words that are more related to abstract
+    - page: 13
+      para: 2
+      type: idea
+      title: Code my own material the same way
+      text: >-
+        Their two-colour coding is close to how I mark papers. I could code my VR task texts, or what learners say, for concrete and abstract
+        words the same way.
+    - page: 15
+      para: 4
+      type: framework
+      title: Learner, representation, concept
+      text: >-
+        Any understanding of a concept is mediated by a representation. Axes sit at the interaction level (learner and representation,
+        subjective) or at the mapping level (representation and concept, objective).
+      quote: >-
+        arguably the relationship between the learner and the concept will always be mediated by the representations of the concept known
+        to the learner.
+    - page: 16
+      para: 4
+      type: framework
+      title: Eleven axes of concreteness
+      text: >-
+        Interaction level: familiarity, interest, simplicity, relevance, sensoriality. Mapping level: situatedness, experientiality, specificity,
+        informality, approximation, physicality. Each axis runs from abstract to concrete and comes with a design question.
+    - page: 16
+      para: 6
+      type: important
+      title: Subjective axes have to be measured
+      text: >-
+        Designers can aim at the interaction-level axes (interest, familiarity…), but whether they happen depends on the learner, so they
+        must be measured. Mapping-level axes depend only on the design.
+      quote: only actual measurement with target learners can ensure that the desired effect indeed happened.
+    - page: 17
+      para: 4
+      type: important
+      title: Concrete on one axis, abstract on another
+      text: >-
+        An excavator simulation is virtual (abstract on physicality) but situated in real life (concrete on situatedness). Equations are
+        concrete for a mathematician and abstract for a student.
+      quote: one representation may now be abstract along one dimension and concrete along another.
+    - page: 19
+      para: 2
+      type: concept
+      title: Sensoriality
+      text: >-
+        How many senses the representation reaches, and how strongly. It depends on the design and on the learner: audio feedback reaches
+        no one who cannot hear it or never triggers it.
+      quote: a more concrete representation thus leverages more senses or the same sense with more stimulation.
+    - page: 20
+      para: 2
+      type: concept
+      title: Experientiality
+      text: >-
+        Symbols are arbitrary and have to be explained; an experiential mapping carries meaning in itself, from shared human experience.
+        It is distinct from sensoriality and physicality, and can even be imaginative.
+      quote: >-
+        while experiential representations (experientiality → concrete) intrinsically embed meaning, symbolic ones (experientiality →
+        abstract) need to be explained.
+    - page: 21
+      para: 2
+      type: idea
+      title: Marking as a designed approximation
+      text: >-
+        Kirsh's marking is approximate on purpose: concrete on experientiality, loose on approximation. I could test which approximations
+        help and which mislead (like coloured unit cubes).
+    - page: 21
+      para: 5
+      type: important
+      title: Physicality and the reality–virtuality continuum
+      text: >-
+        Physical versus virtual is its own axis; AR and augmented virtuality sit in the middle (Milgram). A VR task is abstract on physicality
+        but can be concrete on every other axis.
+      quote: >-
+        Hybrid forms, such as physical objects overlaid by virtual ones using Augmented Reality, would land at the center of the spectrum.
+    - page: 22
+      para: 2
+      type: experiment
+      title: What the literature talks about
+      text: >-
+        Specificity is the most discussed axis, mostly as abstract; approximation the least. Physicality and approximation are mostly
+        discussed as abstract, situatedness and sensoriality as concrete.
+      quote: >-
+        the most discussed dimension is specificity, mostly on the abstract side, while approximation is less commonly mentioned.
+    - page: 23
+      para: 5
+      type: theory
+      title: How the axes affect each other
+      text: >-
+        Design choices (mapping) shape experience (interaction): physicality raises sensoriality; situatedness raises familiarity and
+        relevance; experientiality raises sensoriality, familiarity and interest; informality may ease maths anxiety.
+      quote: >-
+        relationships between objective axes, at the mapping level, and subjective axes, at the interaction level, are quite interesting
+        because they tell us how design choices impact learners’ perception and subjective experiences.
+    - page: 25
+      para: 4
+      type: gap
+      title: Which axes really matter for learning?
+      text: >-
+        The relationships between the axes are mostly untested. Meta-analyses could show which design choices raise which experiences,
+        and then simplify the taxonomy.
+      quote: >-
+        we believe that a series of meta-analyses exploring these relationships in depth can lead to an even more refined understanding
+        of how to design concrete representations
+    - page: 26
+      para: 2
+      type: experiment
+      title: Situated is not the same as familiar
+      text: >-
+        Kaminski's cups were real objects but an unfamiliar group (a full cup as the identity). Trninic made the empty cup the identity,
+        and the advantage of abstract examples disappeared.
+      quote: >-
+        the representation chosen by K and D is less familiar (familiarity → abstract) than the one chosen by T (familiarity →concrete).
+    - page: 27
+      para: 4
+      type: experiment
+      title: Pipes made graphs feel relevant
+      text: >-
+        In Chatain et al. (2023) a situated pipe network and an abstract graph were both interactive; engagement was the same, but only
+        the pipes made students see the problem as relevant.
+      quote: >-
+        simply allowing students to interact with a representation is not sufficient to allow them to relate to the problem or to perceive
+        it as relevant to them.
+    - page: 28
+      para: 3
+      type: experiment
+      title: Virtual blocks helped learners with autism
+      text: >-
+        Neurotypical children did slightly better with physical blocks (not significant); three learners with autism did better with virtual
+        ones, which were steadier and more accurate. Less sensory input can suit some learners.
+      quote: >-
+        This distinction could potentially explain why learners with ASD favored the more abstract representation.
+    - page: 28
+      para: 5
+      type: idea
+      title: Let learners tune sensoriality
+      text: >-
+        In a VR maths task, offer adjustable sensory richness (sound, haptics, visual detail) and see who chooses less.
+    - page: 30
+      para: 3
+      type: important
+      title: Concreteness fading can start virtual
+      text: >-
+        The enactive stage need not be physical: virtual–representational–abstract sequences start with a virtual manipulative, concrete
+        on sensoriality but abstract on physicality.
+      quote: >-
+        leverage a virtual manipulative (sensoriality → concrete still, but physicality → abstract) in the first stage.
+    - page: 32
+      para: 2
+      type: important
+      title: Ask why a concept feels abstract
+      text: >-
+        Abstract because it cannot be seen? Make it visible. Because it is universal? Show the same concept in several problems. Because
+        it is unfamiliar? Link it to learners' experience.
+      quote: >-
+        Is the concept abstract because it cannot be seen? Then, maybe we should design visible representations.
+    - page: 33
+      para: 3
+      type: gap
+      title: Limits of the taxonomy
+      text: >-
+        Two analysts shared one supervisor; only ERIC was searched (missing computer-science education work); lists of adjectives were
+        hard to code; and eleven axes are complex to use.
+    - page: 34
+      para: 5
+      type: gap
+      title: Concepts nobody can perceive
+      text: >-
+        Molecules and the atmosphere are physical but cannot be perceived (abstract on sensoriality); the taxonomy may help design representations
+        for them in other sciences.
+      quote: >-
+        they are often not perceptible (sensoriality → abstract), either because they are too small, for example, molecules, or too big,
+        for example, the atmosphere
+    - page: 44
+      para: 1
+      type: idea
+      title: Place my VR conditions on the template
+      text: >-
+        Before running my VR maths study, place each condition on the blank template (Fig. 24), so I can say exactly which kind of concreteness
+        I change and which I keep.
+  uses:
+    - paper: embodied-learning
+      section: intro
+      page: 1
+      type: important
+      passage: >-
+        the word concrete can be used to mean specific, relatable, visual, and tangible, while the word abstract can be used as general,
+        rigorous, vague, and symbolic.
+      suggest: >-
+        Even the words 'concrete' and 'abstract' are used in many senses: concrete can mean specific, relatable, visual or tangible (Chatain
+        et al., 2025). Saying that bodily practice makes learning 'concrete' is therefore not enough; this paper states which kind of
+        concreteness it adds.
+    - paper: embodied-learning
+      section: background
+      page: 20
+      type: concept
+      passage: >-
+        while experiential representations (experientiality → concrete) intrinsically embed meaning, symbolic ones (experientiality →
+        abstract) need to be explained.
+      suggest: >-
+        Embodied designs aim at experiential concreteness: representations whose meaning comes from shared bodily experience, rather than
+        symbols whose meaning has to be explained (Chatain et al., 2025).
+    - paper: embodied-learning
+      section: method
+      page: 16
+      type: important
+      passage: only actual measurement with target learners can ensure that the desired effect indeed happened.
+      suggest: >-
+        Because familiarity, interest and relevance depend on the learner, the design alone cannot guarantee them (Chatain et al., 2025);
+        we therefore measure them directly after practice.
+    - paper: embodied-learning
+      section: discussion
+      page: 17
+      type: important
+      passage: one representation may now be abstract along one dimension and concrete along another.
+      suggest: >-
+        A simplified practice can be abstract along one dimension and concrete along another (Chatain et al., 2025): marking strips detail
+        away, yet keeps the movement experiential.
+    - paper: cel-math-vr
+      section: related
+      page: 21
+      type: important
+      passage: >-
+        Hybrid forms, such as physical objects overlaid by virtual ones using Augmented Reality, would land at the center of the spectrum.
+      suggest: >-
+        Virtual reality is abstract on physicality but can be concrete on every other axis; augmented reality sits in between (Chatain
+        et al., 2025, following Milgram et al., 1995).
+    - paper: cel-math-vr
+      section: design
+      page: 24
+      type: theory
+      passage: >-
+        Experientiality refers to the use of an experiential mapping of a concept, rather than a symbolic one. Often, especially in embodiment
+        research (Ottmar et al., 2019; Nathan, 2021), this is done by leveraging bodily movements or object manipulations. Therefore,
+        it is also likely to increase sensoriality and familiarity.
+      suggest: >-
+        We design the shared VR space around experiential mappings: learners act out mathematical relations with movements and object
+        manipulations, which is also likely to make them more sensory and familiar (Chatain et al., 2025).
+    - paper: cel-math-vr
+      section: limits
+      page: 28
+      type: experiment
+      passage: >-
+        This distinction could potentially explain why learners with ASD favored the more abstract representation.
+      suggest: >-
+        More sensory richness is not better for everyone: learners with autism did better with virtual than with physical manipulatives
+        (Chatain et al., 2025, on Shurr et al., 2021), so our design should let sensory load be adjusted.
+    - paper: cel-math-vr
+      section: discussion
+      page: 32
+      type: important
+      passage: >-
+        Is the concept abstract because it cannot be seen? Then, maybe we should design visible representations. Is it abstract because
+        it is universal? Then, we may want to highlight the power of generalization by designing several problems relying on the same
+        concept.
+      suggest: >-
+        Rather than calling a concept 'too abstract', we ask why: because it cannot be seen, because it is general, or because it is unfamiliar,
+        and design for that reason (Chatain et al., 2025).
