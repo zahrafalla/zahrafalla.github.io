@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100..125,300..800;1,100..125,300..800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-<link rel="stylesheet" href="/assets/zf/zf.css?v=1795512801">
+<link rel="stylesheet" href="/assets/zf/zf.css?v=1795516195">
 
   </head>
   <body class="zf ">
@@ -100,104 +100,109 @@
   <div class="zf-row">
     <div class="w-full b lib-tools">
       <label class="ov-find"><span>Find</span><input type="search" id="lib-find" placeholder="title, author, year or idea" autocomplete="off"></label>
-      <span class="lib-sort zf-meta"><span>Sort</span><button type="button" data-sort="new" aria-pressed="true">Newest</button><button type="button" data-sort="old" aria-pressed="false">Oldest</button><button type="button" data-sort="az" aria-pressed="false">A–Z</button><button type="button" data-sort="marks" aria-pressed="false">Most marks</button></span>
-      <span class="lib-sort zf-meta lib-view"><span>View</span><button type="button" data-view="cards" aria-pressed="true">Cards</button><button type="button" data-view="list" aria-pressed="false">List</button></span>
+      <!-- one category at a time: a dropdown -->
+      <div class="lib-dd" id="lib-dd">
+        <button type="button" class="lib-dd-btn" id="lib-dd-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="lib-dd-menu">
+          <span class="lib-dd-k">Category</span><span class="lib-dd-v is-all" style="--cat: transparent"><i aria-hidden="true"></i><b>All papers</b></span><span class="lib-dd-car" aria-hidden="true"></span>
+        </button>
+        <ul class="lib-dd-menu" id="lib-dd-menu" role="listbox" aria-label="Category" hidden>
+          <li role="option" data-cat="" aria-selected="true" tabindex="-1" class="is-all" style="--cat: transparent">
+            <i aria-hidden="true"></i><span>All papers</span><em>7</em>
+          </li>
+<li role="option" data-cat="grounded" aria-selected="false" tabindex="-1" style="--cat: #7fae92">
+              <i aria-hidden="true"></i><span>Embodied / grounded cognition</span><em>2</em>
+            </li>
+<li role="option" data-cat="embodied-maths" aria-selected="false" tabindex="-1" style="--cat: #f7d33b">
+              <i aria-hidden="true"></i><span>Embodied mathematics</span><em>2</em>
+            </li>
+<li role="option" data-cat="embodiment" aria-selected="false" tabindex="-1" style="--cat: #8fb3dc">
+              <i aria-hidden="true"></i><span>Embodiment</span><em>1</em>
+            </li>
+<li role="option" data-cat="maths" aria-selected="false" tabindex="-1" style="--cat: #ec6a3c">
+              <i aria-hidden="true"></i><span>Mathematics</span><em>1</em>
+            </li>
+<li role="option" data-cat="collaborative" aria-selected="false" tabindex="-1" style="--cat: #f4c1cf" class="is-empty">
+              <i aria-hidden="true"></i><span>Collaborative learning</span><em>0</em>
+            </li>
+<li role="option" data-cat="embodied-learning" aria-selected="false" tabindex="-1" style="--cat: #b9a3f0">
+              <i aria-hidden="true"></i><span>Embodied learning</span><em>1</em>
+            </li>
+</ul>
+      </div>
+      <span class="lib-sort zf-meta"><span>Sort</span><button type="button" data-sort="new" aria-pressed="true">Newest</button><button type="button" data-sort="old" aria-pressed="false">Oldest</button><button type="button" data-sort="az" aria-pressed="false">A–Z</button><span class="lib-sort-sep">Most</span><button type="button" data-sort="exp" aria-pressed="false" title="How many experiments the paper reports">Experiments</button><button type="button" data-sort="idea" aria-pressed="false" title="My marks: ideas to build">Ideas</button><button type="button" data-sort="gap" aria-pressed="false" title="My marks: gaps">Gaps</button><button type="button" data-sort="know" aria-pressed="false" title="My marks: theory + important for my work">Theory &amp; knowledge</button><button type="button" data-sort="nov" aria-pressed="false" title="My marks: new frameworks + new concepts">Novelty</button></span>
       <b class="lib-count zf-meta" id="lib-count" aria-live="polite">7 papers</b>
-      <span class="lib-cats zf-meta" role="group" aria-label="Show one category"><span>Category</span><button type="button" data-cat="" aria-pressed="true">All <i>7</i></button><button type="button" data-cat="grounded" aria-pressed="false" style="--cat: #7fae92"><b></b>Embodied / grounded cognition <i>2</i></button><button type="button" data-cat="embodied-maths" aria-pressed="false" style="--cat: #f7d33b"><b></b>Embodied mathematics <i>2</i></button><button type="button" data-cat="embodiment" aria-pressed="false" style="--cat: #8fb3dc"><b></b>Embodiment <i>1</i></button><button type="button" data-cat="maths" aria-pressed="false" style="--cat: #ec6a3c"><b></b>Mathematics <i>1</i></button><button type="button" data-cat="collaborative" aria-pressed="false" style="--cat: #f4c1cf"><b></b>Collaborative learning <i>0</i></button><button type="button" data-cat="embodied-learning" aria-pressed="false" style="--cat: #b9a3f0"><b></b>Embodied learning <i>1</i></button></span>
       <button type="button" class="lib-lock zf-meta" id="lib-lock" aria-pressed="false" title="Show the notes I have hidden from visitors">
         <span class="lk-ico" aria-hidden="true"></span><span class="lk-txt">Hidden notes</span>
       </button>
     </div>
     <div class="w-full" id="lib-cards">
-<section class="lib-group" data-cat="grounded" style="--cat: #7fae92">
+      <!-- a single ranked list, shown when sorting by experiments, ideas, gaps, theory or novelty -->
+      <section class="lib-group lib-rank" hidden style="--cat: var(--ink)">
+        <h2 class="lib-group-h b">
+<b aria-hidden="true"></b><span class="lib-rank-t">Ranked</span><i class="lib-group-n"></i>
+</h2>
+        <ol class="lib-rows b"></ol>
+      </section><section class="lib-group" data-cat="grounded" style="--cat: #7fae92">
           <h2 class="lib-group-h b">
             <b aria-hidden="true"></b><span>Embodied / grounded cognition</span><i class="lib-group-n">2 papers</i>
           </h2>
           
-          <div class="zf-tiles">
-            <a class="zf-tile pcard b" href="#kirsh-2013" data-id="kirsh-2013" data-year="2013" data-title="embodied cognition and the magical future of interaction design" data-marks="56" data-find="embodied cognition and the magical future of interaction design david kirsh 2013 kirsh 2013 simulation body-schema enactive marking gesture design maths mirror embodied / grounded cognition">
-                <div class="zf-tile-top">
-                  <span>2013 · 30 pages</span><span>01</span>
-                </div>
-                <h3>Embodied Cognition and the Magical Future of Interaction Design</h3>
-                <p class="where">David Kirsh</p>
-<div class="pmini" data-id="kirsh-2013" aria-hidden="true"></div>
-                <p class="pcounts"><span class="t-theory" title="Theory"><i></i>6 theory</span><span class="t-framework" title="New framework"><i></i>1 framework</span><span class="t-concept" title="New concept"><i></i>2 concept</span><span class="t-experiment" title="Experiment"><i></i>4 exp.</span><span class="t-people" title="People"><i></i>7 people</span><span class="t-important" title="Important for my work"><i></i>12 important</span><span class="t-idea" title="Idea to build"><i></i>19 idea</span><span class="t-gap" title="Gap"><i></i>3 gap</span></p>
-              </a>
-            <a class="zf-tile pcard b" href="#barsalou-2008" data-id="barsalou-2008" data-year="2008" data-title="grounded cognition" data-marks="25" data-find="grounded cognition lawrence w. barsalou 2008 barsalou 2008 grounded simulation body-schema enactive gesture maths metaphor mirror language collaboration embodied / grounded cognition">
-                <div class="zf-tile-top">
-                  <span>2008 · 29 pages</span><span>02</span>
-                </div>
-                <h3>Grounded Cognition</h3>
-                <p class="where">Lawrence W. Barsalou</p>
-<div class="pmini" data-id="barsalou-2008" aria-hidden="true"></div>
-                <p class="pcounts"><span class="t-theory" title="Theory"><i></i>3 theory</span><span class="t-framework" title="New framework"><i></i>1 framework</span><span class="t-concept" title="New concept"><i></i>1 concept</span><span class="t-experiment" title="Experiment"><i></i>3 exp.</span><span class="t-people" title="People"><i></i>6 people</span><span class="t-important" title="Important for my work"><i></i>7 important</span><span class="t-idea" title="Idea to build"><i></i>4 idea</span></p>
-              </a>
-            
-          </div>
+          
+            <ul class="lib-rows b">
+              <li>
+                  <a class="pcard prow" href="#kirsh-2013" data-id="kirsh-2013" data-year="2013" data-title="embodied cognition and the magical future of interaction design" data-marks="56" data-cat="grounded" data-exp="3" data-idea="19" data-gap="3" data-know="18" data-nov="3" data-find="embodied cognition and the magical future of interaction design david kirsh 2013 kirsh 2013 simulation body-schema enactive marking gesture design maths mirror embodied / grounded cognition" style="--c: #5b7cfa"><i aria-hidden="true"></i><span class="prow-t">Embodied Cognition and the Magical Future of Interaction Design</span><span class="prow-n"></span><span class="prow-y">2013</span><span class="prow-go" aria-hidden="true">→</span></a>
+                </li>
+              <li>
+                  <a class="pcard prow" href="#barsalou-2008" data-id="barsalou-2008" data-year="2008" data-title="grounded cognition" data-marks="25" data-cat="grounded" data-exp="1" data-idea="4" data-gap="0" data-know="10" data-nov="2" data-find="grounded cognition lawrence w. barsalou 2008 barsalou 2008 grounded simulation body-schema enactive gesture maths metaphor mirror language collaboration embodied / grounded cognition" style="--c: #a07cf7"><i aria-hidden="true"></i><span class="prow-t">Grounded Cognition</span><span class="prow-n"></span><span class="prow-y">2008</span><span class="prow-go" aria-hidden="true">→</span></a>
+                </li>
+              
+            </ul>
+          
         </section>
       <section class="lib-group" data-cat="embodied-maths" style="--cat: #f7d33b">
           <h2 class="lib-group-h b">
             <b aria-hidden="true"></b><span>Embodied mathematics</span><i class="lib-group-n">2 papers</i>
           </h2>
           
-          <div class="zf-tiles">
-            <a class="zf-tile pcard b" href="#chatain-2023" data-id="chatain-2023" data-year="2023" data-title="grounding graph theory in embodied concreteness with virtual reality" data-marks="29" data-find="grounding graph theory in embodied concreteness with virtual reality julia chatain, rudolf varga, violaine fayolle, manu kapur, robert w. sumner 2023 chatain et al. 2023 concreteness grounded routes metaphor design maths gesture embodied mathematics">
-                <div class="zf-tile-top">
-                  <span>2023 · 13 pages</span><span>03</span>
-                </div>
-                <h3>Grounding Graph Theory in Embodied Concreteness with Virtual Reality</h3>
-                <p class="where">Julia Chatain, Rudolf Varga, Violaine Fayolle, Manu Kapur, Robert W. Sumner</p>
-<div class="pmini" data-id="chatain-2023" aria-hidden="true"></div>
-                <p class="pcounts"><span class="t-theory" title="Theory"><i></i>4 theory</span><span class="t-framework" title="New framework"><i></i>1 framework</span><span class="t-concept" title="New concept"><i></i>3 concept</span><span class="t-experiment" title="Experiment"><i></i>4 exp.</span><span class="t-people" title="People"><i></i>4 people</span><span class="t-important" title="Important for my work"><i></i>4 important</span><span class="t-idea" title="Idea to build"><i></i>4 idea</span><span class="t-gap" title="Gap"><i></i>5 gap</span></p>
-              </a>
-            <a class="zf-tile pcard b" href="#nathan-walkington-2017" data-id="nathan-walkington-2017" data-year="2017" data-title="grounded and embodied mathematical cognition: promoting mathematical insight and proof using action and language" data-marks="45" data-find="grounded and embodied mathematical cognition: promoting mathematical insight and proof using action and language mitchell j. nathan, candace walkington 2017 nathan &amp; walkington 2017 grounded simulation dual gesture directed design maths metaphor language collaboration embodied mathematics">
-                <div class="zf-tile-top">
-                  <span>2017 · 20 pages</span><span>04</span>
-                </div>
-                <h3>Grounded and embodied mathematical cognition: Promoting mathematical insight and proof using action and language</h3>
-                <p class="where">Mitchell J. Nathan, Candace Walkington</p>
-<div class="pmini" data-id="nathan-walkington-2017" aria-hidden="true"></div>
-                <p class="pcounts"><span class="t-theory" title="Theory"><i></i>3 theory</span><span class="t-framework" title="New framework"><i></i>1 framework</span><span class="t-concept" title="New concept"><i></i>5 concept</span><span class="t-experiment" title="Experiment"><i></i>5 exp.</span><span class="t-people" title="People"><i></i>7 people</span><span class="t-important" title="Important for my work"><i></i>11 important</span><span class="t-idea" title="Idea to build"><i></i>9 idea</span><span class="t-gap" title="Gap"><i></i>4 gap</span></p>
-              </a>
-            
-          </div>
+          
+            <ul class="lib-rows b">
+              <li>
+                  <a class="pcard prow" href="#chatain-2023" data-id="chatain-2023" data-year="2023" data-title="grounding graph theory in embodied concreteness with virtual reality" data-marks="29" data-cat="embodied-maths" data-exp="2" data-idea="4" data-gap="5" data-know="8" data-nov="4" data-find="grounding graph theory in embodied concreteness with virtual reality julia chatain, rudolf varga, violaine fayolle, manu kapur, robert w. sumner 2023 chatain et al. 2023 concreteness grounded routes metaphor design maths gesture embodied mathematics" style="--c: #62b6e8"><i aria-hidden="true"></i><span class="prow-t">Grounding Graph Theory in Embodied Concreteness with Virtual Reality</span><span class="prow-n"></span><span class="prow-y">2023</span><span class="prow-go" aria-hidden="true">→</span></a>
+                </li>
+              <li>
+                  <a class="pcard prow" href="#nathan-walkington-2017" data-id="nathan-walkington-2017" data-year="2017" data-title="grounded and embodied mathematical cognition: promoting mathematical insight and proof using action and language" data-marks="45" data-cat="embodied-maths" data-exp="2" data-idea="9" data-gap="4" data-know="14" data-nov="6" data-find="grounded and embodied mathematical cognition: promoting mathematical insight and proof using action and language mitchell j. nathan, candace walkington 2017 nathan &amp; walkington 2017 grounded simulation dual gesture directed design maths metaphor language collaboration embodied mathematics" style="--c: #f0628f"><i aria-hidden="true"></i><span class="prow-t">Grounded and embodied mathematical cognition: Promoting mathematical insight and proof using action and language</span><span class="prow-n"></span><span class="prow-y">2017</span><span class="prow-go" aria-hidden="true">→</span></a>
+                </li>
+              
+            </ul>
+          
         </section>
       <section class="lib-group" data-cat="embodiment" style="--cat: #8fb3dc">
           <h2 class="lib-group-h b">
             <b aria-hidden="true"></b><span>Embodiment</span><i class="lib-group-n">1 paper</i>
           </h2>
           
-          <div class="zf-tiles">
-            <a class="zf-tile pcard b" href="#koerner-2015" data-id="koerner-2015" data-year="2015" data-title="routes to embodiment" data-marks="20" data-find="routes to embodiment anita körner, sascha topolinski, fritz strack 2015 körner et al. 2015 grounded simulation routes metaphor mirror embodiment">
-                <div class="zf-tile-top">
-                  <span>2015 · 10 pages</span><span>05</span>
-                </div>
-                <h3>Routes to embodiment</h3>
-                <p class="where">Anita Körner, Sascha Topolinski, Fritz Strack</p>
-<div class="pmini" data-id="koerner-2015" aria-hidden="true"></div>
-                <p class="pcounts"><span class="t-theory" title="Theory"><i></i>1 theory</span><span class="t-framework" title="New framework"><i></i>3 framework</span><span class="t-concept" title="New concept"><i></i>1 concept</span><span class="t-experiment" title="Experiment"><i></i>2 exp.</span><span class="t-people" title="People"><i></i>6 people</span><span class="t-important" title="Important for my work"><i></i>2 important</span><span class="t-idea" title="Idea to build"><i></i>4 idea</span><span class="t-gap" title="Gap"><i></i>1 gap</span></p>
-              </a>
-            
-          </div>
+          
+            <ul class="lib-rows b">
+              <li>
+                  <a class="pcard prow" href="#koerner-2015" data-id="koerner-2015" data-year="2015" data-title="routes to embodiment" data-marks="20" data-cat="embodiment" data-exp="2" data-idea="4" data-gap="1" data-know="3" data-nov="4" data-find="routes to embodiment anita körner, sascha topolinski, fritz strack 2015 körner et al. 2015 grounded simulation routes metaphor mirror embodiment" style="--c: #2bb59d"><i aria-hidden="true"></i><span class="prow-t">Routes to embodiment</span><span class="prow-n"></span><span class="prow-y">2015</span><span class="prow-go" aria-hidden="true">→</span></a>
+                </li>
+              
+            </ul>
+          
         </section>
       <section class="lib-group" data-cat="maths" style="--cat: #ec6a3c">
           <h2 class="lib-group-h b">
             <b aria-hidden="true"></b><span>Mathematics</span><i class="lib-group-n">1 paper</i>
           </h2>
           
-          <div class="zf-tiles">
-            <a class="zf-tile pcard b" href="#chatain-2025" data-id="chatain-2025" data-year="2025" data-title="concreteness and abstraction in mathematics education: a taxonomy of the semantic landscape" data-marks="40" data-find="concreteness and abstraction in mathematics education: a taxonomy of the semantic landscape julia chatain, charlotte müller, keny chatain, leon calabrese, manu kapur 2025 chatain et al. 2025 concreteness grounded metaphor design maths language mathematics">
-                <div class="zf-tile-top">
-                  <span>2025 · 49 pages</span><span>06</span>
-                </div>
-                <h3>Concreteness and Abstraction in Mathematics Education: A Taxonomy of the Semantic Landscape</h3>
-                <p class="where">Julia Chatain, Charlotte Müller, Keny Chatain, Leon Calabrese, Manu Kapur</p>
-<div class="pmini" data-id="chatain-2025" aria-hidden="true"></div>
-                <p class="pcounts"><span class="t-theory" title="Theory"><i></i>3 theory</span><span class="t-framework" title="New framework"><i></i>2 framework</span><span class="t-concept" title="New concept"><i></i>5 concept</span><span class="t-experiment" title="Experiment"><i></i>7 exp.</span><span class="t-people" title="People"><i></i>9 people</span><span class="t-important" title="Important for my work"><i></i>7 important</span><span class="t-idea" title="Idea to build"><i></i>4 idea</span><span class="t-gap" title="Gap"><i></i>3 gap</span></p>
-              </a>
-            
-          </div>
+          
+            <ul class="lib-rows b">
+              <li>
+                  <a class="pcard prow" href="#chatain-2025" data-id="chatain-2025" data-year="2025" data-title="concreteness and abstraction in mathematics education: a taxonomy of the semantic landscape" data-marks="40" data-cat="maths" data-exp="3" data-idea="4" data-gap="3" data-know="10" data-nov="7" data-find="concreteness and abstraction in mathematics education: a taxonomy of the semantic landscape julia chatain, charlotte müller, keny chatain, leon calabrese, manu kapur 2025 chatain et al. 2025 concreteness grounded metaphor design maths language mathematics" style="--c: #e5c53a"><i aria-hidden="true"></i><span class="prow-t">Concreteness and Abstraction in Mathematics Education: A Taxonomy of the Semantic Landscape</span><span class="prow-n"></span><span class="prow-y">2025</span><span class="prow-go" aria-hidden="true">→</span></a>
+                </li>
+              
+            </ul>
+          
         </section>
       <section class="lib-group" data-cat="collaborative" style="--cat: #f4c1cf">
           <h2 class="lib-group-h b">
@@ -206,27 +211,21 @@
           
             <p class="lib-empty b">No papers here yet — a gap in my reading.</p>
           
-          <div class="zf-tiles">
-            
-          </div>
+          
         </section>
       <section class="lib-group" data-cat="embodied-learning" style="--cat: #b9a3f0">
           <h2 class="lib-group-h b">
             <b aria-hidden="true"></b><span>Embodied learning</span><i class="lib-group-n">1 paper</i>
           </h2>
           
-          <div class="zf-tiles">
-            <a class="zf-tile pcard b" href="#abrahamson-lindgren-2014" data-id="abrahamson-lindgren-2014" data-year="2014" data-title="embodiment and embodied design" data-marks="22" data-find="embodiment and embodied design dor abrahamson, robb lindgren 2014 abrahamson &amp; lindgren 2014 grounded simulation dual body-schema gesture directed design maths metaphor language collaboration embodied learning">
-                <div class="zf-tile-top">
-                  <span>2014 · 17 pages</span><span>07</span>
-                </div>
-                <h3>Embodiment and Embodied Design</h3>
-                <p class="where">Dor Abrahamson, Robb Lindgren</p>
-<div class="pmini" data-id="abrahamson-lindgren-2014" aria-hidden="true"></div>
-                <p class="pcounts"><span class="t-theory" title="Theory"><i></i>3 theory</span><span class="t-framework" title="New framework"><i></i>1 framework</span><span class="t-concept" title="New concept"><i></i>1 concept</span><span class="t-experiment" title="Experiment"><i></i>5 exp.</span><span class="t-people" title="People"><i></i>6 people</span><span class="t-important" title="Important for my work"><i></i>2 important</span><span class="t-idea" title="Idea to build"><i></i>4 idea</span></p>
-              </a>
-            
-          </div>
+          
+            <ul class="lib-rows b">
+              <li>
+                  <a class="pcard prow" href="#abrahamson-lindgren-2014" data-id="abrahamson-lindgren-2014" data-year="2014" data-title="embodiment and embodied design" data-marks="22" data-cat="embodied-learning" data-exp="3" data-idea="4" data-gap="0" data-know="5" data-nov="2" data-find="embodiment and embodied design dor abrahamson, robb lindgren 2014 abrahamson &amp; lindgren 2014 grounded simulation dual body-schema gesture directed design maths metaphor language collaboration embodied learning" style="--c: #f59e3b"><i aria-hidden="true"></i><span class="prow-t">Embodiment and Embodied Design</span><span class="prow-n"></span><span class="prow-y">2014</span><span class="prow-go" aria-hidden="true">→</span></a>
+                </li>
+              
+            </ul>
+          
         </section>
       
     </div>
@@ -244,7 +243,7 @@
   window.LOCK = {"salt":"cqi1FMVce4FrCrI++H1FPQ==","iterations":250000,"check":"u2551gpRCfdF1I421CR17RU8kGVccRTeJVrV9RAH12Fl"};
   window.COLLAGE_URL = "/phd/collage/";
 </script>
-<script src="/phd/library.js?v=1795512801"></script>
+<script src="/phd/library.js?v=1795516195"></script>
 
       </main>
       
@@ -268,6 +267,6 @@
 
       
     </div>
-    <script src="/assets/zf/zf.js?v=1795512801"></script>
+    <script src="/assets/zf/zf.js?v=1795516195"></script>
   </body>
 </html>

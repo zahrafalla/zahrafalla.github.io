@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100..125,300..800;1,100..125,300..800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-<link rel="stylesheet" href="/assets/zf/zf.css?v=1795512801">
+<link rel="stylesheet" href="/assets/zf/zf.css?v=1795516195">
 
   </head>
   <body class="zf ">
@@ -93,34 +93,43 @@
 </div>
 
 
-<h1 class="zf-sr">Overview: looking at papers differently</h1>
-
-<!-- ===================== NUMBERS ===================== -->
-<div class="zf-row">
-  <div class="w-full ov-stats">
-    <div class="b">
-<b data-count="7">7</b><span>papers read</span>
+<!-- ===================== HEADER: what this is, the numbers, and the three ways of looking ===================== -->
+<div class="zf-row ov-top">
+  <div class="w-full b ov-hero">
+    <div class="ov-hero-t">
+      <p class="ov-kick"><span>Overview</span>7 papers, one picture</p>
+      <h1>My papers, three ways</h1>
+      <p class="ov-hero-l">
+        7 papers I have read: where their ideas come from, the people behind them, and how they connect to each other and to my own questions.
+      </p>
+    </div>
+    <dl class="ov-hero-n">
+      <div>
+<dd data-count="7">7</dd>
+<dt>papers read</dt>
 </div>
-    <div class="b">
-<b data-count="237">237</b><span>marks on their bars</span>
+      <div>
+<dd data-count="237">237</dd>
+<dt>marks on them</dt>
 </div>
-    <div class="b">
-<b data-count="65">65</b><span>passages in my papers</span>
+      <div>
+<dd data-count="16">16</dd>
+<dt>experiments</dt>
 </div>
-    <div class="b">
-<b data-count="16">16</b><span>experiments</span>
+      <div>
+<dd data-count="65">65</dd>
+<dt>passages in my papers</dt>
 </div>
-    <div class="b">
-<b data-count="59">59</b><span>people to know</span>
+      <div>
+<dd data-count="59">59</dd>
+<dt>people to know</dt>
 </div>
-    <div class="b">
-<b data-count="16">16</b><span>shared ideas</span>
+      <div>
+<dd data-count="16">16</dd>
+<dt>shared ideas</dt>
 </div>
+    </dl>
   </div>
-</div>
-
-<!-- ===================== THE BAR: THREE WAYS OF LOOKING ===================== -->
-<div class="zf-row ov-nav-row">
   <nav class="w-full b ov-nav" role="tablist" aria-label="Ways of looking at the papers">
     <a href="#timeline" role="tab" data-view="timeline">
       <svg viewbox="0 0 40 24" aria-hidden="true"><path d="M2 12h36"></path><circle cx="8" cy="12" r="3"></circle><circle cx="19" cy="12" r="4.5"></circle><circle cx="32" cy="12" r="3"></circle></svg>
@@ -140,13 +149,19 @@
 
 <!-- ===================== 01 · TIMELINE ===================== -->
 <section class="zf-row ov-panel" id="timeline" data-view="timeline" role="tabpanel" aria-label="Timeline">
-  <div class="zf-row zf-shead">
-    <p class="zf-label b"><span class="n">01</span> Timeline</p>
-    <h2 class="zf-h zf-big b">What they build on</h2>
-  </div>
   <!-- built by overview.js: a river of time with the older works on the left and my papers on the right -->
-  <div class="w-full b tl-stats" id="tl-stats"></div>
-  <div class="w-full b tl-scrub" id="tl-scrub" aria-label="Every year, from the oldest idea to today"></div>
+  <div class="w-full b ov-phead">
+    <div class="ov-phead-t">
+      <p class="ov-kick"><span>01</span>Timeline</p>
+      <h2>What they build on</h2>
+      <p class="ov-phead-l">
+        Older works on the left, my papers on the right. Each paper has its own coloured lane that collects the ideas it builds on; point at anything to follow its threads.
+      </p>
+      <p class="ov-phead-q" id="tl-quote"></p>
+    </div>
+    <div class="ov-phead-x tl-stats" id="tl-stats"></div>
+    <div class="ov-phead-foot tl-scrub" id="tl-scrub" aria-label="Every year, from the oldest idea to today"></div>
+  </div>
   <div class="w-full b tl-river" id="tl-river">
     <svg class="tl-links" id="tl-links" aria-hidden="true"></svg>
     <div class="tl-spine" aria-hidden="true"><i class="tl-ink"></i></div>
@@ -159,9 +174,12 @@
 
 <!-- ===================== 02 · PEOPLE ===================== -->
 <section class="zf-row ov-panel" id="people" data-view="people" role="tabpanel" aria-label="People">
-  <div class="zf-row zf-shead">
-    <p class="zf-label b"><span class="n">02</span> People</p>
-    <h2 class="zf-h zf-big b">Who to know</h2>
+  <div class="w-full b ov-phead is-short">
+    <div class="ov-phead-t">
+      <p class="ov-kick"><span>02</span>People</p>
+      <h2>Who to know</h2>
+      <p class="ov-phead-l">Everyone my papers cite, as a skyline of citations. Choose a paper under “Through” to see who it leans on.</p>
+    </div>
   </div>
   <!-- built by overview.js from window.OV.people and each paper's cite_counts -->
   <div class="w-full b pp-tools zf-meta">
@@ -241,9 +259,12 @@
 
 <!-- ===================== 03 · CONNECTIONS ===================== -->
 <section class="zf-row ov-panel" id="connections" data-view="connections" role="tabpanel" aria-label="Connections">
-  <div class="zf-row zf-shead">
-    <p class="zf-label b"><span class="n">03</span> Connections</p>
-    <h2 class="zf-h zf-big b">How it all connects</h2>
+  <div class="w-full b ov-phead is-short">
+    <div class="ov-phead-t">
+      <p class="ov-kick"><span>03</span>Connections</p>
+      <h2>How it all connects</h2>
+      <p class="ov-phead-l">Papers, shared ideas and my research questions as one network. Point at a shape to follow its links.</p>
+    </div>
   </div>
   <div class="w-full b ov-net-box">
     <div class="ov-net-wrap"><svg class="ov-net" id="ov-net" role="img" aria-label="Network of papers, shared ideas and my research questions"></svg></div>
@@ -267,7 +288,7 @@
     collage: "/phd/collage/"
   };
 </script>
-<script src="/phd/overview.js?v=1795512801"></script>
+<script src="/phd/overview.js?v=1795516195"></script>
 
       </main>
       
@@ -291,6 +312,6 @@
 
       
     </div>
-    <script src="/assets/zf/zf.js?v=1795512801"></script>
+    <script src="/assets/zf/zf.js?v=1795516195"></script>
   </body>
 </html>
