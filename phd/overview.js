@@ -1,8 +1,8 @@
 /* =============================================================================
    overview.js — "Papers through my eyes" · Overview
    Three ways of looking at the papers, switched by the bar at the top:
-   01 Timeline     papers stacked by year + the older works they cite
-   02 People       cards that turn over; sorted, searchable, "show all"
+   01 Timeline     a river of time: older works left, my papers right, threads between
+   02 People       a skyline of citations, a detail panel, and cards that turn over
    03 Connections  papers, shared ideas and my research questions as a
                    network of shapes on a grid (force layout, snapped)
    (Each paper's experiments are shown under its grid in the Library.)
@@ -163,9 +163,11 @@
       built[view] = true;
       if (view === "timeline") buildTimeline();
       if (view === "connections") buildNetwork(1);
+      if (view === "people") buildPeople();
     }
-    if (view === "timeline") replay($("#ov-tl"));
+    if (view === "timeline") replayTimeline();
     if (view === "connections") replay($("#ov-net"));
+    if (view === "people") replay($("#pp-chart"));
     refreshGrid();
     if (scroll && nav) {
       var r = nav.getBoundingClientRect();
@@ -193,217 +195,726 @@
   });
 
   /* ======================================================================
-     01 · TIMELINE — the axis, stacks and lanes all size themselves
+     01 · TIMELINE — a river of time
+     A vertical spine of years (quiet stretches folded away). The older works
+     my papers build on sit on the left, my papers on the right; curved threads
+     join each paper to what it builds on. The spine fills with ink as you
+     scroll, and a bar of every year at the top jumps to any year.
      ====================================================================== */
+  var TL = { built: false, pinned: null, links: [] };
+  var CATS = {};
+  (OV.categories || []).forEach(function (c) {
+    CATS[c.key] = c;
+  });
   function buildTimeline() {
-    var svg = $("#ov-tl");
-    if (!svg) return;
-    var SPLIT = 2000;
-    var years = papers
-      .map(function (p) {
-        return +p.year;
-      })
-      .concat(
-        roots.map(function (r) {
-          return +r.year;
-        })
-      );
-    var minYear = Math.min.apply(null, years.concat([1990])),
-      maxYear = Math.max.apply(null, years.concat([2019])) + 1;
-    var start = Math.floor(minYear / 10) * 10;
-    var dec = Math.max(3, (SPLIT - start) / 10); // one cell per decade before 2000
-    function tx(y) {
-      return y < SPLIT ? 0.5 + (y - start) / 10 : dec + 0.5 + (y - SPLIT);
-    }
-    var W = Math.ceil(dec + (maxYear - SPLIT) + 1);
-
-    // papers stack up in their year's column
-    var stack = {},
-      maxStack = 1;
-    papers
-      .slice()
-      .sort(function (a, b) {
-        return a.year - b.year || (a.cite < b.cite ? -1 : 1);
-      })
-      .forEach(function (p) {
-        // stack by grid column: before 2000 a whole decade shares one column
-        var y = +p.year,
-          col = y < SPLIT ? "d" + Math.floor((y - start) / 10) : "y" + y;
-        p.k = stack[col] = (stack[col] || 0) + 1;
-        maxStack = Math.max(maxStack, p.k);
-        p.x = y < SPLIT ? Math.floor((y - start) / 10) + 0.5 : tx(y);
-      });
-    var top = maxStack + 1.3; // bottom of the paper lane
+    var river = $("#tl-river"),
+      yearsBox = $("#tl-years");
+    if (!river || !yearsBox) return;
+    var items = [];
+    roots.forEach(function (r) {
+      items.push({ kind: "root", id: r.id, year: +r.year, r: r });
+    });
     papers.forEach(function (p) {
-      p.y = top - 0.5 - (p.k - 1);
+      items.push({ kind: "paper", id: p.id, year: +p.year, p: p });
+    });
+    var years = {};
+    items.forEach(function (it) {
+      (years[it.year] = years[it.year] || []).push(it);
+    });
+    var list = Object.keys(years)
+      .map(Number)
+      .sort(function (a, b) {
+        return a - b;
+      });
+    var minY = list[0],
+      maxY = Math.max(list[list.length - 1], new Date().getFullYear());
+
+    /* ---- the numbers at the top ---- */
+    var ages = [];
+    papers.forEach(function (p) {
+      p.builds_on.forEach(function (rid) {
+        var r = roots.filter(function (x) {
+          return x.id === rid;
+        })[0];
+        if (r) ages.push(+p.year - +r.year);
+      });
+    });
+    ages.sort(function (a, b) {
+      return a - b;
+    });
+    var median = ages.length ? ages[Math.floor(ages.length / 2)] : 0;
+    var oldest = roots.slice().sort(function (a, b) {
+      return a.year - b.year;
+    })[0];
+    var newest = papers.slice().sort(function (a, b) {
+      return b.year - a.year;
+    })[0];
+    var stats = $("#tl-stats");
+    if (stats) {
+      stats.innerHTML =
+        '<div class="tl-stat"><b data-to="' + (maxY - minY) + '">' + (maxY - minY) + "</b><span>years of ideas<em>" + minY + " → " + maxY + "</em></span></div>" +
+        '<div class="tl-stat"><b data-to="' + roots.length + '">' + roots.length + "</b><span>older works<em>that my papers build on</em></span></div>" +
+        '<div class="tl-stat"><b data-to="' + papers.length + '">' + papers.length + "</b><span>papers I've read<em>" + (papers.length ? Math.min.apply(null, papers.map(function (p) { return +p.year; })) + " → " + newest.year : "") + "</em></span></div>" +
+        '<div class="tl-stat"><b data-to="' + median + '">' + median + "</b><span>years old<em>a cited idea, typically</em></span></div>" +
+        (oldest ? '<p class="tl-stat-q">The oldest idea here is <b>' + esc(oldest.who) + " " + oldest.year + "</b>: “" + esc(oldest.note || oldest.title) + "”</p>" : "");
+    }
+
+    /* ---- the river: one row per year that has something, folded gaps between ---- */
+    var h = "",
+      lastDecade = null;
+    list.forEach(function (y, i) {
+      if (i > 0 && y - list[i - 1] > 1) {
+        var gap = y - list[i - 1] - 1;
+        h += '<div class="tl-gap" style="--g:' + Math.min(gap, 30) + '"><span>' + gap + (gap === 1 ? " quiet year" : " quiet years") + "</span></div>";
+      }
+      var dec = Math.floor(y / 10) * 10;
+      var its = years[y];
+      var left = its.filter(function (it) { return it.kind === "root"; }),
+        right = its.filter(function (it) { return it.kind === "paper"; });
+      h += '<div class="tl-year" data-year="' + y + '" id="tl-y' + y + '">';
+      if (dec !== lastDecade) h += '<span class="tl-decade" aria-hidden="true">' + dec + "s</span>";
+      lastDecade = dec;
+      h += '<div class="tl-side is-left">';
+      left.forEach(function (it, k) {
+        var r = it.r;
+        h +=
+          '<button type="button" class="tl-item tl-root" data-r="' + esc(r.id) + '" style="--k:' + k + '"><i class="tl-dot"></i>' +
+          '<span class="tl-who">' + esc(r.who) + " <em>" + r.year + "</em></span>" +
+          '<span class="tl-title">' + esc(r.title) + "</span>" +
+          (r.note ? '<span class="tl-note">' + esc(r.note) + "</span>" : "") +
+          '<span class="tl-by" aria-label="Cited by ' + r.in.length + ' of my papers">' +
+          r.in.map(function (pid) { return '<i style="--c:' + esc(byId[pid].color) + '" title="' + esc(byId[pid].cite) + '"></i>'; }).join("") +
+          "<small>" + (r.in.length ? "cited by " + r.in.length : "") + "</small></span></button>";
+      });
+      h += "</div>";
+      h += '<div class="tl-mid"><b>' + y + '</b><i style="--n:' + Math.min(its.length, 6) + '"></i></div>';
+      h += '<div class="tl-side is-right">';
+      right.forEach(function (it, k) {
+        var p = it.p,
+          cat = CATS[p.category];
+        h +=
+          '<a class="tl-item tl-paper" href="' + esc(OV.library) + "#" + esc(p.id) + '" data-p="' + esc(p.id) + '" style="--c:' + esc(p.color) + ";--k:" + k + '"><i class="tl-dot"></i>' +
+          '<span class="tl-code">' + esc(p.short) + "</span>" +
+          '<span class="tl-body"><span class="tl-title">' + esc(p.title) + "</span>" +
+          '<span class="tl-auth">' + esc(p.authors) + "</span>" +
+          '<span class="tl-meta">' + (cat ? '<span class="tl-cat" style="--cat:' + esc(cat.color) + '"><i></i>' + esc(cat.label) + "</span>" : "") +
+          "<span>builds on " + p.builds_on.length + "</span><span>" + p.marks.length + " marks</span></span></span></a>";
+      });
+      h += "</div></div>";
+    });
+    yearsBox.innerHTML = h;
+    river.style.setProperty("--mid", Math.max(120, Math.min(300, papers.length * 16 + 40)) + "px");
+
+    /* ---- the bar of every year at the top ---- */
+    var scrub = $("#tl-scrub");
+    if (scrub) {
+      var start = Math.floor(minY / 10) * 10,
+        n = maxY - start + 1,
+        sh = '<div class="tl-sc-track" style="--n:' + n + '">';
+      for (var y = start; y <= maxY; y++) {
+        var its = years[y] || [];
+        sh += '<button type="button" class="tl-sc-y' + (its.length ? " has" : "") + (y % 10 === 0 ? " is-dec" : "") + '" data-year="' + y + '" title="' + y + (its.length ? ": " + its.map(function (it) { return it.kind === "root" ? it.r.who : it.p.short; }).join(", ") : "") + '"' + (its.length ? "" : ' tabindex="-1"') + ">";
+        its
+          .slice()
+          .sort(function (a, b) { return a.kind === b.kind ? 0 : a.kind === "root" ? -1 : 1; })
+          .forEach(function (it, k) {
+            sh += '<i class="' + (it.kind === "root" ? "is-root" : "is-paper") + '" style="--k:' + k + (it.kind === "paper" ? ";--c:" + esc(it.p.color) : "") + '"></i>';
+          });
+        if (y % 10 === 0) sh += "<small>" + y + "</small>";
+        sh += "</button>";
+      }
+      sh += '<span class="tl-sc-view" aria-hidden="true"></span></div>';
+      sh += '<p class="tl-sc-key zf-meta"><span><i class="is-root"></i>older work</span><span><i class="is-paper"></i>paper I read</span><span>click a year to jump</span></p>';
+      scrub.innerHTML = sh;
+      scrub.addEventListener("click", function (e) {
+        var b = e.target.closest(".tl-sc-y");
+        if (!b) return;
+        var y = +b.dataset.year,
+          target = list.filter(function (x) { return x >= y; })[0] || list[list.length - 1];
+        var row = $("#tl-y" + target);
+        if (row) {
+          var top = row.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.3;
+          window.scrollTo({ top: top, behavior: reduced ? "auto" : "smooth" });
+          row.classList.remove("is-flash");
+          void row.offsetWidth;
+          row.classList.add("is-flash");
+        }
+      });
+    }
+
+    /* ---- hover and focus: light up the threads of one item ---- */
+    yearsBox.addEventListener("pointerover", function (e) {
+      var it = e.target.closest(".tl-item");
+      if (it && !TL.pinned) focusTl(it);
+    });
+    yearsBox.addEventListener("pointerleave", function () {
+      if (!TL.pinned) focusTl(null);
+    });
+    yearsBox.addEventListener("focusin", function (e) {
+      var it = e.target.closest(".tl-item");
+      if (it) focusTl(it);
+    });
+    yearsBox.addEventListener("click", function (e) {
+      var it = e.target.closest(".tl-root");
+      if (!it) return;
+      TL.pinned = TL.pinned === it ? null : it;
+      $$(".tl-root.is-pinned", yearsBox).forEach(function (x) {
+        x.classList.remove("is-pinned");
+      });
+      if (TL.pinned) it.classList.add("is-pinned");
+      focusTl(TL.pinned);
     });
 
-    // roots on lanes below, packed so labels do not overlap
-    var rs = roots.slice().sort(function (a, b) {
-      return a.year - b.year;
+    /* ---- items arrive as they scroll into view ---- */
+    if ("IntersectionObserver" in window && !reduced) {
+      TL.io = new IntersectionObserver(
+        function (es) {
+          es.forEach(function (e) {
+            if (e.isIntersecting) {
+              e.target.classList.add("is-in");
+              TL.io.unobserve(e.target);
+            }
+          });
+        },
+        { rootMargin: "0px 0px -8% 0px" },
+      );
+    }
+    observeRows();
+
+    window.addEventListener("scroll", inkTick, { passive: true });
+    window.addEventListener("resize", function () {
+      clearTimeout(TL.rt);
+      TL.rt = setTimeout(drawLinks, 120);
     });
-    var laneEnd = [],
-      lanes = 1;
-    rs.forEach(function (r) {
-      r.x = tx(+r.year);
-      var w = 0.35 + (r.who.length + 5) * 0.135;
-      for (var l = 0; l < 200; l++) {
-        if (laneEnd[l] == null || laneEnd[l] < r.x - 0.2) {
-          r.lane = l;
-          laneEnd[l] = r.x + w;
-          lanes = Math.max(lanes, l + 1);
-          break;
+    if ("ResizeObserver" in window) new ResizeObserver(function () {
+      clearTimeout(TL.rt);
+      TL.rt = setTimeout(drawLinks, 60);
+    }).observe(yearsBox);
+    TL.built = true;
+    requestAnimationFrame(function () {
+      drawLinks();
+      inkTick();
+    });
+  }
+  function observeRows() {
+    $$(".tl-year, .tl-gap", $("#tl-years")).forEach(function (row) {
+      if (TL.io) TL.io.observe(row);
+      else row.classList.add("is-in");
+    });
+  }
+
+  /* where a dot sits inside the river, ignoring the slide-in transforms */
+  function dotXY(node, river) {
+    var x = 0,
+      y = 0,
+      n = node;
+    while (n && n !== river) {
+      x += n.offsetLeft;
+      y += n.offsetTop;
+      n = n.offsetParent;
+    }
+    return [x + node.offsetWidth / 2, y + node.offsetHeight / 2];
+  }
+  /* a metro map: each paper has its own lane down the middle; its older works join the lane
+     with rounded corners, and the lane runs to the paper */
+  function metro(ax, ay, lx, bx, by) {
+    var r = Math.min(10, Math.abs(by - ay) / 2, Math.abs(lx - ax), Math.abs(bx - lx));
+    var s1 = lx > ax ? 1 : -1,
+      sy = by >= ay ? 1 : -1,
+      s2 = bx > lx ? 1 : -1;
+    return (
+      "M" + ax + " " + ay + " H" + (lx - s1 * r) + " Q" + lx + " " + ay + " " + lx + " " + (ay + sy * r) + " V" + (by - sy * r) + " Q" + lx + " " + by + " " + (lx + s2 * r) + " " + by + " H" + bx
+    );
+  }
+  function drawLinks() {
+    var river = $("#tl-river"),
+      svg = $("#tl-links"),
+      mid = $(".tl-year .tl-mid", river);
+    if (!river || !svg || !mid || !river.offsetParent) return;
+    var W = river.clientWidth,
+      H = river.clientHeight;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.setAttribute("width", W);
+    svg.setAttribute("height", H);
+    var m0 = dotXY(mid, river)[0] - mid.offsetWidth / 2,
+      mw = mid.offsetWidth;
+    var order = papers.slice().sort(function (a, b) {
+      return a.year - b.year || (a.cite < b.cite ? -1 : 1);
+    });
+    var lane = {};
+    order.forEach(function (p, i) {
+      lane[p.id] = m0 + 10 + ((i + 0.5) * (mw - 20)) / order.length;
+    });
+    var s = "",
+      k = 0;
+    order.forEach(function (p) {
+      var pn = $('.tl-paper[data-p="' + p.id + '"] .tl-dot', river);
+      if (!pn) return;
+      var b = dotXY(pn, river);
+      p.builds_on.forEach(function (rid) {
+        var rn = $('.tl-root[data-r="' + rid + '"] .tl-dot', river);
+        if (!rn) return;
+        var a = dotXY(rn, river);
+        s += '<path d="' + metro(a[0], a[1], lane[p.id], b[0], b[1]) + '" pathLength="1" data-p="' + p.id + '" data-r="' + rid + '" style="--c:' + p.color + ";--o:" + k++ + '"/>';
+      });
+    });
+    svg.innerHTML = s;
+    svg.classList.remove("is-drawn");
+    void svg.getBoundingClientRect();
+    svg.classList.add("is-drawn");
+    if (TL.pinned || TL.focus) focusTl(TL.pinned || TL.focus);
+  }
+  /* the ink in the spine follows the reader down the river; the bar on top shows which years are on screen */
+  function inkTick() {
+    if (TL.raf) return;
+    TL.raf = requestAnimationFrame(function () {
+      TL.raf = 0;
+      var river = $("#tl-river");
+      if (!river || !river.offsetParent) return;
+      var r = river.getBoundingClientRect(),
+        mid = window.innerHeight * 0.55;
+      var f = Math.max(0, Math.min(1, (mid - r.top) / Math.max(1, r.height)));
+      river.style.setProperty("--flow", f.toFixed(4));
+      var rows = $$(".tl-year", river),
+        vis = rows.filter(function (row) {
+          var b = row.getBoundingClientRect();
+          return b.bottom > 60 && b.top < window.innerHeight;
+        });
+      var view = $(".tl-sc-view"),
+        track = $(".tl-sc-track");
+      if (view && track && vis.length) {
+        var y1 = +vis[0].dataset.year,
+          y2 = +vis[vis.length - 1].dataset.year;
+        var a = $('.tl-sc-y[data-year="' + y1 + '"]', track),
+          b = $('.tl-sc-y[data-year="' + y2 + '"]', track);
+        if (a && b) {
+          view.style.left = a.offsetLeft + "px";
+          view.style.width = b.offsetLeft + b.offsetWidth - a.offsetLeft + "px";
+          view.style.opacity = r.top < window.innerHeight && r.bottom > 0 ? 1 : 0;
         }
       }
-      r.y = top + 1.6 + r.lane * 0.62;
-    });
-    var H = Math.ceil(top + 1.6 + lanes * 0.62 + 1.2);
-    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-    svg.style.minWidth = W * 26 + "px"; // a cell may shrink to 26px before the timeline scrolls sideways
-    svg.classList.toggle("is-many", papers.length > 12);
-    svg.innerHTML = "";
-
-    var g = el("g", { class: "ov-grid" }, svg);
-    for (var x = 0; x <= W; x++) el("line", { x1: x, y1: 0, x2: x, y2: H }, g);
-    for (var y = 0; y <= H; y++) el("line", { x1: 0, y1: y, x2: W, y2: y }, g);
-    el("path", { class: "ov-break", d: "M" + dec + " 0.2 l-0.15 0.3 l0.3 0.3 l-0.3 0.3 l0.3 0.3 l-0.15 0.3 V" + (H - 0.7) }, svg);
-    var lab = el("g", { class: "ov-lab" }, svg);
-    el("text", { x: 0.25, y: 0.62 }, lab).textContent = "PAPERS I'VE READ · " + papers.length;
-    el("text", { x: 0.25, y: top + 0.9 }, lab).textContent = "WHAT THEY BUILD ON · " + roots.length;
-    el("text", { x: dec + 0.25, y: 0.62 }, lab).textContent = "2000 → ONE CELL PER YEAR";
-    var ticks = el("g", { class: "ov-ticks" }, svg);
-    for (var d = start; d < SPLIT; d += 10) el("text", { x: tx(d), y: H - 0.4, "text-anchor": "middle" }, ticks).textContent = d;
-    var every = maxYear - SPLIT > 30 ? 5 : 2;
-    for (var yr = SPLIT; yr < maxYear; yr += every) el("text", { x: tx(yr), y: H - 0.4, "text-anchor": "middle" }, ticks).textContent = yr;
-
-    var links = el("g", { class: "ov-links" }, svg);
-    var nodes = el("g", { class: "ov-nodes" }, svg);
-    var order = 0;
-    rs.forEach(function (r) {
-      r.in.forEach(function (pid) {
-        var p = byId[pid],
-          pi = papers.indexOf(p),
-          ym = top + 0.35 + (pi % 7) * 0.12;
-        el("path", { d: "M" + p.x + " " + p.y + " V" + ym + " H" + r.x + " V" + (r.y - 0.17), pathLength: 1, "data-p": pid, "data-r": r.id, style: "--c:" + p.color + ";--o:" + order++ }, links);
+      rows.forEach(function (row) {
+        var b = row.getBoundingClientRect();
+        row.classList.toggle("is-now", b.top < mid && b.bottom > mid);
       });
     });
-    rs.forEach(function (r, i) {
-      var gg = el("g", { class: "ov-root", tabindex: 0, "data-r": r.id, style: "--o:" + i }, nodes);
-      el("circle", { cx: r.x, cy: r.y, r: 0.17 }, gg);
-      el("text", { x: r.x + 0.3, y: r.y + 0.08 }, gg).textContent = r.who + " " + r.year;
-      ["mouseenter", "focus"].forEach(function (ev) {
-        gg.addEventListener(ev, function () {
-          focusTl({ root: r });
-        });
-      });
-    });
-    papers.forEach(function (p, i) {
-      var gg = el("g", { class: "ov-paper", tabindex: 0, "data-p": p.id, style: "--c:" + p.color + ";--o:" + i }, nodes);
-      el("circle", { cx: p.x, cy: p.y, r: 0.42 }, gg);
-      el("text", { x: p.x, y: p.y + 0.08, "text-anchor": "middle" }, gg).textContent = p.short;
-      ["mouseenter", "focus"].forEach(function (ev) {
-        gg.addEventListener(ev, function () {
-          focusTl({ paper: p });
-        });
-      });
-      gg.addEventListener("click", function () {
-        location.href = OV.library + "#" + p.id;
-      });
-    });
-    svg.addEventListener("mouseleave", function () {
-      focusTl(null);
-    });
-    focusTl(null);
   }
-  function focusTl(f) {
-    var svg = $("#ov-tl"),
-      info = $("#ov-tl-info");
-    if (!svg) return;
-    svg.classList.toggle("is-focus", !!f);
-    $$("path, .ov-root, .ov-paper", svg).forEach(function (n) {
+  function focusTl(item) {
+    var river = $("#tl-river");
+    if (!river) return;
+    TL.focus = item;
+    river.classList.toggle("is-focus", !!item);
+    $$(".is-on", river).forEach(function (n) {
       n.classList.remove("is-on");
     });
-    if (!f) {
-      info.innerHTML =
-        '<p class="ov-info-k">Timeline</p><h3>' + papers.length + " papers · " + roots.length +
-        " older works</h3><p>Hover a paper to see what it builds on, or an older work to see who cites it. Click a paper to open its bar.</p>";
-      return;
-    }
-    if (f.paper) {
-      var p = f.paper;
-      $$('[data-p="' + p.id + '"]', svg).forEach(function (x) {
-        x.classList.add("is-on");
-      });
-      p.builds_on.forEach(function (rid) {
-        var r = $('.ov-root[data-r="' + rid + '"]', svg);
-        if (r) r.classList.add("is-on");
-      });
-      info.innerHTML =
-        '<p class="ov-info-k" style="--c:' + esc(p.color) + '"><i></i>' + esc(p.cite) + "</p><h3>" + esc(p.title) + "</h3><p>" + esc(p.authors) + " · " + esc(p.year) +
-        " · builds on " + p.builds_on.length + " of the older works shown.</p>" + '<p><a class="zf-red" href="' + esc(OV.library) + "#" + esc(p.id) + '">Open its page bar →</a></p>';
-    } else {
-      var r = f.root;
-      $$('[data-r="' + r.id + '"]', svg).forEach(function (x) {
-        x.classList.add("is-on");
-      });
-      r.in.forEach(function (pid) {
-        var pn = $('.ov-paper[data-p="' + pid + '"]', svg);
-        if (pn) pn.classList.add("is-on");
-      });
-      info.innerHTML =
-        '<p class="ov-info-k">' + esc(r.year) + "</p><h3>" + esc(r.who) + " · " + esc(r.title) + "</h3><p>" + esc(r.note) + '</p><p class="ov-chips">Cited by ' +
-        r.in.map(function (id) { return chip(id); }).join("") + "</p>";
-    }
+    if (!item) return;
+    item.classList.add("is-on");
+    var sel = item.dataset.p ? '[data-p="' + item.dataset.p + '"]' : '[data-r="' + item.dataset.r + '"]';
+    $$("#tl-links path" + sel, river).forEach(function (path) {
+      path.classList.add("is-on");
+      path.parentNode.appendChild(path); // on top
+      var other = item.dataset.p ? '.tl-root[data-r="' + path.dataset.r + '"]' : '.tl-paper[data-p="' + path.dataset.p + '"]';
+      var o = $(other, river);
+      if (o) o.classList.add("is-on");
+    });
+  }
+  function replayTimeline() {
+    if (!TL.built || reduced) return;
+    $$(".tl-year, .tl-gap", $("#tl-years")).forEach(function (row) {
+      row.classList.remove("is-in");
+    });
+    observeRows();
+    $$("#tl-stats .tl-stat b").forEach(function (b) {
+      countUp(b, +b.dataset.to);
+    });
+    requestAnimationFrame(function () {
+      drawLinks();
+      inkTick();
+    });
+  }
+  function countUp(node, to) {
+    var t0 = performance.now(),
+      dur = 900;
+    (function step(t) {
+      var f = Math.min(1, (t - t0) / dur);
+      node.textContent = Math.round(to * (1 - Math.pow(1 - f, 3)));
+      if (f < 1) requestAnimationFrame(step);
+    })(t0);
   }
 
   /* ======================================================================
-     02 · PEOPLE: sort by mentions, find, show all, turn over
+     02 · PEOPLE — a skyline of citations, a detail panel, and cards
+     Each person is a column of small squares, one per citation in my papers'
+     own text, coloured by the paper that cites them (cite_counts in each
+     paper's block). "Through" a paper re-sorts everything by that paper.
      ====================================================================== */
-  var groupsEls = $$(".ov-people");
-  groupsEls.forEach(function (box) {
-    var cards = $$(".ov-person", box);
-    cards
-      .sort(function (a, b) {
-        return +b.dataset.n - +a.dataset.n;
-      })
-      .forEach(function (c) {
-        box.appendChild(c);
-      });
-    var limit = +box.dataset.limit || 12;
-    if (cards.length > limit) {
-      box.classList.add("is-clipped");
-      cards.forEach(function (c, i) {
-        if (i >= limit) c.classList.add("is-extra");
-      });
-      var more = document.createElement("button");
-      more.type = "button";
-      more.className = "ov-more b";
-      more.textContent = "Show all " + cards.length + " →";
-      more.addEventListener("click", function () {
-        box.classList.toggle("is-clipped");
-        more.textContent = box.classList.contains("is-clipped") ? "Show all " + cards.length + " →" : "Show fewer ↑";
-        refreshGrid();
-      });
-      box.parentNode.insertBefore(more, box.nextSibling);
+  var PP = { who: "all", sort: "cites", through: "", q: "", pinned: null, all: false };
+  var CARD_LIMIT = 16;
+  var people = (OV.people || []).map(function (x) {
+    var per = [];
+    papers.forEach(function (p) {
+      var n = (p.cite_counts || {})[x.id] || 0;
+      if (n || (p.mentions || []).indexOf(x.id) >= 0) per.push({ p: p, n: n });
+    });
+    var total = per.reduce(function (a, b) {
+      return a + b.n;
+    }, 0);
+    var parts = x.name.split(" ");
+    return Object.assign({}, x, {
+      per: per,
+      total: total,
+      npapers: per.length,
+      last: parts[parts.length - 1],
+      initials: (parts[0][0] + parts[parts.length - 1][0]).toUpperCase(),
+      find: (x.name + " " + (x.known || "") + " " + (x.idea || "")).toLowerCase(),
+    });
+  });
+  var pById = {};
+  people.forEach(function (x) {
+    pById[x.id] = x;
+  });
+
+  /* a small PRNG so each person's portrait is the same on every visit */
+  function seeded(str) {
+    var h = 2166136261;
+    for (var i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+    return function () {
+      h = Math.imul(h ^ (h >>> 15), 2246822507);
+      h = Math.imul(h ^ (h >>> 13), 3266489909);
+      return ((h ^= h >>> 16) >>> 0) / 4294967296;
+    };
+  }
+  /* pixel portrait: 5×5, mirrored like a face, coloured by the papers that cite the person */
+  function portrait(x, size) {
+    var rnd = seeded(x.id),
+      cols = [];
+    x.per.forEach(function (e) {
+      for (var i = 0; i < Math.max(1, e.n); i++) cols.push(e.p.color);
+    });
+    if (!cols.length) cols.push("var(--paper-2)");
+    var s = '<svg class="pp-face" viewBox="0 0 5 5" width="' + size + '" height="' + size + '" aria-hidden="true">';
+    for (var r = 0; r < 5; r++) {
+      for (var c = 0; c < 3; c++) {
+        if (rnd() < 0.42) continue;
+        var col = cols[Math.floor(rnd() * cols.length)];
+        var d = (r * 3 + c) * 0.03;
+        s += '<rect x="' + c + '" y="' + r + '" width="1" height="1" fill="' + col + '" style="--d:' + d + 's"/>';
+        if (c < 2) s += '<rect x="' + (4 - c) + '" y="' + r + '" width="1" height="1" fill="' + col + '" style="--d:' + d + 's"/>';
+      }
     }
-  });
-  $$(".ov-person").forEach(function (b) {
-    b.addEventListener("click", function () {
-      b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    return s + "</svg>";
+  }
+  function countIn(x) {
+    if (!PP.through) return x.total;
+    var e = x.per.filter(function (e) {
+      return e.p.id === PP.through;
+    })[0];
+    return e ? e.n : 0;
+  }
+  function visible() {
+    return people.filter(function (x) {
+      if (PP.who === "author" && !x.author) return false;
+      if (PP.who === "other" && x.author) return false;
+      if (PP.q && x.find.indexOf(PP.q) < 0) return false;
+      if (PP.through && !x.per.some(function (e) { return e.p.id === PP.through; })) return false;
+      return true;
     });
-  });
-  var find = $("#ov-people-find");
-  if (find) {
-    find.addEventListener("input", function () {
-      var q = find.value.trim().toLowerCase();
-      groupsEls.forEach(function (box) {
-        box.classList.toggle("is-finding", !!q);
-        $$(".ov-person", box).forEach(function (c) {
-          c.hidden = !!q && c.dataset.find.indexOf(q) < 0;
-        });
+  }
+  function sorted(list) {
+    var by = {
+      cites: function (a, b) {
+        return countIn(b) - countIn(a) || b.npapers - a.npapers || (a.last < b.last ? -1 : 1);
+      },
+      papers: function (a, b) {
+        return b.npapers - a.npapers || countIn(b) - countIn(a);
+      },
+      az: function (a, b) {
+        return a.last.localeCompare(b.last);
+      },
+    }[PP.sort];
+    return list.slice().sort(by);
+  }
+
+  var chart = $("#pp-chart"),
+    info = $("#pp-info"),
+    cardsBox = $("#pp-cards");
+  /* how many squares side by side in a column, and how many citations a square stands for */
+  var maxTotal = Math.max.apply(null, people.map(function (x) { return x.total; }).concat([1]));
+  var WIDE = maxTotal > 160 ? 4 : maxTotal > 70 ? 3 : 2;
+  var PER = Math.max(1, Math.ceil(maxTotal / (WIDE * 34)));
+
+  function buildChart() {
+    if (!chart) return;
+    var h = "";
+    people.forEach(function (x, i) {
+      var blocks = "",
+        k = 0;
+      x.per.forEach(function (e) {
+        var n = Math.ceil(e.n / PER);
+        for (var j = 0; j < n; j++) blocks += '<i data-p="' + esc(e.p.id) + '" style="--c:' + esc(e.p.color) + ";--k:" + k++ + '"></i>';
       });
-      refreshGrid();
+      if (!k) blocks = '<i class="is-zero" style="--k:0"></i>';
+      h +=
+        '<button type="button" class="pp-col' + (x.author ? " is-author" : "") + '" role="listitem" data-id="' + esc(x.id) + '" style="--i:' + i + '" aria-label="' +
+        esc(x.name) + ", " + x.total + " citations in " + x.npapers + ' papers">' +
+        '<b class="pp-n">' + x.total + '</b><span class="pp-stack" style="--wide:' + WIDE + '">' + blocks + "</span>" +
+        '<span class="pp-name">' + esc(x.last) + "</span></button>";
     });
+    chart.innerHTML = h;
+    chart.style.setProperty("--rows", Math.ceil(maxTotal / PER / WIDE));
+    chart.addEventListener("pointerover", function (e) {
+      var c = e.target.closest(".pp-col");
+      if (c && !PP.pinned) showInfo(pById[c.dataset.id]);
+    });
+    chart.addEventListener("pointerleave", function () {
+      if (!PP.pinned) showInfo(null);
+    });
+    chart.addEventListener("focusin", function (e) {
+      var c = e.target.closest(".pp-col");
+      if (c) showInfo(pById[c.dataset.id]);
+    });
+    chart.addEventListener("click", function (e) {
+      var c = e.target.closest(".pp-col");
+      if (!c) return;
+      pin(PP.pinned === c.dataset.id ? null : c.dataset.id);
+    });
+    chart.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      var cols = $$(".pp-col:not([hidden])", chart);
+      var i = cols.indexOf(document.activeElement);
+      var n = cols[i + (e.key === "ArrowRight" ? 1 : -1)];
+      if (n) {
+        e.preventDefault();
+        n.focus();
+      }
+    });
+  }
+  function pin(id) {
+    PP.pinned = id;
+    $$(".pp-col", chart).forEach(function (c) {
+      c.classList.toggle("is-pinned", c.dataset.id === id);
+    });
+    showInfo(id ? pById[id] : null);
+    if (id) {
+      var card = cardsBox.querySelector('.pp-card[data-id="' + id + '"]');
+      if (card && card.hidden && !PP.all) {
+        PP.all = true;
+        apply(false);
+      }
+      card = cardsBox.querySelector('.pp-card[data-id="' + id + '"]');
+      if (card) {
+        card.classList.remove("is-flash");
+        void card.offsetWidth;
+        card.classList.add("is-flash");
+      }
+    }
+  }
+
+  function bars(x) {
+    var max = Math.max.apply(null, x.per.map(function (e) { return e.n; }).concat([1]));
+    return x.per
+      .slice()
+      .sort(function (a, b) { return b.n - a.n; })
+      .map(function (e) {
+        return (
+          '<li style="--c:' + esc(e.p.color) + ";--w:" + Math.max(4, (e.n / max) * 100) + '%"><span>' + esc(e.p.short) + '</span><i></i><b>' + e.n + "</b></li>"
+        );
+      })
+      .join("");
+  }
+  function showInfo(x) {
+    if (!info) return;
+    var h;
+    if (!x) {
+      var vis = visible(),
+        tot = vis.reduce(function (a, y) { return a + countIn(y); }, 0),
+        top = sorted(vis)[0];
+      var tp = PP.through ? byId[PP.through] : null;
+      h =
+        '<p class="pp-i-kick">' + (tp ? "Through " + esc(tp.cite) : "Everyone my papers cite") + "</p>" +
+        '<p class="pp-i-big"><b>' + vis.length + "</b> people</p>" +
+        '<p class="pp-i-big"><b>' + tot + "</b> citations</p>" +
+        (top ? '<p class="pp-i-top">Most cited: <b>' + esc(top.name) + "</b> (" + countIn(top) + ")</p>" : "") +
+        '<p class="pp-i-hint">Point at a column to meet the person; click to keep them here. Each square is ' +
+        (PER > 1 ? PER + " citations" : "one citation") + ", coloured by the paper that cites them.</p>";
+      info.className = "pp-info is-empty";
+    } else {
+      h =
+        '<div class="pp-i-head">' + portrait(x, 64) + '<div><p class="pp-i-kick">' + (x.author ? "Author of a paper I read" : "Cited by my papers") + "</p>" +
+        "<h3>" + esc(x.name) + "</h3>" + (x.where ? "<small>" + esc(x.where) + "</small>" : "") + "</div></div>" +
+        '<p class="pp-i-known">' + esc(x.known) + "</p>" +
+        (x.idea ? '<p class="pp-i-idea">' + esc(x.idea) + "</p>" : "") +
+        '<p class="pp-i-sub"><b>' + x.total + "</b> citations in " + x.npapers + " of " + papers.length + " papers</p>" +
+        '<ul class="pp-bars">' + bars(x) + "</ul>" +
+        (x.my_note ? '<p class="pp-i-mine"><em>✎ My note</em> ' + esc(x.my_note) + "</p>" : "") +
+        (x.read ? '<p class="pp-i-read"><em>Read</em> ' + esc(x.read) + "</p>" : "");
+      info.className = "pp-info";
+    }
+    info.innerHTML = h;
+  }
+
+  function buildCards() {
+    if (!cardsBox) return;
+    var h = "";
+    people.forEach(function (x) {
+      var code = "";
+      x.per.forEach(function (e) {
+        for (var j = 0; j < Math.min(e.n, 60); j++) code += '<i style="--c:' + esc(e.p.color) + '"></i>';
+      });
+      h +=
+        '<button type="button" class="pp-card' + (x.author ? " is-author" : "") + (x.my_note ? " has-note" : "") + '" data-id="' + esc(x.id) + '" aria-pressed="false">' +
+        '<span class="pp-front b">' +
+        '<span class="pp-c-top">' + portrait(x, 56) + '<span class="pp-c-rank"><em>#00</em><b>' + x.total + "</b><small>citations</small></span></span>" +
+        '<b class="pp-c-name">' + esc(x.name) + "</b>" +
+        '<small class="pp-c-known">' + esc(x.known) + "</small>" +
+        (x.idea ? '<span class="pp-c-tease">' + esc(x.idea) + "</span>" : "") +
+        (x.my_note ? '<span class="pp-c-mine">✎ My note</span>' : "") +
+        '<span class="pp-code" aria-hidden="true">' + (code || '<i class="is-zero"></i>') + "</span>" +
+        '<span class="pp-c-foot"><span>' + (x.author ? "★ Author" : "Cited") + "</span><span>in " + x.npapers + " of " + papers.length + " papers</span></span>" +
+        "</span>" +
+        '<span class="pp-back b">' +
+        '<b class="pp-c-name">' + esc(x.name) + "</b>" + (x.where ? "<small>" + esc(x.where) + "</small>" : "") +
+        '<span class="pp-c-idea">' + esc(x.idea || x.known) + "</span>" +
+        (x.my_note ? '<span class="pp-c-note"><em>✎ My note</em>' + esc(x.my_note) + "</span>" : "") +
+        (x.read ? '<span class="pp-c-read"><em>Read</em>' + esc(x.read) + "</span>" : "") +
+        "</span></button>";
+    });
+    h += '<button type="button" class="pp-more b" hidden></button>';
+    cardsBox.innerHTML = h;
+    cardsBox.addEventListener("click", function (e) {
+      var more = e.target.closest(".pp-more");
+      if (more) {
+        PP.all = !PP.all;
+        apply(false);
+        return;
+      }
+      var c = e.target.closest(".pp-card");
+      if (c) c.setAttribute("aria-pressed", c.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    });
+    cardsBox.addEventListener("pointerover", function (e) {
+      var c = e.target.closest(".pp-card");
+      $$(".pp-col.is-hot", chart).forEach(function (x) {
+        x.classList.remove("is-hot");
+      });
+      if (c) {
+        var col = chart.querySelector('.pp-col[data-id="' + c.dataset.id + '"]');
+        if (col) col.classList.add("is-hot");
+      }
+    });
+  }
+
+  /* re-order with a smooth slide (FLIP): remember where things were, move them, animate the difference */
+  function flip(nodes, reorder) {
+    var before = new Map();
+    nodes.forEach(function (n) {
+      if (!n.hidden) before.set(n, n.getBoundingClientRect());
+    });
+    reorder();
+    if (reduced) return;
+    nodes.forEach(function (n) {
+      if (n.hidden) return;
+      var a = before.get(n),
+        b = n.getBoundingClientRect();
+      if (!a) {
+        n.animate([{ opacity: 0, transform: "scale(0.6)" }, { opacity: 1, transform: "none" }], { duration: 380, easing: "cubic-bezier(.3,1.4,.5,1)" });
+        return;
+      }
+      var dx = a.left - b.left,
+        dy = a.top - b.top;
+      if (dx || dy)
+        n.animate([{ transform: "translate(" + dx + "px," + dy + "px)" }, { transform: "none" }], { duration: 520, easing: "cubic-bezier(.3,1,.4,1)" });
+    });
+  }
+  function apply(animate) {
+    var list = sorted(visible());
+    var order = {};
+    list.forEach(function (x, i) {
+      order[x.id] = i;
+    });
+    var cols = $$(".pp-col", chart),
+      cards = $$(".pp-card", cardsBox);
+    var run = function () {
+      cols
+        .slice()
+        .sort(function (a, b) {
+          return (order[a.dataset.id] == null ? 1e6 : order[a.dataset.id]) - (order[b.dataset.id] == null ? 1e6 : order[b.dataset.id]);
+        })
+        .forEach(function (c) {
+          c.hidden = order[c.dataset.id] == null;
+          chart.appendChild(c);
+          var x = pById[c.dataset.id];
+          c.querySelector(".pp-n").textContent = countIn(x);
+          $$("i[data-p]", c).forEach(function (i) {
+            i.classList.toggle("is-off", !!PP.through && i.dataset.p !== PP.through);
+          });
+        });
+      var more = cardsBox.querySelector(".pp-more");
+      cards
+        .slice()
+        .sort(function (a, b) {
+          return (order[a.dataset.id] == null ? 1e6 : order[a.dataset.id]) - (order[b.dataset.id] == null ? 1e6 : order[b.dataset.id]);
+        })
+        .forEach(function (c) {
+          var i = order[c.dataset.id];
+          c.hidden = i == null || (!PP.all && !PP.q && i >= CARD_LIMIT);
+          var rk = c.querySelector(".pp-c-rank em");
+          if (rk && i != null) rk.textContent = "#" + (i < 9 ? "0" : "") + (i + 1);
+          c.querySelector(".pp-c-rank b").textContent = countIn(pById[c.dataset.id]);
+          cardsBox.insertBefore(c, more);
+        });
+      var extra = list.length - CARD_LIMIT;
+      more.hidden = PP.q || extra <= 0;
+      more.textContent = PP.all ? "Show fewer ↑" : "Show all " + list.length + " people →";
+    };
+    if (animate) flip(cols.concat(cards), run);
+    else run();
+    if (!PP.pinned || order[PP.pinned] == null) {
+      PP.pinned = null;
+      showInfo(null);
+    }
+    refreshGrid();
+  }
+
+  function buildPeople() {
+    if (!chart || !cardsBox) return;
+    buildChart();
+    buildCards();
+    // "Through" one paper: a chip per paper, in its colour
+    var chips = $(".pp-papers");
+    if (chips) {
+      var ch = '<button type="button" data-through="" aria-pressed="true">All papers</button>';
+      papers.forEach(function (p) {
+        ch += '<button type="button" data-through="' + esc(p.id) + '" aria-pressed="false" style="--c:' + esc(p.color) + '" title="' + esc(p.cite) + '"><i></i>' + esc(p.short) + "</button>";
+      });
+      chips.insertAdjacentHTML("beforeend", ch);
+      chips.addEventListener("click", function (e) {
+        var b = e.target.closest("button");
+        if (!b) return;
+        PP.through = b.dataset.through;
+        $$("button", chips).forEach(function (x) {
+          x.setAttribute("aria-pressed", x === b ? "true" : "false");
+        });
+        chart.classList.toggle("is-through", !!PP.through);
+        apply(true);
+      });
+    }
+    $$(".pp-seg button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var key = b.dataset.who ? "who" : "sort";
+        PP[key] = b.dataset[key];
+        $$("button", b.parentNode).forEach(function (x) {
+          x.setAttribute("aria-pressed", x === b ? "true" : "false");
+        });
+        apply(true);
+      });
+    });
+    var find = $("#pp-find");
+    if (find)
+      find.addEventListener("input", function () {
+        PP.q = find.value.trim().toLowerCase();
+        apply(false);
+      });
+    apply(false);
   }
 
   /* ======================================================================

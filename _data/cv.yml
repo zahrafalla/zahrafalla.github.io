@@ -10,12 +10,12 @@
     - name: LinkedIn
       value: <a href="https://www.linkedin.com/in/zahra-fallah95" target="_blank">linkedin.com/in/zahra-fallah95</a>
     - name: Languages
-      value: English (TOEFL iBT 93), Persian (Native)
+      value: English (Proficient), Persian (Native), German (Basic)
 
 - title: Research Profile
   type: list
   contents:
-    - Cognitive Science MSc researcher working on VR-based behavioral experiments, embodied interaction, and perceptual decision-making. Experienced in Unity-based experimental design, computational behavioral analysis, eye-tracking, and immersive HCI research. Interested in collaborative learning, multimodal interaction, and cognitive technologies.
+    - Cognitive scientist (MSc in Cognitive Science, University of Tehran, 2025) working on VR-based behavioral experiments, embodied interaction, and perceptual decision-making. Experienced in Unity-based experimental design, computational behavioral analysis, eye-tracking, and immersive HCI research. Interested in collaborative learning, multimodal interaction, and cognitive technologies.
 
 - title: Research Interests
   type: list

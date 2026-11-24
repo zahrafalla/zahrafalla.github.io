@@ -31,33 +31,66 @@ description: The papers I have read for my PhD. Each paper becomes a grid of its
         ><button type="button" data-view="list" aria-pressed="false">List</button></span
       >
       <b class="lib-count zf-meta" id="lib-count" aria-live="polite">{{ papers.size }} papers</b>
+      <span class="lib-cats zf-meta" role="group" aria-label="Show one category"
+        ><span>Category</span><button type="button" data-cat="" aria-pressed="true">All <i>{{ papers.size }}</i></button
+        >{%- for c in site.data.categories -%}
+          {%- assign inc = papers | where: 'category', c.key | size -%}
+          <button type="button" data-cat="{{ c.key }}" aria-pressed="false" style="--cat: {{ c.color }}"><b></b>{{ c.label }} <i>{{ inc }}</i></button>
+        {%- endfor -%}
+      </span>
+      <button type="button" class="lib-lock zf-meta" id="lib-lock" aria-pressed="false" title="Show the notes I have hidden from visitors">
+        <span class="lk-ico" aria-hidden="true"></span><span class="lk-txt">Hidden notes</span>
+      </button>
     </div>
-    <div class="w-full zf-tiles" id="lib-cards">
-      {% for p in papers %}
-        <a
-          class="zf-tile pcard b"
-          href="#{{ p.id }}"
-          data-id="{{ p.id }}"
-          data-year="{{ p.year }}"
-          data-title="{{ p.title | downcase | escape }}"
-          data-marks="{{ p.marks.size }}"
-          data-find="{{ p.title | downcase | escape }} {{ p.authors | downcase | escape }} {{ p.year }} {{ p.cite | downcase | escape }} {{ p.ideas | join: ' ' }}"
-        >
-          <div class="zf-tile-top">
-            <span>{{ p.year }} · {{ p.pages }} pages</span><span>{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
+    <div class="w-full" id="lib-cards">
+      {%- assign n_card = 0 -%}
+      {% for c in site.data.categories %}
+        {%- assign in_cat = papers | where: 'category', c.key -%}
+        <section class="lib-group" data-cat="{{ c.key }}" style="--cat: {{ c.color }}">
+          <h2 class="lib-group-h b">
+            <b aria-hidden="true"></b><span>{{ c.label }}</span><i class="lib-group-n">{{ in_cat.size }} {% if in_cat.size == 1 %}paper{% else %}papers{% endif %}</i>
+          </h2>
+          {% if in_cat.size == 0 %}
+            <p class="lib-empty b">No papers here yet — a gap in my reading.</p>
+          {% endif %}
+          <div class="zf-tiles">
+            {% for p in in_cat %}
+              {%- assign n_card = n_card | plus: 1 -%}
+              <a
+                class="zf-tile pcard b"
+                href="#{{ p.id }}"
+                data-id="{{ p.id }}"
+                data-year="{{ p.year }}"
+                data-title="{{ p.title | downcase | escape }}"
+                data-marks="{{ p.marks.size }}"
+                data-find="{{ p.title | downcase | escape }} {{ p.authors | downcase | escape }} {{ p.year }} {{ p.cite | downcase | escape }} {{ p.ideas | join: ' ' }} {{ c.label | downcase }}"
+              >
+                <div class="zf-tile-top">
+                  <span>{{ p.year }} · {{ p.pages }} pages</span><span>{% if n_card < 10 %}0{% endif %}{{ n_card }}</span>
+                </div>
+                <h3>{{ p.title }}</h3>
+                <p class="where">{{ p.authors }}</p>
+                {%- if p.also -%}
+                  <p class="pcats">
+                    {%- for a in p.also -%}
+                      {%- assign ac = site.data.categories | where: 'key', a | first -%}
+                      {%- if ac -%}<span style="--cat: {{ ac.color }}"><b></b>also {{ ac.label }}</span>{%- endif -%}
+                    {%- endfor -%}
+                  </p>
+                {%- endif -%}
+                <div class="pmini" data-id="{{ p.id }}" aria-hidden="true"></div>
+                <p class="pcounts">
+                  {%- for t in site.data.mark_types -%}
+                    {%- assign n = p.marks | where: 'type', t.key | size -%}
+                    {%- if n > 0 -%}
+                      <span class="t-{{ t.key }}" title="{{ t.label }}"><i></i>{{ n }} {{ t.short }}</span>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </p>
+              </a>
+            {% endfor %}
           </div>
-          <h3>{{ p.title }}</h3>
-          <p class="where">{{ p.authors }}</p>
-          <div class="pmini" data-id="{{ p.id }}" aria-hidden="true"></div>
-          <p class="pcounts">
-            {%- for t in site.data.mark_types -%}
-              {%- assign n = p.marks | where: 'type', t.key | size -%}
-              {%- if n > 0 -%}
-                <span class="t-{{ t.key }}" title="{{ t.label }}"><i></i>{{ n }} {{ t.short }}</span>
-              {%- endif -%}
-            {%- endfor -%}
-          </p>
-        </a>
+        </section>
       {% endfor %}
     </div>
   </div>
@@ -71,6 +104,7 @@ description: The papers I have read for my PhD. Each paper becomes a grid of its
   window.MARK_TYPES = {{ site.data.mark_types | jsonify }};
   window.MY_PAPERS = {{ site.data.my_papers | jsonify }};
   window.MEASURES = {{ site.data.measures | jsonify }};
+  window.LOCK = {{ site.data.lock | jsonify }};
   window.COLLAGE_URL = {{ '/phd/collage/' | relative_url | jsonify }};
 </script>
 <script src="{{ '/phd/library.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>

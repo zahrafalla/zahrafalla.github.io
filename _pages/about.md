@@ -19,7 +19,7 @@ timeline:
     url: /#publications
   - date: "2025"
     tag: Degree
-    title: MSc in Cognitive Science, GPA 4.0/4.0
+    title: Graduated, MSc in Cognitive Science, GPA 4.0/4.0
     meta: University of Tehran
     url: /cv/#education
   - date: "2025"

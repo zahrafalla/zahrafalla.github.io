@@ -1,0 +1,20 @@
+# The categories of the Library (/phd/), in this order. Each paper names one with `category`
+# in _data/papers.yml (a paper can name more with `also: [keys]`, but one is better).
+- key: grounded
+  label: Embodied / grounded cognition
+  color: "#7fae92"
+- key: embodied-maths
+  label: Embodied mathematics
+  color: "#f7d33b"
+- key: embodiment
+  label: Embodiment
+  color: "#8fb3dc"
+- key: maths
+  label: Mathematics
+  color: "#ec6a3c"
+- key: collaborative
+  label: Collaborative learning
+  color: "#f4c1cf"
+- key: embodied-learning
+  label: Embodied learning
+  color: "#b9a3f0"

@@ -1,0 +1,4 @@
+# Hidden notes (see bin/zf-notes.js). Not the password: a salt and an encrypted check value.
+salt: "cqi1FMVce4FrCrI++H1FPQ=="
+iterations: 250000
+check: "u2551gpRCfdF1I421CR17RU8kGVccRTeJVrV9RAH12Fl"

@@ -345,6 +345,138 @@ people:
       Generic, abstract examples transferred better than concrete ones; later replications softened the claim.
     read: Kaminski, Sloutsky & Heckler (2008)
 
+  # ---- famous names found in the papers (2026-11-24) ----
+  - id: jeannerod
+    name: Marc Jeannerod
+    known: Covert action, motor simulation
+    idea: Imagining, watching or preparing an action uses the same motor system as doing it.
+    read: The Cognitive Neuroscience of Action (1997); Neural Simulation of Action (2001)
+  - id: prinz
+    name: Wolfgang Prinz
+    known: Common coding theory
+    idea: Perceiving an action and doing it share one code, so watching can prime doing.
+    read: Perception and action planning (1997)
+  - id: polanyi
+    name: Michael Polanyi
+    known: Tacit knowledge
+    idea: We know more than we can tell; a tool in skilled use becomes transparent.
+    read: Personal Knowledge (1958); The Tacit Dimension (1966)
+  - id: disessa
+    name: Andrea diSessa
+    known: Knowledge in pieces
+    idea: Intuitive physics is made of many small ideas from everyday experience, which learning reorganises.
+    read: Toward an Epistemology of Physics (1993)
+  - id: thelen
+    name: Esther Thelen
+    known: Dynamic systems in development
+    idea: Moving and thinking develop as self-organising dynamics of body and environment.
+    read: A Dynamic Systems Approach to the Development of Cognition and Action (1994, with Smith)
+  - id: montessori
+    name: Maria Montessori
+    known: Learning with designed materials
+    idea: Children learn abstract ideas by handling objects designed to embody them.
+    read: The Montessori Method (1912)
+  - id: dewey
+    name: John Dewey
+    known: Experiential and progressive education
+    idea: Learning comes from experience followed by reflection; concrete is what is readily understood.
+    read: How We Think (1910); Experience and Nature (1925)
+  - id: schwarz
+    name: Norbert Schwarz
+    known: Feelings as information
+    idea: People use their feelings as evidence when judging, unless they attribute them to another source.
+    read: Feelings-as-information theory (2011)
+  - id: niedenthal
+    name: Paula Niedenthal
+    known: Embodied emotion
+    idea: Understanding an emotion involves partly re-living it in the body and face.
+    read: Embodying Emotion (Science, 2007)
+  - id: bargh
+    name: John Bargh
+    known: Automaticity and priming
+    idea: Much social behaviour is triggered automatically; some famous priming effects did not replicate.
+    read: Bargh, Chen & Burrows (1996)
+  - id: william-james
+    name: William James
+    known: Father of American psychology
+    idea: The bodily change comes first; the emotion is our feeling of it.
+    read: What is an Emotion? (1884); The Principles of Psychology (1890)
+  - id: zajonc
+    name: Robert Zajonc
+    known: Mere exposure; facial efference
+    idea: Familiarity breeds liking, and facial movements can change how we feel.
+    read: Feeling and Thinking (1980)
+  - id: galinsky
+    name: Adam Galinsky
+    known: Enclothed cognition
+    idea: Clothes change thinking through their symbolic meaning and the experience of wearing them.
+    read: Adam & Galinsky (2012)
+  - id: harel
+    name: Guershon Harel
+    known: Proof schemes
+    idea: What convinces a learner that something is true; transformational proofs are general, operational and logical.
+    read: Harel & Sowder (1998)
+  - id: mcneill
+    name: David McNeill
+    known: Gesture studies
+    idea: Gesture and speech are one system of thought.
+    read: Hand and Mind (1992)
+  - id: wolpert
+    name: Daniel Wolpert
+    known: Computational motor control
+    idea: The brain controls movement with internal models that predict its results.
+    read: Wolpert & Kawato (1998)
+  - id: kosslyn
+    name: Stephen Kosslyn
+    known: Mental imagery
+    idea: Mental images are picture-like and use the visual cortex.
+    read: Image and Mind (1980)
+  - id: pylyshyn
+    name: Zenon Pylyshyn
+    known: The imagery debate, the propositional side
+    idea: Images are not pictures in the head but descriptions; cognition is computation over symbols.
+    read: What the Mind's Eye Tells the Mind's Brain (1973)
+  - id: paivio
+    name: Allan Paivio
+    known: Dual coding theory
+    idea: Words and images are held in two linked systems, which helps memory.
+    read: Imagery and Verbal Processes (1971)
+  - id: damasio
+    name: Antonio Damasio
+    known: Somatic markers, convergence zones
+    idea: Bodily feelings guide decisions; distributed sensory areas are bound in convergence zones.
+    read: Descartes' Error (1994)
+  - id: harnad
+    name: Stevan Harnad
+    known: The symbol grounding problem
+    idea: Symbols get meaning only when grounded in perception and action.
+    read: The Symbol Grounding Problem (1990)
+  - id: searle
+    name: John Searle
+    known: The Chinese room
+    idea: Manipulating symbols by rules is not understanding them.
+    read: Minds, Brains, and Programs (1980)
+  - id: fodor
+    name: Jerry Fodor
+    known: The language of thought
+    idea: Thinking is computation over an inner symbolic language.
+    read: The Language of Thought (1975)
+  - id: lakatos
+    name: Imre Lakatos
+    known: Proofs and refutations
+    idea: Mathematics grows through conjectures, proofs and counterexamples.
+    read: Proofs and Refutations (1976)
+  - id: milgram
+    name: Paul Milgram
+    known: The reality–virtuality continuum
+    idea: Mixed reality spans from the real world to a fully virtual one, with AR and AV between.
+    read: Milgram & Kishino (1994)
+  - id: chalmers
+    name: David Chalmers
+    known: The hard problem; verbal disputes; extended mind
+    idea: Many disagreements are really about what words mean.
+    read: Verbal Disputes (2011); The Extended Mind (1998, with Clark)
+
 # concept groups use the colours of the connections picture
 concept_groups:
   - key: hub

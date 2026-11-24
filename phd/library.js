@@ -69,6 +69,207 @@
     return h;
   }
 
+  /* ---------------- hidden notes ----------------
+     A hidden mark or experiment is stored encrypted in papers.yml (`locked:`, made by
+     bin/zf-notes.js). Visitors see a hatched cell. After the password is typed, the browser
+     decrypts them (AES-GCM, key from PBKDF2) and, on a local preview, can hide or show more.
+     The password is kept only in this tab (sessionStorage). */
+  var LOCK = window.LOCK || null;
+  var OWNER = null;
+  var HELPERS = ["/__zf/notes", "http://127.0.0.1:4001/__zf/notes"];
+  function isShut(it) {
+    return !!(it && it.locked && !it._hid);
+  }
+  function b64bytes(str) {
+    var bin = atob(str),
+      u = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    return u;
+  }
+  function deriveKey(pw) {
+    return crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]).then(function (base) {
+      return crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: b64bytes(LOCK.salt), iterations: +LOCK.iterations, hash: "SHA-256" },
+        base,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["decrypt"],
+      );
+    });
+  }
+  function openBox(key, b64) {
+    var all = b64bytes(b64);
+    return crypto.subtle.decrypt({ name: "AES-GCM", iv: all.slice(0, 12) }, key, all.slice(12)).then(function (buf) {
+      return new TextDecoder().decode(buf);
+    });
+  }
+  /* check the password, then decrypt every hidden item in place */
+  function unlockAll(pw) {
+    if (!LOCK || !window.crypto || !crypto.subtle) return Promise.reject(new Error("unsupported"));
+    return deriveKey(pw)
+      .then(function (key) {
+        return openBox(key, LOCK.check).then(function (t) {
+          if (t !== "zf-ok") throw new Error("wrong");
+          return key;
+        });
+      })
+      .catch(function () {
+        throw new Error("wrong");
+      })
+      .then(function (key) {
+        var jobs = [];
+        PAPERS.forEach(function (p) {
+          ["marks", "experiments"].forEach(function (list) {
+            (p[list] || []).forEach(function (it, i) {
+              if (!isShut(it)) return;
+              jobs.push(
+                openBox(key, it.locked).then(function (t) {
+                  var item = JSON.parse(t).item;
+                  item._hid = true;
+                  p[list][i] = item;
+                }),
+              );
+            });
+          });
+        });
+        return Promise.all(jobs);
+      });
+  }
+  /* ask the local helper (the preview server, or `node bin/zf-notes.js serve`) to change papers.yml */
+  function askHelper(body, i) {
+    i = i || 0;
+    return fetch(HELPERS[i], { method: "POST", headers: { "content-type": "application/json" }, body: body })
+      .then(function (r) {
+        return r.json();
+      })
+      .catch(function (e) {
+        if (i + 1 < HELPERS.length) return askHelper(body, i + 1);
+        throw e;
+      });
+  }
+  var toastEl = null,
+    toastT = 0;
+  function toast(msg) {
+    if (!toastEl) {
+      toastEl = document.createElement("p");
+      toastEl.className = "zf-toast b";
+      toastEl.setAttribute("role", "status");
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    toastEl.classList.add("is-on");
+    clearTimeout(toastT);
+    toastT = setTimeout(function () {
+      toastEl.classList.remove("is-on");
+    }, 5200);
+  }
+  function lockBtnHtml(cls) {
+    return (
+      '<button type="button" class="lib-lock zf-meta ' + cls + '" aria-pressed="' + (OWNER ? "true" : "false") + '"><span class="lk-ico" aria-hidden="true"></span><span class="lk-txt">' +
+      (OWNER ? "Hidden notes shown · lock" : "Hidden notes") + "</span></button>"
+    );
+  }
+  /* the hide button: always on the local preview, and on the live site once unlocked */
+  var LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  var EYE_OFF =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 20 20 4" stroke="currentColor" stroke-width="2"/></svg>';
+  var EYE_ON =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>';
+  function hideBtn(list, k, hidden) {
+    if (!LOCK || !(OWNER || LOCAL)) return "";
+    var label = hidden ? "Hidden from visitors. Click to show it again" : "Hide from visitors";
+    return (
+      '<button type="button" class="pg-hide" data-list="' + list + '" data-k="' + k + '" data-hide="' + (hidden ? "0" : "1") + '" title="' + label + '" aria-label="' + label + '">' +
+      (hidden ? EYE_ON : EYE_OFF) + "<span>" + (hidden ? "Show" : "Hide") + "</span></button>"
+    );
+  }
+  var pendingHide = null; // a hide asked for before the password was typed
+
+  var dlg = null;
+  function askPassword() {
+    if (!dlg) {
+      dlg = document.createElement("dialog");
+      dlg.className = "zf-lockdlg";
+      dlg.innerHTML =
+        '<form class="b" method="dialog"><p class="zf-meta">Hidden notes</p><h2>Password</h2>' +
+        '<label class="zf-sr" for="zf-pw">Password</label><input id="zf-pw" type="password" autocomplete="current-password" required />' +
+        '<p class="lk-err" aria-live="assertive"></p>' +
+        '<div class="lk-row"><button type="button" value="cancel">Cancel</button><button type="submit">Unlock</button></div></form>';
+      document.body.appendChild(dlg);
+      var form = dlg.querySelector("form"),
+        input = dlg.querySelector("input"),
+        err = dlg.querySelector(".lk-err");
+      dlg.querySelector('button[value="cancel"]').addEventListener("click", function () {
+        dlg.close();
+      });
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var pw = input.value;
+        err.textContent = "Checking…";
+        form.classList.remove("is-wrong");
+        unlockAll(pw).then(
+          function () {
+            OWNER = pw;
+            try {
+              sessionStorage.setItem("zf-pw", pw);
+            } catch (x) {}
+            input.value = "";
+            err.textContent = "";
+            dlg.close();
+            ownerChanged();
+            if (pendingHide) {
+              var job = pendingHide;
+              pendingHide = null;
+              setHidden(job[0], job[1], job[2]);
+            } else toast("Hidden notes are shown, with a dashed outline. Only on this tab.");
+          },
+          function (x) {
+            err.textContent = x.message === "unsupported" ? "This browser cannot decrypt here (it needs https or localhost)." : "That is not the password.";
+            void form.offsetWidth;
+            form.classList.add("is-wrong");
+            input.select();
+          },
+        );
+      });
+    }
+    dlg.querySelector(".lk-err").textContent = pendingHide ? "Type the password to hide this from visitors." : "";
+    dlg.showModal();
+    dlg.querySelector("input").focus();
+  }
+  function toggleLock() {
+    if (!OWNER) return askPassword();
+    try {
+      sessionStorage.removeItem("zf-pw");
+    } catch (x) {}
+    location.reload();
+  }
+  /* hide (or show again) item k of the open paper's marks or experiments */
+  function setHidden(list, k, hide) {
+    if (!S) return;
+    if (!OWNER) {
+      pendingHide = [list, k, hide];
+      return askPassword();
+    }
+    var p = S.paper,
+      item = p[list][k];
+    var body = JSON.stringify({ password: OWNER, paper: p.id, list: list, k: k, hide: hide, item: hide ? item : null });
+    askHelper(body).then(
+      function (r) {
+        if (!r || !r.ok) return toast((r && r.error) || "That did not work.");
+        if (hide) item._hid = true;
+        else {
+          delete item._hid;
+          delete item.locked;
+        }
+        rerender();
+        toast((hide ? "Hidden from visitors" : "Visible to visitors again") + ". Saved in _data/papers.yml; the live site changes when you push.");
+      },
+      function () {
+        toast("Hiding works from the local preview: run  node bin/zf-notes.js serve  next to it (see phd/README.md).");
+      },
+    );
+  }
+
   /* ---------------- where each mark sits: page (column) and paragraph (row) ----------------
      A mark may give its paragraph (`para`, 1 = first). Marks without one are spread down
      their page's column, in the order they appear in the data. */
@@ -76,7 +277,8 @@
     var ppp = +p.paras_per_page || PARAS_PER_PAGE;
     var marks = (p.marks || []).map(function (m, k) {
       // `from`: "note" or "highlight" when the mark comes from my own Zotero annotations
-      return { page: +m.page, para: +m.para || 0, type: m.type, title: m.title, text: m.text, quote: m.quote, from: m.from, original: m.original, k: k };
+      if (isShut(m)) return { page: +m.page, para: +m.para || 0, type: "locked", title: "Hidden note", k: k, shut: true };
+      return { page: +m.page, para: +m.para || 0, type: m.type, title: m.title, text: m.text, quote: m.quote, from: m.from, original: m.original, k: k, hid: !!m._hid };
     });
     var byPage = {};
     marks.forEach(function (m) {
@@ -131,18 +333,21 @@
   }
 
   /* ---------------- the small grid on each card ---------------- */
-  Array.prototype.forEach.call(listEl.querySelectorAll(".pmini[data-id]"), function (box) {
-    var p = findPaper(box.getAttribute("data-id"));
-    if (!p) return;
-    var g = placeMarks(p);
-    box.style.setProperty("--pages", p.pages);
-    box.style.setProperty("--rows", g.rows);
-    box.innerHTML = g.marks
-      .map(function (m) {
-        return '<i class="t-' + esc(m.type) + '" style="--x:' + (m.page - 1) + ";--y:" + m.row + '"></i>';
-      })
-      .join("");
-  });
+  function drawMinis() {
+    Array.prototype.forEach.call(listEl.querySelectorAll(".pmini[data-id]"), function (box) {
+      var p = findPaper(box.getAttribute("data-id"));
+      if (!p) return;
+      var g = placeMarks(p);
+      box.style.setProperty("--pages", p.pages);
+      box.style.setProperty("--rows", g.rows);
+      box.innerHTML = g.marks
+        .map(function (m) {
+          return '<i class="t-' + esc(m.type) + (m.hid ? " is-hid" : "") + '" style="--x:' + (m.page - 1) + ";--y:" + m.row + '"></i>';
+        })
+        .join("");
+    });
+  }
+  drawMinis();
 
   /* ---------------- state of the open paper ---------------- */
   var S = null;
@@ -195,7 +400,7 @@
     h += '<div class="w-full b pg-box">';
     h += '<div class="pgd" style="--pages:' + +p.pages + ";--rows:" + rows + '">';
     h += '<div class="pg-wrap">';
-    h += '<p class="pg-cap zf-meta">A column is a page, a cell is a paragraph. A cell with a white corner is one of my own notes from Zotero.</p>';
+    h += '<p class="pg-cap zf-meta">A column is a page, a cell is a paragraph. A cell with a white corner is one of my own notes from Zotero.' + (LOCK ? lockBtnHtml("pb-lockbtn") : "") + "</p>";
     h +=
       '<div class="pg-grid" tabindex="0" role="group" aria-label="' + esc(p.pages) + " pages, " + marks.length +
       ' marked paragraphs. Use the arrow keys to move between them.">';
@@ -204,8 +409,8 @@
         var m = at[pg + ":" + r];
         if (m)
           h +=
-            '<button type="button" class="pg-c is-m t-' + esc(m.type) + (m.from === "note" ? " is-mine" : "") + '" tabindex="-1" data-i="' + m.i + '" data-p="' + pg + '" style="--p:' + (pg - 1) +
-            '" aria-label="Page ' + printed(p, pg) + ", paragraph " + (r + 1) + ", " + esc(typeLabel(m.type)) + ": " + esc(m.title) + '"></button>';
+            '<button type="button" class="pg-c is-m t-' + esc(m.type) + (m.from === "note" ? " is-mine" : "") + (m.hid ? " is-hid" : "") + '" tabindex="-1" data-i="' + m.i + '" data-p="' + pg +
+            '" style="--p:' + (pg - 1) + '" aria-label="Page ' + printed(p, pg) + ", paragraph " + (r + 1) + ", " + (m.shut ? "a hidden note" : esc(typeLabel(m.type)) + ": " + esc(m.title)) + '"></button>';
         else h += '<span class="pg-c" data-p="' + pg + '" style="--p:' + (pg - 1) + '"></span>';
       }
     }
@@ -249,14 +454,85 @@
   }
 
   /* ---------------- the experiments in this paper ---------------- */
+  /* the back of an experiment card: my draft of the same study as a VR task */
+  var VR_ICON =
+    '<svg class="ov-vr-ico" viewBox="0 0 24 14" aria-hidden="true"><path d="M2 2h20v9h-7l-2-3h-2l-2 3H2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="6" r="1.6" fill="currentColor"/><circle cx="17" cy="6" r="1.6" fill="currentColor"/></svg>';
+  function vrFace(p, e, vr) {
+    var h = '<div class="ov-exp-face is-vr" inert>';
+    h += '<button type="button" class="ov-vr-btn is-back" aria-pressed="true"><b>←</b><span>The paper’s study</span></button>';
+    h += '<div class="ov-vr-stage" aria-hidden="true"><i></i></div>';
+    h += '<header><span>' + esc(p.short) + " · VR</span><span>Draft design</span></header>";
+    h += '<div class="ov-vr-body"><div class="ov-vr-a">';
+    h += "<h3>" + esc(vr.title) + "</h3>";
+    if (vr.principles && vr.principles.length) {
+      h += '<p class="ov-vr-prin">' + vr.principles.map(function (x) {
+        return "<span>" + esc(x) + "</span>";
+      }).join("") + "</p>";
+    }
+    h += '<dl class="ov-vr-dl"><dt>Scene</dt><dd>' + esc(vr.scene) + "</dd><dt>Task</dt><dd>" + esc(vr.task) + "</dd></dl>";
+    if (vr.conditions && vr.conditions.length) {
+      h += '<ol class="ov-vr-conds" aria-label="Conditions">';
+      vr.conditions.forEach(function (c, i) {
+        h += '<li style="--k:' + i + '"><b>' + esc(c.name) + "</b><span>" + esc(c.does) + "</span></li>";
+      });
+      h += "</ol>";
+    }
+    h += '</div><div class="ov-vr-b">';
+    if (vr.measures && vr.measures.length) {
+      h += '<p class="ov-vr-h">Measures</p><ul class="ov-vr-ms">' + vr.measures.map(function (x) {
+        return "<li>" + esc(x) + "</li>";
+      }).join("") + "</ul>";
+    }
+    if (vr.why) h += '<p class="ov-exp-r ov-vr-why"><b>Why VR</b> ' + esc(vr.why) + "</p>";
+    if (vr.watch) h += '<p class="ov-vr-watch"><b>Watch out</b> ' + esc(vr.watch) + "</p>";
+    return h + "</div></div></div>";
+  }
+  function setFlip(card, toVr) {
+    var faces = card.querySelectorAll(".ov-exp-face");
+    var grid = card.parentNode;
+    var cols = getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length;
+    card.classList.toggle("is-flipped", toVr);
+    card.classList.toggle("is-wide", toVr && cols >= 2);
+    faces[0].inert = toVr;
+    faces[1].inert = !toVr;
+  }
+  function flipExp(card, toVr) {
+    var cards = Array.prototype.slice.call(card.parentNode.children);
+    cards.forEach(function (c, i) {
+      c.style.viewTransitionName = "exp-" + i;
+      c.style.viewTransitionClass = "exp";
+    });
+    transition(function () {
+      setFlip(card, toVr);
+      refreshGrid();
+    }).then(function () {
+      cards.forEach(function (c) {
+        c.style.viewTransitionName = "";
+        c.style.viewTransitionClass = "";
+      });
+      refreshGrid();
+      var r = card.getBoundingClientRect();
+      if (r.top < 70 || r.top > innerHeight * 0.6) {
+        window.scrollTo({ top: window.scrollY + r.top - 90, behavior: reduced ? "auto" : "smooth" });
+      }
+      var focus = card.querySelector(toVr ? ".is-vr .ov-vr-btn" : ".is-paper .ov-vr-btn");
+      if (focus) focus.focus({ preventScroll: true });
+    });
+  }
+
   function expHtml(p) {
-    var ex = p.experiments || [];
-    if (!ex.length) return "";
+    var ex = [],
+      nShut = 0;
+    (p.experiments || []).forEach(function (e, k) {
+      if (isShut(e)) nShut++;
+      else ex.push(Object.assign({ _k: k }, e));
+    });
+    if (!ex.length && !nShut) return "";
     var h = '<div class="zf-row pb-exps">';
     h += '<div class="zf-row zf-shead"><p class="zf-label b"><span class="n">↓</span> Experiments</p>';
     h += '<h2 class="zf-h zf-big b">What it tests and measures</h2></div>';
     // the matrix: experiments × what gets measured
-    h += '<div class="w-full b ov-matrix" style="--cols:' + MEASURES.length + '">';
+    if (ex.length) h += '<div class="w-full b ov-matrix" style="--cols:' + MEASURES.length + '">';
     h += '<div class="ov-mx-row ov-mx-head"><span class="ov-mx-name zf-meta">Experiment</span>';
     MEASURES.forEach(function (m) {
       h += '<span class="ov-mx-col"><span>' + esc(m.label) + "</span></span>";
@@ -282,9 +558,13 @@
           })
           .join("");
       };
-      h += '<article class="ov-exp b" data-exp="' + esc(e.id) + '" style="--c:' + esc(p.color) + '">';
+      var vr = e.vr;
+      h += '<article class="ov-exp b' + (vr ? " has-vr" : "") + (e._hid ? " is-hid" : "") + '" data-exp="' + esc(e.id) + '" style="--c:' + esc(p.color) + '">';
+      h += '<div class="ov-exp-face is-paper">';
+      if (vr) h += '<button type="button" class="ov-vr-btn" aria-pressed="false">' + VR_ICON + "<span>Reimagine in VR</span><b>→</b></button>";
       h += "<header><span>" + esc(p.short) + "</span><span>" + (e.own ? "Own study" : "Cited · " + esc(e.by)) + "</span>";
-      h += '<button type="button" class="ov-exp-pg" data-page="' + +e.page + '" title="Show this page in the grid">p. ' + printed(p, +e.page) + "</button></header>";
+      h += '<button type="button" class="ov-exp-pg" data-page="' + +e.page + '" title="Show this page in the grid">p. ' + printed(p, +e.page) + "</button>";
+      h += hideBtn("experiments", e._k, e._hid) + "</header>";
       h += "<h3>" + esc(e.title) + "</h3>";
       h += '<p class="ov-exp-who"><b>' + (e.n ? "N = " + esc(e.n) : "N not given") + "</b> · " + esc(e.who) + "</p>";
       h += '<div class="ov-exp-design" aria-label="Conditions">';
@@ -296,8 +576,15 @@
       h += "<dl><dt>Manipulated</dt><dd>" + list(e.manipulated) + "</dd><dt>Measured</dt><dd>" + list(e.measured) + "</dd>";
       h += '<dt>Tools</dt><dd class="ov-exp-tools">' + list(e.tools) + "</dd></dl>";
       h += '<p class="ov-exp-r">' + esc(e.result) + "</p>";
+      h += "</div>";
+      if (vr) h += vrFace(p, e, vr);
       h += "</article>";
     });
+    if (nShut)
+      h +=
+        '<article class="ov-exp b is-shut"><div class="ov-exp-face"><header><span>' + esc(p.short) + "</span><span>Hidden</span></header><h3>" + nShut +
+        (nShut === 1 ? " hidden experiment" : " hidden experiments") +
+        '</h3><p>I keep these to myself for now.</p><button type="button" class="pg-unlock">Unlock with the password</button></div></article>';
     h += "</div></div>";
     return h;
   }
@@ -362,14 +649,25 @@
     S.btns[i].classList.add("is-active");
     var visible = visibleMarks();
     var h = "";
+    if (m.shut) {
+      h += '<div class="pb-note-top"><i aria-hidden="true"></i><span>Hidden</span><span class="pgn">p. ' + printed(S.paper, m.page) + " · ¶" + (m.row + 1) + "</span>";
+      h += "<span>" + (visible.indexOf(m) + 1) + "/" + visible.length + "</span></div>";
+      h += "<h3>A hidden note</h3><p>I keep this one to myself for now.</p>";
+      h += '<button type="button" class="pg-unlock">Unlock with the password</button>';
+      S.note.className = "pg-note t-locked";
+      S.note.innerHTML = h;
+      return;
+    }
     h += '<div class="pb-note-top"><i aria-hidden="true"></i><span>' + esc(typeLabel(m.type)) + "</span>";
     if (m.from) h += '<span class="pg-from pg-from--' + esc(m.from) + '">' + (m.from === "note" ? "✎ My note" : "▌My highlight") + "</span>";
-    h += '<span class="pgn">p. ' + printed(S.paper, m.page) + " · ¶" + (m.row + 1) + "</span><span>" + (visible.indexOf(m) + 1) + "/" + visible.length + "</span></div>";
+    h += '<span class="pgn">p. ' + printed(S.paper, m.page) + " · ¶" + (m.row + 1) + "</span><span>" + (visible.indexOf(m) + 1) + "/" + visible.length + "</span>";
+    h += hideBtn("marks", m.k, m.hid) + "</div>";
+    if (m.hid) h += '<p class="pg-hid-tag">Hidden from visitors</p>';
     h += "<h3>" + esc(m.title) + "</h3>";
     if (m.text) h += "<p>" + esc(m.text) + "</p>";
     if (m.quote) h += "<q>" + esc(m.quote) + "</q>";
     if (m.original) h += '<p class="pg-orig" dir="auto" lang="fa">' + esc(m.original) + "</p>";
-    S.note.className = "pg-note t-" + m.type;
+    S.note.className = "pg-note t-" + m.type + (m.hid ? " is-hid" : "");
     S.note.innerHTML = h;
   }
 
@@ -406,6 +704,11 @@
   }
 
   function bind() {
+    Array.prototype.forEach.call(paperEl.querySelectorAll(".ov-vr-btn"), function (b) {
+      b.addEventListener("click", function () {
+        flipExp(b.closest(".ov-exp"), !b.classList.contains("is-back"));
+      });
+    });
     Array.prototype.forEach.call(paperEl.querySelectorAll(".pb-use .pg, .ov-exp-pg"), function (b) {
       b.addEventListener("click", function () {
         goToPage(+b.getAttribute("data-page"));
@@ -476,6 +779,60 @@
   window.addEventListener("resize", function () {
     if (S) sizeCells();
   });
+
+  /* draw the open paper again (after unlocking or hiding), keeping its state */
+  function rerender() {
+    drawMinis();
+    if (!S) return;
+    var act = S.active,
+      y = window.scrollY,
+      flipped = Array.prototype.map.call(paperEl.querySelectorAll(".ov-exp.is-flipped"), function (c) {
+        return c.getAttribute("data-exp");
+      });
+    render(S.paper);
+    sizeCells();
+    flipped.forEach(function (id) {
+      var c = paperEl.querySelector('.ov-exp[data-exp="' + id + '"]');
+      if (c && c.classList.contains("has-vr")) setFlip(c, true);
+    });
+    if (act >= 0 && S.marks[act]) setActive(act);
+    window.scrollTo(0, y);
+    refreshGrid();
+  }
+  function ownerChanged() {
+    document.documentElement.classList.toggle("zf-owner", !!OWNER);
+    var top = document.getElementById("lib-lock");
+    if (top) {
+      top.setAttribute("aria-pressed", OWNER ? "true" : "false");
+      top.querySelector(".lk-txt").textContent = OWNER ? "Hidden notes shown · lock" : "Hidden notes";
+    }
+    rerender();
+  }
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest(".lib-lock, .pg-unlock, .pg-hide");
+    if (!t || !LOCK) return;
+    if (t.classList.contains("pg-hide")) setHidden(t.getAttribute("data-list"), +t.getAttribute("data-k"), t.getAttribute("data-hide") === "1");
+    else if (t.classList.contains("pg-unlock")) askPassword();
+    else toggleLock();
+  });
+  if (!LOCK) {
+    var lb = document.getElementById("lib-lock");
+    if (lb) lb.hidden = true;
+  } else {
+    try {
+      var savedPw = sessionStorage.getItem("zf-pw");
+      if (savedPw)
+        unlockAll(savedPw).then(
+          function () {
+            OWNER = savedPw;
+            ownerChanged();
+          },
+          function () {
+            sessionStorage.removeItem("zf-pw");
+          },
+        );
+    } catch (x) {}
+  }
 
   /* ---------------- routing: #<paper id> opens that paper ---------------- */
   var lastId = null;
@@ -555,12 +912,15 @@
   window.addEventListener("hashchange", function () {
     route(true);
   });
-  /* ---------------- the list: find and sort (built for 100+ papers) ---------------- */
+  /* ---------------- the list: categories, find and sort (built for 100+ papers) ---------------- */
   var cardsBox = document.getElementById("lib-cards");
   var findBox = document.getElementById("lib-find");
   var countEl = document.getElementById("lib-count");
   if (cardsBox) {
     var cards = Array.prototype.slice.call(cardsBox.querySelectorAll(".pcard"));
+    var groups = Array.prototype.slice.call(cardsBox.querySelectorAll(".lib-group"));
+    var catBtns = document.querySelectorAll(".lib-cats button");
+    var onlyCat = "";
     var sorters = {
       new: function (a, b) {
         return b.dataset.year - a.dataset.year;
@@ -578,16 +938,35 @@
     var applyList = function () {
       var q = findBox ? findBox.value.trim().toLowerCase() : "";
       var shown = 0;
-      cards.forEach(function (c) {
-        var hit = !q || q.split(/\s+/).every(function (w) {
-          return c.dataset.find.indexOf(w) >= 0;
+      groups.forEach(function (g) {
+        var inGroup = 0;
+        var gc = g.querySelectorAll(".pcard");
+        Array.prototype.forEach.call(gc, function (c) {
+          var hit = !q || q.split(/\s+/).every(function (w) {
+            return c.dataset.find.indexOf(w) >= 0;
+          });
+          c.hidden = !hit;
+          if (hit) inGroup++;
         });
-        c.hidden = !hit;
-        if (hit) shown++;
+        var off = onlyCat && g.dataset.cat !== onlyCat;
+        // while searching, groups with no hits fold away; an empty category stays visible as a gap
+        g.hidden = off || (q && !inGroup);
+        if (!off) shown += inGroup;
+        var n = g.querySelector(".lib-group-n");
+        if (n) n.textContent = (q ? inGroup + " of " + gc.length : gc.length) + (gc.length === 1 ? " paper" : " papers");
       });
-      if (countEl) countEl.textContent = q ? shown + " of " + cards.length + " papers" : cards.length + " papers";
+      if (countEl) countEl.textContent = q || onlyCat ? shown + " of " + cards.length + " papers" : cards.length + " papers";
       refreshGrid();
     };
+    Array.prototype.forEach.call(catBtns, function (b) {
+      b.addEventListener("click", function () {
+        onlyCat = b.dataset.cat;
+        Array.prototype.forEach.call(catBtns, function (x) {
+          x.setAttribute("aria-pressed", x === b ? "true" : "false");
+        });
+        applyList();
+      });
+    });
     // cards or a compact list (one line per paper, for long libraries)
     var views = document.querySelectorAll(".lib-view button");
     var setView = function (v) {
@@ -610,13 +989,20 @@
       if (saved) setView(saved);
       else if (cards.length > 24) setView("list");
     } catch (e) {}
+    // sorting happens inside each category
     Array.prototype.forEach.call(document.querySelectorAll(".lib-sort:not(.lib-view) button"), function (b, i, all) {
       b.addEventListener("click", function () {
         Array.prototype.forEach.call(all, function (x) {
           x.setAttribute("aria-pressed", x === b ? "true" : "false");
         });
-        cards.sort(sorters[b.dataset.sort]).forEach(function (c) {
-          cardsBox.appendChild(c);
+        groups.forEach(function (g) {
+          var box = g.querySelector(".zf-tiles");
+          Array.prototype.slice
+            .call(box.querySelectorAll(".pcard"))
+            .sort(sorters[b.dataset.sort])
+            .forEach(function (c) {
+              box.appendChild(c);
+            });
         });
         refreshGrid();
       });

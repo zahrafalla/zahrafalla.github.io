@@ -47,6 +47,13 @@
     - id: rq2
       text: Through which route (state, priming or sensorimotor simulation) does bodily practice change learning?
       ideas: [routes, simulation, grounded]
+    # from my Zotero notes (Nathan & Walkington 2017, summary note)
+    - id: rq8
+      from: notes
+      text: >-
+        Does bodily practice mainly change fast, intuitive (System 1) understanding, and what does it take for that understanding to
+        become explicit and verbal (System 2)?
+      ideas: [dual, routes, language, simulation]
     # from my Zotero notes (Kirsh 2013, p. 5)
     - id: rq7
       from: notes

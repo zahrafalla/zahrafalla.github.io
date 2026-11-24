@@ -61,11 +61,50 @@ one block:
 | `mentions`  | ids of people it mentions (`people` in `_data/overview.yml`)         | `[goldin-meadow, alibali]`       |
 | `cites`     | ids of other papers in `papers.yml` it cites                         | `[barsalou]`                     |
 
+`cite_counts` says how often each person is cited in the paper's own text, reference list and page headers left
+out (for example `{barsalou: 3, gibson: 10}`). The People cards in the Overview add these up and are sorted by them.
+For papers with numbered references, count how often each reference number is cited. Famous people named in a paper
+also get a `people` mark where they first appear, saying what they gave the field and how the paper uses them.
+
 Each paper also needs a `color` and a 2–4 letter `short` code, both unique, for its squares and tiles.
 
-The Library has Find (title, author, year or idea), Sort (newest, oldest, A–Z, most marks) and a Cards / List
-view; with more than 24 papers it opens as a list. Each card shows a small version of the paper's grid. The
-behaviour of the grid and the list is in `phd/library.js`.
+**Category.** Each paper has one `category`, a key from `_data/categories.yml` (embodied / grounded cognition,
+embodied mathematics, embodiment, mathematics, collaborative learning, embodied learning). The Library groups the
+cards by category, in the order of that file; an empty category stays visible as a gap. A paper that really belongs
+to more than one can add `also: [maths]`: it stays in its main group and shows a small "also …" tag. A paper without
+a `category` does not appear in the Library, so always give one.
+
+**VR versions.** An experiment can have a `vr:` block, my draft of the same study as a VR experiment: `title`,
+`principles` (the cognitive ideas behind it), `scene`, `task`, `conditions` (each a `name` and what it `does`),
+`measures`, `why` (what VR adds) and `watch` (pitfalls). Its card then gets a "Reimagine in VR" button at the top that
+opens it: the card grows to fit the design and, when there is room, takes two columns while the other cards make
+way.
+
+The Library has Find (title, author, year or idea), Sort (newest, oldest, A–Z, most marks; within each category),
+Category filters and a Cards / List view; with more than 24 papers it opens as a list. Each card shows a small
+version of the paper's grid. The behaviour of the grid and the list is in `phd/library.js`.
+
+## Hidden notes
+
+A mark or an experiment can be hidden from visitors. It stays in `_data/papers.yml`, but encrypted: its text is
+replaced by `locked: "…"` (AES-256-GCM with a key made from the password, PBKDF2-SHA256, 250 000 rounds). Visitors see
+a hatched cell or a "hidden experiment" card. The **Hidden notes** button (above the paper list and above each grid)
+asks for the password and shows them on that tab, with a dashed outline. The password is never stored:
+`_data/lock.yml` only holds a salt and an encrypted check value.
+
+To hide or show something, use the **eye button** at the top right of a note, or in an experiment card's coloured
+header. On a local preview the button is always there (it asks for the password the first time); on the live site it
+only appears after unlocking. The page asks a small helper to rewrite `papers.yml`:
+
+- with Jekyll (`bundle exec jekyll serve`), also run `node bin/zf-notes.js serve` in the repository (Node 18+, no
+  packages);
+- on the live site the button cannot change anything, since the site is static.
+
+Then commit and push `_data/papers.yml`. Showing a note again restores its original lines exactly. To change the
+password, show everything first, then run `node bin/zf-notes.js init`.
+
+Notes that were already pushed as plain text stay in the git history. Hiding protects them from the website, not
+from someone who digs through old commits.
 
 ## The papers I will write (Paper collage)
 
@@ -90,9 +129,15 @@ they come from, under `uses:` in `_data/papers.yml`: each one names my paper (`p
 Most of it is computed from the per-paper fields above; `_data/overview.yml` holds the things that are not about one
 paper:
 
-- `roots`: older works the papers build on (timeline). Who cites them comes from `builds_on`.
+- `roots`: older works the papers build on. Who cites them comes from `builds_on`. The Timeline is a river of years
+  (quiet stretches folded away): older works on the left, my papers on the right, and a metro map in the middle where
+  each paper has its own coloured lane that collects the older works it builds on. A bar of every year at the top
+  jumps to any year and shows which years are on screen.
 - `people`: researchers worth knowing, `author: true` for authors I've read. Which papers mention them comes from
-  `mentions`; each person's coloured squares are those papers.
+  `mentions`, and how often from each paper's `cite_counts`. The People tab draws a skyline: one column per person,
+  one square per citation, coloured by the citing paper ("Through" a paper re-sorts everything by that paper). Under it,
+  each person gets a card with a pixel portrait made from their name and the colours of the papers that cite them, and a
+  barcode of their citations; click a card to turn it over.
 - `concepts` and `concept_groups`: the ideas. Which papers touch them comes from `ideas`.
 
 **Connections** is the network: papers, ideas, my research questions (square nodes) and citations. Hovering a question

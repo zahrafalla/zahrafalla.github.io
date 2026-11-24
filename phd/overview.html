@@ -58,13 +58,14 @@ description: The papers I have read, seen three ways — on a timeline, by the p
     <p class="zf-label b"><span class="n">01</span> Timeline</p>
     <h2 class="zf-h zf-big b">What they build on</h2>
   </div>
-  <div class="w-full b ov-board">
-    <div class="ov-board-h zf-meta">
-      <span>Papers I've read stack up by year (top); the older works they cite sit below. Before 2000, one cell is a decade.</span>
-      <span>Hover a circle</span>
-    </div>
-    <div class="ov-scroll"><svg class="ov-tl" id="ov-tl" role="img" aria-label="Timeline of the papers and their roots"></svg></div>
-    <div class="ov-info" id="ov-tl-info" aria-live="polite"></div>
+  <!-- built by overview.js: a river of time with the older works on the left and my papers on the right -->
+  <div class="w-full b tl-stats" id="tl-stats"></div>
+  <div class="w-full b tl-scrub" id="tl-scrub" aria-label="Every year, from the oldest idea to today"></div>
+  <div class="w-full b tl-river" id="tl-river">
+    <svg class="tl-links" id="tl-links" aria-hidden="true"></svg>
+    <div class="tl-spine" aria-hidden="true"><i class="tl-ink"></i></div>
+    <div class="tl-heads zf-meta"><span>What they build on</span><span>Papers I've read</span></div>
+    <div class="tl-years" id="tl-years"></div>
   </div>
 </section>
 
@@ -74,63 +75,32 @@ description: The papers I have read, seen three ways — on a timeline, by the p
     <p class="zf-label b"><span class="n">02</span> People</p>
     <h2 class="zf-h zf-big b">Who to know</h2>
   </div>
-  <div class="w-full b ov-board-h ov-people-h zf-meta">
-    <span>Sorted by how many of my papers mention them; the coloured squares show which. Click a card to turn it over.</span>
-    <label class="ov-find"><span>Find</span><input type="search" id="ov-people-find" placeholder="a name or an idea" autocomplete="off" /></label>
+  <!-- built by overview.js from window.OV.people and each paper's cite_counts -->
+  <div class="w-full b pp-tools zf-meta">
+    <label class="ov-find"><span>Find</span><input type="search" id="pp-find" placeholder="a name or an idea" autocomplete="off" /></label>
+    <span class="pp-seg" role="group" aria-label="Who"
+      ><span>Who</span><button type="button" data-who="all" aria-pressed="true">Everyone</button
+      ><button type="button" data-who="author" aria-pressed="false">Authors I read</button
+      ><button type="button" data-who="other" aria-pressed="false">Names they cite</button></span
+    >
+    <span class="pp-seg" role="group" aria-label="Sort"
+      ><span>Sort</span><button type="button" data-sort="cites" aria-pressed="true">Most cited</button
+      ><button type="button" data-sort="papers" aria-pressed="false">In most papers</button
+      ><button type="button" data-sort="az" aria-pressed="false">A–Z</button></span
+    >
+    <span class="pp-papers" role="group" aria-label="Seen through one paper"><span>Through</span></span>
   </div>
-  {%- assign groups = 'author,other' | split: ',' -%}
-  {% for g in groups %}
-    <p class="w-full zf-label b ov-people-label">
-      {% if g == 'author' %}Authors of papers I've read{% else %}Names that keep coming up{% endif %}
-    </p>
-    <div class="w-full ov-people" data-limit="{% if g == 'author' %}8{% else %}12{% endif %}">
-      {%- for person in ov.people -%}
-        {%- assign want = false -%}
-        {%- if g == 'author' -%}
-          {%- if person.author -%}{%- assign want = true -%}{%- endif -%}
-        {%- else -%}
-          {%- unless person.author -%}{%- assign want = true -%}{%- endunless -%}
-        {%- endif -%}
-        {%- if want -%}
-          {%- assign n = 0 -%}
-          {%- capture dots -%}
-            {%- for p in site.data.papers -%}
-              {%- if p.mentions contains person.id -%}
-                {%- assign n = n | plus: 1 -%}
-                {%- if n <= 10 -%}<i style="--c: {{ p.color }}" title="{{ p.cite }}"></i>{%- endif -%}
-              {%- endif -%}
-            {%- endfor -%}
-          {%- endcapture -%}
-          {%- assign parts = person.name | split: ' ' -%}
-          {%- assign big = n | at_most: 5 -%}
-          <button
-            type="button"
-            class="ov-person{% if person.my_note %} has-note{% endif %}"
-            aria-pressed="false"
-            data-n="{{ n }}"
-            data-find="{{ person.name | downcase | escape }} {{ person.known | downcase | escape }}"
-            style="--n: {{ big }}"
-          >
-            <span class="ov-person-in">
-              <span class="ov-mono" aria-hidden="true">{{ parts.first | slice: 0, 1 }}{{ parts.last | slice: 0, 1 }}</span>
-              <b>{{ person.name }}</b>
-              <small>{{ person.known }}</small>
-              {% if person.my_note %}<span class="ov-person-mine"><em>✎ My note</em>{{ person.my_note }}</span>{% endif %}
-              <span class="ov-person-dots" aria-label="Mentioned in {{ n }} of my papers"
-                >{{ dots }}{% if n > 10 %}<em>+{{ n | minus: 10 }}</em>{% endif %}<em>{{ n }}/{{ npapers }}</em></span
-              >
-            </span>
-            <span class="ov-person-back">
-              <b>{{ person.name }}</b>
-              {% if person.where %}<small>{{ person.where }}</small>{% endif %}
-              <span class="ov-person-idea">{{ person.idea }}</span>
-              <span class="ov-person-read"><em>Read</em>{{ person.read }}</span>
-            </span>
-          </button>
-        {%- endif -%}
-      {%- endfor -%}
+  <div class="w-full b pp-sky">
+    <div class="pp-sky-scroll">
+      <div class="pp-chart" id="pp-chart" role="list" aria-label="People, as columns of citations"></div>
     </div>
-  {% endfor %}
+    <aside class="pp-info" id="pp-info" aria-live="polite"></aside>
+  </div>
+  <div class="w-full pp-cards" id="pp-cards" aria-label="People">
+    {%- for person in ov.people -%}
+      <p class="pp-fallback b"><b>{{ person.name }}</b> — {{ person.known }}</p>
+    {%- endfor -%}
+  </div>
 </section>
 
 <!-- ===================== 03 · CONNECTIONS ===================== -->
@@ -155,6 +125,8 @@ description: The papers I have read, seen three ways — on a timeline, by the p
     concepts: {{ ov.concepts | jsonify }},
     groups: {{ ov.concept_groups | jsonify }},
     myPapers: {{ site.data.my_papers | jsonify }},
+    people: {{ ov.people | jsonify }},
+    categories: {{ site.data.categories | jsonify }},
     library: {{ '/phd/' | relative_url | jsonify }},
     collage: {{ '/phd/collage/' | relative_url | jsonify }}
   };
