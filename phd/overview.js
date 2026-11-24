@@ -253,11 +253,12 @@
     if (stats) {
       stats.innerHTML =
         '<div class="tl-stat"><b data-to="' + (maxY - minY) + '">' + (maxY - minY) + "</b><span>years of ideas<em>" + minY + " → " + maxY + "</em></span></div>" +
-        '<div class="tl-stat"><b data-to="' + roots.length + '">' + roots.length + "</b><span>older works<em>that my papers build on</em></span></div>" +
-        '<div class="tl-stat"><b data-to="' + papers.length + '">' + papers.length + "</b><span>papers I've read<em>" + (papers.length ? Math.min.apply(null, papers.map(function (p) { return +p.year; })) + " → " + newest.year : "") + "</em></span></div>" +
-        '<div class="tl-stat"><b data-to="' + median + '">' + median + "</b><span>years old<em>a cited idea, typically</em></span></div>" +
-        (oldest ? '<p class="tl-stat-q">The oldest idea here is <b>' + esc(oldest.who) + " " + oldest.year + "</b>: “" + esc(oldest.note || oldest.title) + "”</p>" : "");
+        '<div class="tl-stat"><b data-to="' + roots.length + '">' + roots.length + "</b><span>older works<em>my papers build on</em></span></div>" +
+        '<div class="tl-stat"><b data-to="' + median + '">' + median + "</b><span>years old<em>a typical cited idea</em></span></div>";
     }
+    var quote = $("#tl-quote");
+    if (quote && oldest)
+      quote.innerHTML = "<em>Oldest idea · " + esc(oldest.who) + " " + oldest.year + "</em>“" + esc(oldest.note || oldest.title) + "”";
 
     /* ---- the river: one row per year that has something, folded gaps between ---- */
     var h = "",
@@ -324,7 +325,9 @@
         sh += "</button>";
       }
       sh += '<span class="tl-sc-view" aria-hidden="true"></span></div>';
-      sh += '<p class="tl-sc-key zf-meta"><span><i class="is-root"></i>older work</span><span><i class="is-paper"></i>paper I read</span><span>click a year to jump</span></p>';
+      sh =
+        '<p class="tl-sc-key zf-meta"><b>Every year since ' + start + '</b><span><i class="is-root"></i>older work</span><span><i class="is-paper"></i>paper I read</span><span class="tl-sc-hint">click a year to jump</span></p>' +
+        sh;
       scrub.innerHTML = sh;
       scrub.addEventListener("click", function (e) {
         var b = e.target.closest(".tl-sc-y");

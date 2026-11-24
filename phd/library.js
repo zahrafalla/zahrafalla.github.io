@@ -917,9 +917,39 @@
   var findBox = document.getElementById("lib-find");
   var countEl = document.getElementById("lib-count");
   if (cardsBox) {
-    var cards = Array.prototype.slice.call(cardsBox.querySelectorAll(".pcard"));
-    var groups = Array.prototype.slice.call(cardsBox.querySelectorAll(".lib-group"));
-    var catBtns = document.querySelectorAll(".lib-cats button");
+    var cards = Array.prototype.slice.call(cardsBox.querySelectorAll(".lib-group:not(.lib-rank) .pcard"));
+    var groups = Array.prototype.slice.call(cardsBox.querySelectorAll(".lib-group:not(.lib-rank)"));
+    // sorting by what a paper gave me: one ranked list across the categories
+    var FACTORS = {
+      exp: ["experiment", "experiments", "Ranked by experiments"],
+      idea: ["idea to build", "ideas to build", "Ranked by ideas to build"],
+      gap: ["gap", "gaps", "Ranked by gaps"],
+      know: ["theory & knowledge mark", "theory & knowledge marks", "Ranked by theory & knowledge"],
+      nov: ["new framework or concept", "new frameworks & concepts", "Ranked by novelty"],
+    };
+    var rankBy = "";
+    var rankSec = cardsBox.querySelector(".lib-rank");
+    var buildRank = function (key) {
+      var list = cards.slice().sort(function (a, b) {
+        return b.dataset[key] - a.dataset[key] || b.dataset.year - a.dataset.year;
+      });
+      var max = Math.max(1, +list[0].dataset[key]);
+      var ol = rankSec.querySelector("ol");
+      ol.innerHTML = "";
+      list.forEach(function (card, i) {
+        var n = +card.dataset[key];
+        var li = document.createElement("li");
+        var a = card.cloneNode(true);
+        a.classList.add("is-ranked");
+        a.style.setProperty("--k", i);
+        a.insertAdjacentHTML("afterbegin", '<span class="prow-r">' + (i < 9 ? "0" : "") + (i + 1) + "</span>");
+        a.querySelector(".prow-n").innerHTML =
+          '<b style="--w:' + Math.round((n / max) * 100) + '%"></b><em>' + (n ? n + " " + FACTORS[key][n === 1 ? 0 : 1] : "none") + "</em>";
+        li.appendChild(a);
+        ol.appendChild(li);
+      });
+      rankSec.querySelector(".lib-rank-t").textContent = FACTORS[key][2];
+    };
     var onlyCat = "";
     var sorters = {
       new: function (a, b) {
@@ -938,6 +968,30 @@
     var applyList = function () {
       var q = findBox ? findBox.value.trim().toLowerCase() : "";
       var shown = 0;
+      var match = function (c) {
+        return (
+          !q ||
+          q.split(/\s+/).every(function (w) {
+            return c.dataset.find.indexOf(w) >= 0;
+          })
+        );
+      };
+      if (rankSec) rankSec.hidden = !rankBy;
+      if (rankBy) {
+        groups.forEach(function (g) {
+          g.hidden = true;
+        });
+        Array.prototype.forEach.call(rankSec.querySelectorAll("li"), function (li) {
+          var c = li.firstChild;
+          var hit = match(c) && (!onlyCat || c.dataset.cat === onlyCat);
+          li.hidden = !hit;
+          if (hit) shown++;
+        });
+        rankSec.querySelector(".lib-group-n").textContent = shown + (shown === 1 ? " paper" : " papers");
+        if (countEl) countEl.textContent = q || onlyCat ? shown + " of " + cards.length + " papers" : cards.length + " papers";
+        refreshGrid();
+        return;
+      }
       groups.forEach(function (g) {
         var inGroup = 0;
         var gc = g.querySelectorAll(".pcard");
@@ -945,7 +999,7 @@
           var hit = !q || q.split(/\s+/).every(function (w) {
             return c.dataset.find.indexOf(w) >= 0;
           });
-          c.hidden = !hit;
+          (c.parentNode.tagName === "LI" ? c.parentNode : c).hidden = !hit;
           if (hit) inGroup++;
         });
         var off = onlyCat && g.dataset.cat !== onlyCat;
@@ -958,17 +1012,74 @@
       if (countEl) countEl.textContent = q || onlyCat ? shown + " of " + cards.length + " papers" : cards.length + " papers";
       refreshGrid();
     };
-    Array.prototype.forEach.call(catBtns, function (b) {
-      b.addEventListener("click", function () {
-        onlyCat = b.dataset.cat;
-        Array.prototype.forEach.call(catBtns, function (x) {
-          x.setAttribute("aria-pressed", x === b ? "true" : "false");
+    /* the category dropdown: a button and a listbox (arrows, Enter, Esc, click outside) */
+    var dd = document.getElementById("lib-dd");
+    if (dd) {
+      var ddBtn = dd.querySelector(".lib-dd-btn"),
+        ddMenu = dd.querySelector(".lib-dd-menu"),
+        opts = Array.prototype.slice.call(ddMenu.querySelectorAll("[role=option]"));
+      var openDd = function (open, focusSel) {
+        ddMenu.hidden = !open;
+        ddBtn.setAttribute("aria-expanded", open ? "true" : "false");
+        dd.classList.toggle("is-open", open);
+        var bar = dd.closest(".lib-tools");
+        if (bar) bar.classList.toggle("is-raised", open); // keep the menu above the boxes below
+        if (open) {
+          var cur = ddMenu.querySelector('[aria-selected="true"]') || opts[0];
+          (focusSel === "last" ? opts[opts.length - 1] : cur).focus();
+        }
+      };
+      var choose = function (o) {
+        onlyCat = o.dataset.cat;
+        opts.forEach(function (x) {
+          x.setAttribute("aria-selected", x === o ? "true" : "false");
         });
+        var v = ddBtn.querySelector(".lib-dd-v");
+        v.style.setProperty("--cat", o.style.getPropertyValue("--cat"));
+        v.classList.toggle("is-all", !o.dataset.cat);
+        v.querySelector("b").textContent = o.querySelector("span").textContent;
+        dd.classList.toggle("is-set", !!onlyCat);
+        openDd(false);
+        ddBtn.focus();
         applyList();
+      };
+      ddBtn.addEventListener("click", function () {
+        openDd(ddMenu.hidden);
       });
-    });
+      ddBtn.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+          e.preventDefault();
+          openDd(true, e.key === "ArrowUp" ? "last" : "");
+        }
+      });
+      ddMenu.addEventListener("click", function (e) {
+        var o = e.target.closest("[role=option]");
+        if (o) choose(o);
+      });
+      ddMenu.addEventListener("keydown", function (e) {
+        var i = opts.indexOf(document.activeElement);
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+          e.preventDefault();
+          var n = opts[(i + (e.key === "ArrowDown" ? 1 : -1) + opts.length) % opts.length];
+          n.focus();
+        } else if (e.key === "Home" || e.key === "End") {
+          e.preventDefault();
+          opts[e.key === "Home" ? 0 : opts.length - 1].focus();
+        } else if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (i >= 0) choose(opts[i]);
+        } else if (e.key === "Escape" || e.key === "Tab") {
+          openDd(false);
+          if (e.key === "Escape") ddBtn.focus();
+        }
+      });
+      document.addEventListener("click", function (e) {
+        if (!ddMenu.hidden && !dd.contains(e.target)) openDd(false);
+      });
+    }
     // cards or a compact list (one line per paper, for long libraries)
     var views = document.querySelectorAll(".lib-view button");
+    if (!views.length) cardsBox.classList.remove("is-list");
     var setView = function (v) {
       cardsBox.classList.toggle("is-list", v === "list");
       Array.prototype.forEach.call(views, function (x) {
@@ -986,8 +1097,10 @@
     });
     try {
       var saved = localStorage.getItem("zf-lib-view");
-      if (saved) setView(saved);
-      else if (cards.length > 24) setView("list");
+      if (views.length) {
+        if (saved) setView(saved);
+        else if (cards.length > 24) setView("list");
+      }
     } catch (e) {}
     // sorting happens inside each category
     Array.prototype.forEach.call(document.querySelectorAll(".lib-sort:not(.lib-view) button"), function (b, i, all) {
@@ -995,16 +1108,23 @@
         Array.prototype.forEach.call(all, function (x) {
           x.setAttribute("aria-pressed", x === b ? "true" : "false");
         });
+        rankBy = FACTORS[b.dataset.sort] ? b.dataset.sort : "";
+        if (rankBy) {
+          buildRank(rankBy);
+          applyList();
+          return;
+        }
         groups.forEach(function (g) {
-          var box = g.querySelector(".zf-tiles");
+          var box = g.querySelector(".lib-rows");
+          if (!box) return;
           Array.prototype.slice
             .call(box.querySelectorAll(".pcard"))
             .sort(sorters[b.dataset.sort])
             .forEach(function (c) {
-              box.appendChild(c);
+              box.appendChild(c.parentNode); // the <li>
             });
         });
-        refreshGrid();
+        applyList();
       });
     });
     if (findBox) findBox.addEventListener("input", applyList);

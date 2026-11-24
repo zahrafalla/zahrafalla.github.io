@@ -20,29 +20,46 @@ description: The papers I have read for my PhD. Each paper becomes a grid of its
   <div class="zf-row">
     <div class="w-full b lib-tools">
       <label class="ov-find"><span>Find</span><input type="search" id="lib-find" placeholder="title, author, year or idea" autocomplete="off" /></label>
+      <!-- one category at a time: a dropdown -->
+      <div class="lib-dd" id="lib-dd">
+        <button type="button" class="lib-dd-btn" id="lib-dd-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="lib-dd-menu">
+          <span class="lib-dd-k">Category</span><span class="lib-dd-v is-all" style="--cat: transparent"><i aria-hidden="true"></i><b>All papers</b></span
+          ><span class="lib-dd-car" aria-hidden="true"></span>
+        </button>
+        <ul class="lib-dd-menu" id="lib-dd-menu" role="listbox" aria-label="Category" hidden>
+          <li role="option" data-cat="" aria-selected="true" tabindex="-1" class="is-all" style="--cat: transparent">
+            <i aria-hidden="true"></i><span>All papers</span><em>{{ papers.size }}</em>
+          </li>
+          {%- for c in site.data.categories -%}
+            {%- assign inc = papers | where: 'category', c.key | size -%}
+            <li role="option" data-cat="{{ c.key }}" aria-selected="false" tabindex="-1" style="--cat: {{ c.color }}"{% if inc == 0 %} class="is-empty"{% endif %}>
+              <i aria-hidden="true"></i><span>{{ c.label }}</span><em>{{ inc }}</em>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
       <span class="lib-sort zf-meta"
         ><span>Sort</span><button type="button" data-sort="new" aria-pressed="true">Newest</button
         ><button type="button" data-sort="old" aria-pressed="false">Oldest</button
         ><button type="button" data-sort="az" aria-pressed="false">A–Z</button
-        ><button type="button" data-sort="marks" aria-pressed="false">Most marks</button></span
-      >
-      <span class="lib-sort zf-meta lib-view"
-        ><span>View</span><button type="button" data-view="cards" aria-pressed="true">Cards</button
-        ><button type="button" data-view="list" aria-pressed="false">List</button></span
+        ><span class="lib-sort-sep">Most</span
+        ><button type="button" data-sort="exp" aria-pressed="false" title="How many experiments the paper reports">Experiments</button
+        ><button type="button" data-sort="idea" aria-pressed="false" title="My marks: ideas to build">Ideas</button
+        ><button type="button" data-sort="gap" aria-pressed="false" title="My marks: gaps">Gaps</button
+        ><button type="button" data-sort="know" aria-pressed="false" title="My marks: theory + important for my work">Theory &amp; knowledge</button
+        ><button type="button" data-sort="nov" aria-pressed="false" title="My marks: new frameworks + new concepts">Novelty</button></span
       >
       <b class="lib-count zf-meta" id="lib-count" aria-live="polite">{{ papers.size }} papers</b>
-      <span class="lib-cats zf-meta" role="group" aria-label="Show one category"
-        ><span>Category</span><button type="button" data-cat="" aria-pressed="true">All <i>{{ papers.size }}</i></button
-        >{%- for c in site.data.categories -%}
-          {%- assign inc = papers | where: 'category', c.key | size -%}
-          <button type="button" data-cat="{{ c.key }}" aria-pressed="false" style="--cat: {{ c.color }}"><b></b>{{ c.label }} <i>{{ inc }}</i></button>
-        {%- endfor -%}
-      </span>
       <button type="button" class="lib-lock zf-meta" id="lib-lock" aria-pressed="false" title="Show the notes I have hidden from visitors">
         <span class="lk-ico" aria-hidden="true"></span><span class="lk-txt">Hidden notes</span>
       </button>
     </div>
     <div class="w-full" id="lib-cards">
+      <!-- a single ranked list, shown when sorting by experiments, ideas, gaps, theory or novelty -->
+      <section class="lib-group lib-rank" hidden style="--cat: var(--ink)">
+        <h2 class="lib-group-h b"><b aria-hidden="true"></b><span class="lib-rank-t">Ranked</span><i class="lib-group-n"></i></h2>
+        <ol class="lib-rows b"></ol>
+      </section>
       {%- assign n_card = 0 -%}
       {% for c in site.data.categories %}
         {%- assign in_cat = papers | where: 'category', c.key -%}
@@ -53,43 +70,39 @@ description: The papers I have read for my PhD. Each paper becomes a grid of its
           {% if in_cat.size == 0 %}
             <p class="lib-empty b">No papers here yet — a gap in my reading.</p>
           {% endif %}
-          <div class="zf-tiles">
-            {% for p in in_cat %}
-              {%- assign n_card = n_card | plus: 1 -%}
-              <a
-                class="zf-tile pcard b"
-                href="#{{ p.id }}"
-                data-id="{{ p.id }}"
-                data-year="{{ p.year }}"
-                data-title="{{ p.title | downcase | escape }}"
-                data-marks="{{ p.marks.size }}"
-                data-find="{{ p.title | downcase | escape }} {{ p.authors | downcase | escape }} {{ p.year }} {{ p.cite | downcase | escape }} {{ p.ideas | join: ' ' }} {{ c.label | downcase }}"
-              >
-                <div class="zf-tile-top">
-                  <span>{{ p.year }} · {{ p.pages }} pages</span><span>{% if n_card < 10 %}0{% endif %}{{ n_card }}</span>
-                </div>
-                <h3>{{ p.title }}</h3>
-                <p class="where">{{ p.authors }}</p>
-                {%- if p.also -%}
-                  <p class="pcats">
-                    {%- for a in p.also -%}
-                      {%- assign ac = site.data.categories | where: 'key', a | first -%}
-                      {%- if ac -%}<span style="--cat: {{ ac.color }}"><b></b>also {{ ac.label }}</span>{%- endif -%}
-                    {%- endfor -%}
-                  </p>
-                {%- endif -%}
-                <div class="pmini" data-id="{{ p.id }}" aria-hidden="true"></div>
-                <p class="pcounts">
-                  {%- for t in site.data.mark_types -%}
-                    {%- assign n = p.marks | where: 'type', t.key | size -%}
-                    {%- if n > 0 -%}
-                      <span class="t-{{ t.key }}" title="{{ t.label }}"><i></i>{{ n }} {{ t.short }}</span>
-                    {%- endif -%}
-                  {%- endfor -%}
-                </p>
-              </a>
-            {% endfor %}
-          </div>
+          {% if in_cat.size > 0 %}
+            <ul class="lib-rows b">
+              {% for p in in_cat %}
+                {%- assign n_exp = p.experiments | size -%}
+                {%- assign n_idea = p.marks | where: 'type', 'idea' | size -%}
+                {%- assign n_gap = p.marks | where: 'type', 'gap' | size -%}
+                {%- assign n_th = p.marks | where: 'type', 'theory' | size -%}
+                {%- assign n_imp = p.marks | where: 'type', 'important' | size -%}
+                {%- assign n_fw = p.marks | where: 'type', 'framework' | size -%}
+                {%- assign n_co = p.marks | where: 'type', 'concept' | size -%}
+                <li>
+                  <a
+                    class="pcard prow"
+                    href="#{{ p.id }}"
+                    data-id="{{ p.id }}"
+                    data-year="{{ p.year }}"
+                    data-title="{{ p.title | downcase | escape }}"
+                    data-marks="{{ p.marks.size }}"
+                    data-cat="{{ c.key }}"
+                    data-exp="{{ n_exp }}"
+                    data-idea="{{ n_idea }}"
+                    data-gap="{{ n_gap }}"
+                    data-know="{{ n_th | plus: n_imp }}"
+                    data-nov="{{ n_fw | plus: n_co }}"
+                    data-find="{{ p.title | downcase | escape }} {{ p.authors | downcase | escape }} {{ p.year }} {{ p.cite | downcase | escape }} {{ p.ideas | join: ' ' }} {{ c.label | downcase }}"
+                    style="--c: {{ p.color }}"
+                    ><i aria-hidden="true"></i><span class="prow-t">{{ p.title }}</span><span class="prow-n"></span><span class="prow-y">{{ p.year }}</span
+                    ><span class="prow-go" aria-hidden="true">→</span></a
+                  >
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
         </section>
       {% endfor %}
     </div>

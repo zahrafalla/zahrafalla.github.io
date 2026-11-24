@@ -19,22 +19,25 @@ description: The papers I have read, seen three ways — on a timeline, by the p
 {%- endfor -%}
 {% include zf/phd-bar.liquid %}
 
-<h1 class="zf-sr">Overview: looking at papers differently</h1>
-
-<!-- ===================== NUMBERS ===================== -->
-<div class="zf-row">
-  <div class="w-full ov-stats">
-    <div class="b"><b data-count="{{ npapers }}">{{ npapers }}</b><span>papers read</span></div>
-    <div class="b"><b data-count="{{ nmarks }}">{{ nmarks }}</b><span>marks on their bars</span></div>
-    <div class="b"><b data-count="{{ nuses }}">{{ nuses }}</b><span>passages in my papers</span></div>
-    <div class="b"><b data-count="{{ nexps }}">{{ nexps }}</b><span>experiments</span></div>
-    <div class="b"><b data-count="{{ ov.people.size }}">{{ ov.people.size }}</b><span>people to know</span></div>
-    <div class="b"><b data-count="{{ ov.concepts.size }}">{{ ov.concepts.size }}</b><span>shared ideas</span></div>
+<!-- ===================== HEADER: what this is, the numbers, and the three ways of looking ===================== -->
+<div class="zf-row ov-top">
+  <div class="w-full b ov-hero">
+    <div class="ov-hero-t">
+      <p class="ov-kick"><span>Overview</span>{{ npapers }} papers, one picture</p>
+      <h1>My papers, three ways</h1>
+      <p class="ov-hero-l">
+        {{ npapers }} papers I have read: where their ideas come from, the people behind them, and how they connect to each other and to my own questions.
+      </p>
+    </div>
+    <dl class="ov-hero-n">
+      <div><dd data-count="{{ npapers }}">{{ npapers }}</dd><dt>papers read</dt></div>
+      <div><dd data-count="{{ nmarks }}">{{ nmarks }}</dd><dt>marks on them</dt></div>
+      <div><dd data-count="{{ nexps }}">{{ nexps }}</dd><dt>experiments</dt></div>
+      <div><dd data-count="{{ nuses }}">{{ nuses }}</dd><dt>passages in my papers</dt></div>
+      <div><dd data-count="{{ ov.people.size }}">{{ ov.people.size }}</dd><dt>people to know</dt></div>
+      <div><dd data-count="{{ ov.concepts.size }}">{{ ov.concepts.size }}</dd><dt>shared ideas</dt></div>
+    </dl>
   </div>
-</div>
-
-<!-- ===================== THE BAR: THREE WAYS OF LOOKING ===================== -->
-<div class="zf-row ov-nav-row">
   <nav class="w-full b ov-nav" role="tablist" aria-label="Ways of looking at the papers">
     <a href="#timeline" role="tab" data-view="timeline">
       <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M2 12h36" /><circle cx="8" cy="12" r="3" /><circle cx="19" cy="12" r="4.5" /><circle cx="32" cy="12" r="3" /></svg>
@@ -54,13 +57,19 @@ description: The papers I have read, seen three ways — on a timeline, by the p
 
 <!-- ===================== 01 · TIMELINE ===================== -->
 <section class="zf-row ov-panel" id="timeline" data-view="timeline" role="tabpanel" aria-label="Timeline">
-  <div class="zf-row zf-shead">
-    <p class="zf-label b"><span class="n">01</span> Timeline</p>
-    <h2 class="zf-h zf-big b">What they build on</h2>
-  </div>
   <!-- built by overview.js: a river of time with the older works on the left and my papers on the right -->
-  <div class="w-full b tl-stats" id="tl-stats"></div>
-  <div class="w-full b tl-scrub" id="tl-scrub" aria-label="Every year, from the oldest idea to today"></div>
+  <div class="w-full b ov-phead">
+    <div class="ov-phead-t">
+      <p class="ov-kick"><span>01</span>Timeline</p>
+      <h2>What they build on</h2>
+      <p class="ov-phead-l">
+        Older works on the left, my papers on the right. Each paper has its own coloured lane that collects the ideas it builds on; point at anything to follow its threads.
+      </p>
+      <p class="ov-phead-q" id="tl-quote"></p>
+    </div>
+    <div class="ov-phead-x tl-stats" id="tl-stats"></div>
+    <div class="ov-phead-foot tl-scrub" id="tl-scrub" aria-label="Every year, from the oldest idea to today"></div>
+  </div>
   <div class="w-full b tl-river" id="tl-river">
     <svg class="tl-links" id="tl-links" aria-hidden="true"></svg>
     <div class="tl-spine" aria-hidden="true"><i class="tl-ink"></i></div>
@@ -71,9 +80,12 @@ description: The papers I have read, seen three ways — on a timeline, by the p
 
 <!-- ===================== 02 · PEOPLE ===================== -->
 <section class="zf-row ov-panel" id="people" data-view="people" role="tabpanel" aria-label="People">
-  <div class="zf-row zf-shead">
-    <p class="zf-label b"><span class="n">02</span> People</p>
-    <h2 class="zf-h zf-big b">Who to know</h2>
+  <div class="w-full b ov-phead is-short">
+    <div class="ov-phead-t">
+      <p class="ov-kick"><span>02</span>People</p>
+      <h2>Who to know</h2>
+      <p class="ov-phead-l">Everyone my papers cite, as a skyline of citations. Choose a paper under “Through” to see who it leans on.</p>
+    </div>
   </div>
   <!-- built by overview.js from window.OV.people and each paper's cite_counts -->
   <div class="w-full b pp-tools zf-meta">
@@ -105,9 +117,12 @@ description: The papers I have read, seen three ways — on a timeline, by the p
 
 <!-- ===================== 03 · CONNECTIONS ===================== -->
 <section class="zf-row ov-panel" id="connections" data-view="connections" role="tabpanel" aria-label="Connections">
-  <div class="zf-row zf-shead">
-    <p class="zf-label b"><span class="n">03</span> Connections</p>
-    <h2 class="zf-h zf-big b">How it all connects</h2>
+  <div class="w-full b ov-phead is-short">
+    <div class="ov-phead-t">
+      <p class="ov-kick"><span>03</span>Connections</p>
+      <h2>How it all connects</h2>
+      <p class="ov-phead-l">Papers, shared ideas and my research questions as one network. Point at a shape to follow its links.</p>
+    </div>
   </div>
   <div class="w-full b ov-net-box">
     <div class="ov-net-wrap"><svg class="ov-net" id="ov-net" role="img" aria-label="Network of papers, shared ideas and my research questions"></svg></div>
